@@ -6,7 +6,7 @@ namespace TeamHub.Domain.Users.ValueObjects;
 public sealed class FirstName : ValueObject
 {
     public string Value { get; }
-    public const int MaxLength = 20;
+    public const int MaxLength = 100;
 
     public FirstName(string value)
     {
@@ -24,7 +24,10 @@ public sealed class FirstName : ValueObject
 
         if(firstName.Length > MaxLength)
         {
-            return Result.Failure<FirstName>(new Error("FirstName.TooLong", $"Firstname is too long. Maximum Length is {MaxLength} characters."));
+            return Result.Failure<FirstName>(new Error(
+                "FirstName.TooLong", 
+                $"Firstname is too long. Maximum Length is {MaxLength} characters."
+            ));
         }
 
         return new FirstName(firstName);

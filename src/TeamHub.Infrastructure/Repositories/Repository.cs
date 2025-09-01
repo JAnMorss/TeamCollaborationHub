@@ -2,7 +2,7 @@
 using TeamHub.SharedKernel.Domain;
 using TeamHub.SharedKernel.Helpers;
 
-namespace TeamHub.Infrastrucure.Repositories;
+namespace TeamHub.Infrastructure.Repositories;
 
 internal abstract class Repository<T> where T : BaseEntity
 {
@@ -14,7 +14,7 @@ internal abstract class Repository<T> where T : BaseEntity
     }
 
     public virtual async Task<IEnumerable<T>> GetAllAsync(
-        QueryObject query, 
+        QueryObject query,
         CancellationToken cancellationToken = default)
     {
         var queryable = _context.Set<T>().AsQueryable();
@@ -44,7 +44,7 @@ internal abstract class Repository<T> where T : BaseEntity
     }
 
     public async Task AddAsync(
-        T entity, 
+        T entity,
         CancellationToken cancellationToken = default)
     {
         await _context

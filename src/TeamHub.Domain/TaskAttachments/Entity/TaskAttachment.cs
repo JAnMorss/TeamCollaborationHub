@@ -1,4 +1,5 @@
-﻿using TeamHub.Domain.Users.Entities;
+﻿using Microsoft.VisualBasic.FileIO;
+using TeamHub.Domain.Users.Entities;
 using TeamHub.SharedKernel.Domain;
 
 namespace TeamHub.Domain.TaskAttachments.Entity
@@ -6,11 +7,11 @@ namespace TeamHub.Domain.TaskAttachments.Entity
     public sealed class TaskAttachment : BaseEntity
     {
         public TaskAttachment(
-            Guid id, 
-            string? fileName, 
-            string? filePath, 
-            string? fileType, 
-            long fileSize, 
+            Guid id,
+            FileName? fileName,
+            FilePath? filePath,
+            FileType? fileType,
+            FileSize fileSize, 
             DateTime uploadedAt, 
             Guid taskId, 
             Guid uploadedById) : base(id)
@@ -24,10 +25,10 @@ namespace TeamHub.Domain.TaskAttachments.Entity
             UploadedById = uploadedById;
         }
 
-        public string? FileName { get; private set; }
-        public string? FilePath { get; private set; }
-        public string? FileType { get; private set; }
-        public long FileSize { get; private set; }
+        public FileName? FileName { get; private set; }
+        public FilePath? FilePath { get; private set; }
+        public FileType? FileType { get; private set; }
+        public FileSize FileSize { get; private set; }
         public DateTime UploadedAt { get; private set; }
 
         public Guid TaskId { get; private set; }

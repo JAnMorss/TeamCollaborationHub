@@ -1,5 +1,5 @@
 using TeamHub.Application;
-using TeamHub.Infrastrucure;
+using TeamHub.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 

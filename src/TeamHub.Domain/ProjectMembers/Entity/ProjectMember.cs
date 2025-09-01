@@ -1,4 +1,5 @@
 ﻿using TeamHub.Domain.ProjectMembers.Enums;
+using TeamHub.Domain.ProjectMembers.Events;
 using TeamHub.Domain.Projects.Entity;
 using TeamHub.Domain.Users.Entities;
 using TeamHub.SharedKernel.Domain;
@@ -29,4 +30,12 @@ public sealed class ProjectMember : BaseEntity
 
     public Project? Project { get; private set; }
     public User? User { get; private set; }
+
+    public void ChangeRole(ProjectRole newRole)
+    {
+        if (Role == newRole) return;
+
+        Role = newRole;
+        RaiseDomainEvent(new ProjectMemberRoleChangedDomainEvent(Id, newRole));
+    }
 }

@@ -2,10 +2,10 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TeamHub.Domain.Users.Interface;
-using TeamHub.Infrastrucure.Repositories;
+using TeamHub.Infrastructure.Repositories;
 using TeamHub.SharedKernel;
 
-namespace TeamHub.Infrastrucure;
+namespace TeamHub.Infrastructure;
 
 public static class DependencyInjection
 {

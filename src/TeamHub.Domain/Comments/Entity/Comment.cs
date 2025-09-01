@@ -1,4 +1,5 @@
-﻿using TeamHub.Domain.Users.Entities;
+﻿using TeamHub.Domain.Comments.ValueObjects;
+using TeamHub.Domain.Users.Entities;
 using TeamHub.SharedKernel.Domain;
 
 namespace TeamHub.Domain.Comments.Entity;
@@ -9,7 +10,7 @@ public sealed class Comment : BaseEntity
 
     public Comment(
         Guid id,
-        string? content,
+        Content? content,
         DateTime? updatedAt,
         bool isEdited,
         Guid taskId,
@@ -23,7 +24,7 @@ public sealed class Comment : BaseEntity
         AuthorId = authorId;
     }
 
-    public string? Content { get; private set; }
+    public Content? Content { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime? UpdatedAt { get; private set; }
     public bool IsEdited { get; private set; }

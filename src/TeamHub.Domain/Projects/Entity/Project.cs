@@ -1,4 +1,5 @@
 ﻿using TeamHub.Domain.ProjectMembers.Entity;
+using TeamHub.Domain.Projects.ValueObjects;
 using TeamHub.Domain.Tasks.Entity;
 using TeamHub.Domain.Users.Entities;
 using TeamHub.SharedKernel.Domain;
@@ -11,9 +12,9 @@ public sealed class Project : BaseEntity
     public Project(
         Guid id,
         Guid createdById,
-        string name,
-        string description,
-        string color) : base(id)
+        ProjectName name,
+        ProjectDescription description,
+        ProjectColor color) : base(id)
     {
         CreatedById = createdById;
         Name = name;
@@ -24,9 +25,9 @@ public sealed class Project : BaseEntity
     }
 
     public Guid CreatedById { get; private set; }
-    public string? Name { get; private set; }
-    public string? Description { get; private set; }
-    public string? Color { get; private set; }
+    public ProjectName? Name { get; private set; }
+    public ProjectDescription? Description { get; private set; }
+    public ProjectColor? Color { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public bool IsActive { get; private set; }
 

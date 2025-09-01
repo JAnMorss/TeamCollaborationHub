@@ -2,6 +2,7 @@
 using TeamHub.Domain.Projects.Entity;
 using TeamHub.Domain.TaskAttachments.Entity;
 using TeamHub.Domain.Tasks.Enums;
+using TeamHub.Domain.Tasks.ValueObjects;
 using TeamHub.Domain.Users.Entities;
 using TeamHub.SharedKernel.Domain;
 
@@ -13,14 +14,14 @@ public sealed class ProjectTask : BaseEntity
 
     public ProjectTask(
         Guid id,
-        string title,
-        string description,
+        Title title,
+        Description description,
         TaskPriority priority,
         Taskstatus status,
         DateTime? dueDate,
         DateTime updateAt,
         Guid projectId,
-        Guid? assignToId,
+        Guid? assignedToId,
         Guid createdById) : base(id)
     {
         Title = title;
@@ -31,12 +32,12 @@ public sealed class ProjectTask : BaseEntity
         CreatedAt = DateTime.UtcNow;
         UpdateAt = updateAt;
         ProjectId = projectId;
-        AssignToId = assignToId;
+        AssignedToId = assignedToId;
         CreatedById = createdById;
     }
 
-    public string? Title { get; private set; }
-    public string? Description { get; private set; }
+    public Title? Title { get; private set; }
+    public Description? Description { get; private set; }
     public TaskPriority Priority { get; private set; }
     public Taskstatus Status { get; private set; }
     public DateTime? DueDate { get; private set; }
@@ -44,7 +45,7 @@ public sealed class ProjectTask : BaseEntity
     public DateTime UpdateAt { get; private set; }
 
     public Guid ProjectId { get; private set; }
-    public Guid? AssignToId { get; private set; }
+    public Guid? AssignedToId { get; private set; }
     public Guid CreatedById { get; private set; }
 
     public Project? Project { get; private set; }

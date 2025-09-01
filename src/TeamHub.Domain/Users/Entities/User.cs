@@ -30,7 +30,6 @@ public sealed class User : BaseEntity
         Avatar = avatar;
         PasswordHash = passwordHash;
         CreatedAt = DateTime.UtcNow;
-        LastLoginAt = lastLoginAt;
         IsActive = isActive;
     }
 
@@ -40,7 +39,6 @@ public sealed class User : BaseEntity
     public Avatar? Avatar { get; private set; }
     public PasswordHash? PasswordHash { get; private set; }
     public DateTime CreatedAt { get; private set; }   
-    public DateTime? LastLoginAt { get; private set; }
     public bool IsActive { get; private set; }
     public DateTime? UpdatedAt { get; private set; }
     public string IdentityId { get; private set; } = string.Empty;
@@ -195,12 +193,6 @@ public sealed class User : BaseEntity
         RaiseDomainEvent(new UserAvatarUpdatedDomainEvent(Id));
 
         return Result.Success();
-    }
-
-    public void UpdateLastLogin()
-    {
-        LastLoginAt = DateTime.UtcNow;
-        RaiseDomainEvent(new UserLoggedInDomainEvent(Id));
     }
 
     public void SetIdentityId(string identityId)
