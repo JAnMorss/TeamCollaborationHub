@@ -19,6 +19,7 @@ public sealed class Notification : BaseEntity
         Message message, 
         NotificationType type, 
         bool isRead,
+        TimeOnly time,
         ActionUrl actionUrl, 
         Guid userId, 
         Guid? projectId, 
@@ -30,6 +31,7 @@ public sealed class Notification : BaseEntity
         Type = type;
         IsRead = isRead;
         CreatedAt = DateTime.UtcNow;
+        Time = time;
         ActionUrl = actionUrl;
         UserId = userId;
         ProjectId = projectId;
@@ -42,6 +44,7 @@ public sealed class Notification : BaseEntity
     public NotificationType Type { get; private set; }
     public bool IsRead { get; private set; }
     public DateTime CreatedAt { get; private set; }
+    public TimeOnly Time { get; private set; }
     public ActionUrl? ActionUrl { get; private set; } 
 
     public Guid UserId { get; private set; }

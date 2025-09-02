@@ -21,7 +21,6 @@ public sealed class User : BaseEntity
         EmailAddress email,
         Avatar avatar,
         PasswordHash passwordHash,
-        DateTime? lastLoginAt,
         bool isActive) : base(id)
     {
         FirstName = firstName;
