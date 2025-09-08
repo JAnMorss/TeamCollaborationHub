@@ -22,7 +22,7 @@ public sealed class ActivateUserCommandHandler : ICommandHandler<ActivateUserCom
         if (user is null)
             return Result.Failure(UserErrors.NotFound);
 
-        var result = user.Active();
+        var result = user.Activate();
         if (result.IsFailure)
             return result;
 

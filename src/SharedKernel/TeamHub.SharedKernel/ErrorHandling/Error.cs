@@ -1,6 +1,6 @@
 ﻿namespace TeamHub.SharedKernel.ErrorHandling;
 
-public record Error(string Code, string Description)
+public record Error(string Code, string Message)
 {
     public static readonly Error None = new(
         string.Empty, 
@@ -11,6 +11,7 @@ public record Error(string Code, string Description)
         "Error.NullValue",
         "Null value was provided"
     );
+
 
     public static implicit operator Result(Error error)
         => Result.Failure(error);
