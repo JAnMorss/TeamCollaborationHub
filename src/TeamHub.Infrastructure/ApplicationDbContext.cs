@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore;
 using TeamHub.Domain.Projects.Entity;
@@ -10,7 +9,7 @@ using TeamHub.SharedKernel;
 
 namespace TeamHub.Infrastructure;
 
-public sealed class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IUnitOfWork
+public sealed class ApplicationDbContext : DbContext, IUnitOfWork
 {
     private readonly IPublisher _publisher;
     public ApplicationDbContext(
@@ -20,7 +19,7 @@ public sealed class ApplicationDbContext : IdentityDbContext<ApplicationUser>, I
         _publisher = publisher;
     }
 
-    public DbSet<User> UserProfiles { get; private set; }
+    public DbSet<User> Users { get; private set; }
     public DbSet<Project> Projects { get; private set; }
     public DbSet<ProjectTask> Tasks { get; private set; }
 

@@ -13,7 +13,7 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        var connectionString = configuration.GetConnectionString("Data") ??
+        var connectionString = configuration.GetConnectionString("Database") ??
                 throw new InvalidOperationException("Connection string 'Database' is missing in configuration.");
 
         services.AddDbContext<ApplicationDbContext>(opt =>
