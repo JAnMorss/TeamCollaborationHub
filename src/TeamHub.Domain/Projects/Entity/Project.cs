@@ -1,14 +1,23 @@
 ﻿using TeamHub.Domain.ProjectMembers.Entity;
+using TeamHub.Domain.ProjectMembers.Enums;
+using TeamHub.Domain.ProjectMembers.Events;
+using TeamHub.Domain.Projects.Errors;
+using TeamHub.Domain.Projects.Events;
 using TeamHub.Domain.Projects.ValueObjects;
 using TeamHub.Domain.Tasks.Entity;
 using TeamHub.Domain.Users.Entities;
 using TeamHub.SharedKernel.Domain;
+using TeamHub.SharedKernel.ErrorHandling;
 
 namespace TeamHub.Domain.Projects.Entity;
 
 public sealed class Project : BaseEntity
 {
+    private readonly List<ProjectMember> _members = new();
+    private readonly List<ProjectTask> _tasks = new();
+
     private Project() { }
+
     public Project(
         Guid id,
         Guid createdById,
@@ -32,6 +41,96 @@ public sealed class Project : BaseEntity
     public bool IsActive { get; private set; }
 
     public User? CreatedBy { get; private set; }
-    public ICollection<ProjectMember>? Members { get; set; }
-    public ICollection<ProjectTask>? Tasks { get; private set; }
+    public IReadOnlyCollection<ProjectMember> Members => _members.AsReadOnly();
+    public IReadOnlyCollection<ProjectTask> Tasks => _tasks.AsReadOnly();
+
+    public Result UpdateDetails(
+        string name,
+        string description,
+        string color)
+    {
+        bool changed = false;
+
+        if (!string.IsNullOrWhiteSpace(name) && name != Name?.Value)
+        {
+            var nameResult = ProjectName.Create(name);
+            if (nameResult.IsFailure)
+                return Result.Failure(nameResult.Error);
+
+            Name = nameResult.Value;
+            changed = true;
+        }
+
+        if (!string.IsNullOrWhiteSpace(description) && description != Description?.Value)
+        {
+            var descriptionResult = ProjectDescription.Create(description);
+            if (descriptionResult.IsFailure)
+                return Result.Failure(descriptionResult.Error);
+
+            Description = descriptionResult.Value;
+            changed = true;
+        }
+
+        if (!string.IsNullOrWhiteSpace(color) && color != Color?.Value)
+        {
+            var colorResult = ProjectColor.Create(color);
+            if (colorResult.IsFailure)
+                return Result.Failure(colorResult.Error);
+
+            Color = colorResult.Value;
+            changed = true;
+        }
+
+        if (!changed)
+            return Result.Failure(ProjectErrors.NoChanges);
+
+        RaiseDomainEvent(new ProjectUpdatedDomainEvent(Id));
+
+        return Result.Success(this);
+    }
+
+    public Result AddMember(User user, ProjectRole role)
+    {
+        if (_members.Any(m => m.UserId == user.Id))
+        {
+            return Result.Failure(ProjectErrors.AlreadyMember);
+        }
+
+        var newMember = new ProjectMember(
+            Guid.NewGuid(),
+            Id,
+            user.Id,
+            role);
+
+        _members.Add(newMember);
+
+        RaiseDomainEvent(new ProjectMemberAddedDomainEvent(Id, user.Id));
+
+        return Result.Success(newMember);
+    }
+
+    public Result RemoveMember(Guid userId)
+    {
+        var member = _members.FirstOrDefault(m => m.UserId == userId);
+        if (member is null)
+            return Result.Failure(ProjectErrors.MemberNotFound);
+
+        _members.Remove(member);
+
+        RaiseDomainEvent(new ProjectMemberRemovedDomainEvent(Id, userId));
+
+        return Result.Success();
+    }
+
+
+    public Result Archive()
+    {
+        if (!IsActive)
+            return Result.Failure(ProjectErrors.AlreadyArchived);
+
+        IsActive = false;
+        RaiseDomainEvent(new ProjectArchivedDomainEvent(Id));
+
+        return Result.Success();
+    }
 }

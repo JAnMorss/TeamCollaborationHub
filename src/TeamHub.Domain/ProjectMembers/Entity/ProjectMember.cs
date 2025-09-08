@@ -13,8 +13,7 @@ public sealed class ProjectMember : BaseEntity
         Guid id,
         Guid projectId,
         Guid userId,
-        ProjectRole role,
-        DateTime joinedAt) : base(id)
+        ProjectRole role) : base(id)
     {
         ProjectId = projectId;
         UserId = userId;
@@ -37,5 +36,10 @@ public sealed class ProjectMember : BaseEntity
 
         Role = newRole;
         RaiseDomainEvent(new ProjectMemberRoleChangedDomainEvent(Id, newRole));
+    }
+
+    public void LeaveProject()
+    {
+        RaiseDomainEvent(new LeaveProjectDomainEvent(Id, ProjectId, UserId));
     }
 }

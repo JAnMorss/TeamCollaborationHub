@@ -12,6 +12,11 @@ namespace TeamHub.Domain.Users.Entities;
 
 public sealed class User : BaseEntity
 {
+    private readonly List<ProjectMember> _projectMemberships = new();
+    private readonly List<ProjectTask> _assignedTasks = new();
+    private readonly List<Notification> _notifications = new();
+    private readonly List<Comment> _comments = new();
+
     private User() { }
 
     public User(
@@ -37,15 +42,15 @@ public sealed class User : BaseEntity
     public EmailAddress? Email { get; private set; }
     public Avatar? Avatar { get; private set; }
     public PasswordHash? PasswordHash { get; private set; }
-    public DateTime CreatedAt { get; private set; }   
+    public DateTime CreatedAt { get; private set; }
     public bool IsActive { get; private set; }
     public DateTime? UpdatedAt { get; private set; }
     public string IdentityId { get; private set; } = string.Empty;
 
-    public ICollection<ProjectMember> ProjectMemberships { get; private set; } = new List<ProjectMember>();
-    public ICollection<ProjectTask> AssignedTasks { get; private set; } = new List<ProjectTask>();
-    public ICollection<Notification> Notifications { get; private set; } = new List<Notification>();
-    public ICollection<Comment> Comments { get; private set; } = new List<Comment>();
+    public IReadOnlyCollection<ProjectMember> ProjectMemberships => _projectMemberships.AsReadOnly();
+    public IReadOnlyCollection<ProjectTask> AssignedTasks => _assignedTasks.AsReadOnly();
+    public IReadOnlyCollection<Notification> Notifications => _notifications.AsReadOnly();
+    public IReadOnlyCollection<Comment> Comments => _comments.AsReadOnly();
 
     public static Result<User> Create(
         Guid id,
@@ -82,7 +87,6 @@ public sealed class User : BaseEntity
             emailResult.Value,
             avatarResult.Value,
             passwordResult.Value,
-            null,
             true);
 
         user.RaiseDomainEvent(new UserCreatedDomainEvent(user.Id));
@@ -90,12 +94,10 @@ public sealed class User : BaseEntity
         return Result.Success(user);
     }
 
-    public Result<User> Update(
+    public Result<User> UpdateDetails(
         string firstName,
         string lastName,
-        string email,
-        string avatar,
-        string passwordHash)
+        string email)
     {
         bool changed = false;
 
@@ -129,26 +131,6 @@ public sealed class User : BaseEntity
             changed = true;
         }
 
-        if (!string.IsNullOrWhiteSpace(avatar) && avatar != Avatar?.Value)
-        {
-            var avatarResult = Avatar.Create(avatar);
-            if (avatarResult.IsFailure)
-                return Result.Failure<User>(UserErrors.AvatarInvalidUrl);
-
-            Avatar = avatarResult.Value;
-            changed = true;
-        }
-
-        if (!string.IsNullOrWhiteSpace(passwordHash) && passwordHash != PasswordHash?.Value)
-        {
-            var passwordResult = PasswordHash.Create(passwordHash);
-            if (passwordResult.IsFailure)
-                return Result.Failure<User>(passwordResult.Error);
-
-            PasswordHash = passwordResult.Value;
-            changed = true;
-        }
-
         if (changed)
         {
             UpdatedAt = DateTime.UtcNow;
@@ -158,15 +140,13 @@ public sealed class User : BaseEntity
         return Result.Success(this);
     }
 
-    public Result Active()
+    public Result Activate()
     {
         if (IsActive)
             return Result.Failure(UserErrors.AlreadyActive);
 
         IsActive = true;
-
         RaiseDomainEvent(new UserActivatedDomainEvent(Id));
-
         return Result.Success();
     }
 
@@ -177,14 +157,12 @@ public sealed class User : BaseEntity
 
         IsActive = false;
         RaiseDomainEvent(new UserDeactiveDomainEvent(Id));
-
         return Result.Success();
     }
 
     public Result UpdateAvatar(string avatarUrl)
     {
         var result = Avatar.Create(avatarUrl);
-
         if (result.IsFailure)
             return Result.Failure(UserErrors.AvatarInvalidUrl);
 
@@ -194,8 +172,15 @@ public sealed class User : BaseEntity
         return Result.Success();
     }
 
-    public void SetIdentityId(string identityId)
-    {
-        IdentityId = identityId;
-    }
+    public void SetIdentityId(string identityId) 
+        => IdentityId = identityId;
+
+    public void AddProjectMembership(ProjectMember member)
+        => _projectMemberships.Add(member);
+    public void AddAssignedTask(ProjectTask task) 
+        => _assignedTasks.Add(task);
+    public void AddNotification(Notification notification) 
+        => _notifications.Add(notification);
+    public void AddComment(Comment comment) 
+        => _comments.Add(comment);
 }

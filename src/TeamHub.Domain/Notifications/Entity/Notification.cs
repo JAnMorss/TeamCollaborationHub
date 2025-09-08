@@ -3,6 +3,7 @@ using TeamHub.Domain.Notifications.Errors;
 using TeamHub.Domain.Notifications.Events;
 using TeamHub.Domain.Notifications.ValueObjects;
 using TeamHub.Domain.Projects.Entity;
+using TeamHub.Domain.Tasks.Entity;
 using TeamHub.Domain.Users.Entities;
 using TeamHub.SharedKernel.Domain;
 using TeamHub.SharedKernel.ErrorHandling;
@@ -54,7 +55,7 @@ public sealed class Notification : BaseEntity
 
     public User? User { get; private set; }
     public Project? Project { get; private set; }
-    public Task? Task { get; private set; }
+    public ProjectTask? Task { get; private set; }
     public User? TriggeredBy { get; private set; }
 
     public Result MarkAsRead()
