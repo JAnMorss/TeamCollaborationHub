@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TeamHub.API.Abstractions;
 using TeamHub.Application.Users.Commands.ActiveUser;
@@ -26,6 +27,7 @@ public class UserController : ApiController
             : Guid.Parse(userId);
     }
 
+    [Authorize]
     [HttpGet("me")]
     public async Task<IActionResult> GetMyProfile(CancellationToken cancellationToken)
     {
@@ -35,16 +37,18 @@ public class UserController : ApiController
 
         var query = new GetMyProfileQuery(userId.Value);
 
-        var result = await _sender.Send(query, cancellationToken);
+        var result = await _sender.Send(
+            query, 
+            cancellationToken);
 
         return result.IsSuccess
             ? Ok(new ApiResponse<UserResponse>(
                     result.Value, 
-                    "Profile fetched successfully"
-                ))
+                    "Profile fetched successfully"))
             : HandleFailure(result);
     }
 
+    [Authorize]
     [HttpPut("activate")]
     public async Task<IActionResult> ActivateUser(CancellationToken cancellationToken)
     {
@@ -54,13 +58,16 @@ public class UserController : ApiController
 
         var command = new ActivateUserCommand(userId.Value);
 
-        var result = await _sender.Send(command, cancellationToken);
+        var result = await _sender.Send(
+            command, 
+            cancellationToken);
 
         return result.IsSuccess
             ? Ok(new ApiResponse("User activated successfully"))
             : HandleFailure(result);
     }
 
+    [Authorize]
     [HttpPut("deactivate")]
     public async Task<IActionResult> DeactivateUser(CancellationToken cancellationToken)
     {
@@ -70,13 +77,16 @@ public class UserController : ApiController
 
         var command = new DeactivateUserCommand(userId.Value);
 
-        var result = await _sender.Send(command, cancellationToken);
+        var result = await _sender.Send(
+            command, 
+            cancellationToken);
 
         return result.IsSuccess
             ? Ok(new ApiResponse("User deactivated successfully"))
             : HandleFailure(result);
     }
 
+    [Authorize]
     [HttpPut("details")]
     public async Task<IActionResult> UserUpdateDetails(
         [FromBody] UserRequest request,
@@ -92,13 +102,14 @@ public class UserController : ApiController
             request.LastName,
             request.Email);
 
-        var result = await _sender.Send(command, cancellationToken);
+        var result = await _sender.Send(
+            command, 
+            cancellationToken);
 
         return result.IsSuccess
             ? Ok(new ApiResponse<UserResponse>(
                     result.Value, 
-                    "User details updated successfully"
-                ))
+                    "User details updated successfully"))
             : HandleFailure(result);
     }
 }

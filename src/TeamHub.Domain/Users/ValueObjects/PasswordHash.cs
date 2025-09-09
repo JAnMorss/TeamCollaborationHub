@@ -57,7 +57,7 @@ public sealed class PasswordHash : ValueObject
                 "Password hash cannot be empty."));
         }
 
-        if (hash.Length < 20)
+        if (hash.Length < 5)
         {
             return Result.Failure<PasswordHash>(new Error(
                 "PasswordHash.Invalid",

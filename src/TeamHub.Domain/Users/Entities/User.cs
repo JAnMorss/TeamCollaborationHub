@@ -21,6 +21,7 @@ public sealed class User : BaseEntity
 
     public User(
         Guid id,
+        string identityId,
         FirstName firstName,
         LastName lastName,
         EmailAddress email,
@@ -28,6 +29,7 @@ public sealed class User : BaseEntity
         PasswordHash passwordHash,
         bool isActive) : base(id)
     {
+        IdentityId = identityId;
         FirstName = firstName;
         LastName = lastName;
         Email = email;
@@ -37,15 +39,17 @@ public sealed class User : BaseEntity
         IsActive = isActive;
     }
 
-    public FirstName? FirstName { get; private set; }
-    public LastName? LastName { get; private set; }
-    public EmailAddress? Email { get; private set; }
+
+    public FirstName FirstName { get; private set; } = null!;
+    public LastName LastName { get; private set; } = null!;
+    public EmailAddress Email { get; private set; } = null!;
     public Avatar? Avatar { get; private set; }
-    public PasswordHash? PasswordHash { get; private set; }
+    public PasswordHash PasswordHash { get; private set; } = null!;
     public DateTime CreatedAt { get; private set; }
     public bool IsActive { get; private set; }
     public DateTime? UpdatedAt { get; private set; }
-    public string IdentityId { get; private set; } = string.Empty;
+    public string IdentityId { get; private set; }
+
 
     public IReadOnlyCollection<ProjectMember> ProjectMemberships => _projectMemberships.AsReadOnly();
     public IReadOnlyCollection<ProjectTask> AssignedTasks => _assignedTasks.AsReadOnly();
@@ -82,6 +86,7 @@ public sealed class User : BaseEntity
 
         var user = new User(
             id,
+            Guid.NewGuid().ToString(),
             firstNameResult.Value,
             lastNameResult.Value,
             emailResult.Value,

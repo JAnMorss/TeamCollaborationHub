@@ -1,4 +1,5 @@
 ﻿using TeamHub.Application.Users.Responses;
+using TeamHub.Domain.Users.Errors;
 using TeamHub.Domain.Users.Interface;
 using TeamHub.Domain.Users.ValueObjects;
 using TeamHub.SharedKernel;
@@ -24,18 +25,18 @@ public sealed class UpdateDetailsCommandHandler : ICommandHandler<UpdateDetailsC
     {
         var existingUser = await _userRepository.GetByIdAsync(request.Id, cancellationToken);
         if (existingUser is null)
-            return Result.Failure<UserResponse>(new Error(
-                "User.NotFound",
-                "User cannot be found"));
+            return Result.Failure<UserResponse>(UserErrors.NotFound);
 
-        existingUser.UpdateDetails(
-            new FirstName(request.FirstName).Value,
-            new LastName(request.LastName).Value,
-            new EmailAddress(request.Email).Value
+        var updateResult = existingUser.UpdateDetails(
+            request.FirstName,
+            request.LastName,
+            request.Email
         );
 
-        await _userRepository.UpdateAsync(existingUser, cancellationToken);
+        if (updateResult.IsFailure)
+            return Result.Failure<UserResponse>(updateResult.Error);
 
+        await _userRepository.UpdateAsync(existingUser, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         var result = UserResponse.FromEntity(existingUser);
