@@ -51,23 +51,24 @@ public class NotificationConfiguration : IEntityTypeConfiguration<Notification>
 
         // Relationships
         builder.HasOne(n => n.User)
-            .WithMany() 
+            .WithMany()
             .HasForeignKey(n => n.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Restrict); 
 
         builder.HasOne(n => n.Project)
             .WithMany()
             .HasForeignKey(n => n.ProjectId)
-            .OnDelete(DeleteBehavior.SetNull);
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(n => n.Task)
             .WithMany()
             .HasForeignKey(n => n.TaskId)
-            .OnDelete(DeleteBehavior.SetNull);
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(n => n.TriggeredBy)
             .WithMany()
             .HasForeignKey(n => n.TriggeredById)
-            .OnDelete(DeleteBehavior.SetNull);
+            .OnDelete(DeleteBehavior.Restrict); 
+
     }
 }

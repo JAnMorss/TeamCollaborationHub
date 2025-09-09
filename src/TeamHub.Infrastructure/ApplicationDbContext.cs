@@ -19,9 +19,9 @@ public sealed class ApplicationDbContext : DbContext, IUnitOfWork
         _publisher = publisher;
     }
 
-    public DbSet<User> Users { get; private set; }
-    public DbSet<Project> Projects { get; private set; }
-    public DbSet<ProjectTask> Tasks { get; private set; }
+    public DbSet<User> Users { get; set; }
+    public DbSet<Project> Projects { get; set; }
+    public DbSet<ProjectTask> Tasks { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
