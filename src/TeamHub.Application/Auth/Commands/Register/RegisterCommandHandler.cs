@@ -6,6 +6,7 @@ using TeamHub.SharedKernel;
 using TeamHub.Application.Abstractions;
 using TeamHub.Application.Auth.Response;
 using TeamHub.Application.Users.Responses;
+using Microsoft.EntityFrameworkCore;
 
 namespace TeamHub.Application.Auth.Commands.Register;
 
@@ -45,7 +46,17 @@ public sealed class RegisterCommandHandler : ICommandHandler<RegisterCommand, Au
         var token = _jwtProvider.Generate(user);
 
         await _userRepository.AddAsync(user, cancellationToken);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        try
+        {
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateException ex)
+        {
+            Console.WriteLine(ex.InnerException?.Message);
+            throw;
+        }
+
 
         return Result.Success(new AuthResponse(
                 token,

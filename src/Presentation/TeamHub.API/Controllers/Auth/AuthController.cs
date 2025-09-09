@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using TeamHub.API.Abstractions;
 using TeamHub.Application.Auth.Commands.Login;
@@ -30,13 +29,14 @@ public class AuthController : ApiController
             request.Avatar,
             request.Password);
 
-        var result = await _sender.Send(command, cancellationToken);
+        var result = await _sender.Send(
+            command, 
+            cancellationToken);
 
         return result.IsSuccess
             ? Ok(new ApiResponse<AuthResponse>(
                     result.Value, 
-                    "User registered successfully"
-                ))
+                    "User registered successfully"))
             : HandleFailure(result);
     }
 
@@ -45,15 +45,18 @@ public class AuthController : ApiController
         [FromBody] LoginRequest request,
         CancellationToken cancellationToken)
     {
-        var command = new LoginCommand(request.Email, request.Password);
+        var command = new LoginCommand(
+            request.Email, 
+            request.Password);
 
-        var result = await _sender.Send(command, cancellationToken);
+        var result = await _sender.Send(
+            command, 
+            cancellationToken);
 
         return result.IsSuccess
             ? Ok(new ApiResponse<AuthResponse>(
                     result.Value, 
-                    "Login successful"
-                ))
+                    "Login successful"))
             : HandleFailure(result);
     }
 }

@@ -36,23 +36,20 @@ public sealed class LoginCommandHandler
             return Result.Failure<AuthResponse>(emailResult.Error);
 
         var user = await _userRepository.GetByEmailAsync(
-            emailResult.Value,
+            emailResult.Value, 
             cancellationToken);
 
         if (user is null)
-            return Result.Failure<AuthResponse>(UserErrors.NotFound);
+            return Result.Failure<AuthResponse>(UserErrors.InvalidCredentials);
 
-        if (!user.PasswordHash!.Verify(request.Password)) 
+        if (!user.PasswordHash!.Verify(request.Password))
             return Result.Failure<AuthResponse>(UserErrors.InvalidCredentials);
 
         var token = _jwtProvider.Generate(user);
 
-        await _userRepository.AddAsync(user, cancellationToken);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
-
         return Result.Success(new AuthResponse(
-                token, 
-                UserResponse.FromEntity(user)
-            ));
+            token,
+            UserResponse.FromEntity(user)
+        ));
     }
 }
