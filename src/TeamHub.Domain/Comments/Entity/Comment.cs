@@ -25,7 +25,7 @@ public sealed class Comment : BaseEntity
         AuthorId = authorId;
     }
 
-    public Content? Content { get; private set; }
+    public Content Content { get; private set; } = null!; 
     public DateTime CreatedAt { get; private set; }
     public DateTime? UpdatedAt { get; private set; }
     public bool IsEdited { get; private set; }
@@ -33,8 +33,9 @@ public sealed class Comment : BaseEntity
     public Guid TaskId { get; private set; }
     public Guid AuthorId { get; private set; }
 
-    public ProjectTask? Task { get; private set; }
-    public User? Author { get; private set; }
+    public ProjectTask? Task { get; private set; }   
+    public User? Author { get; private set; }       
+
 
     public static Result<Comment> Create(
         string content,

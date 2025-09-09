@@ -40,13 +40,13 @@ public sealed class Notification : BaseEntity
         TriggeredById = triggeredById;
     }
 
-    public Title? Title { get; private set; }
-    public Message? Message { get; private set; }
+    public Title Title { get; private set; } = null!;
+    public Message Message { get; private set; } = null!;
     public NotificationType Type { get; private set; }
     public bool IsRead { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public TimeOnly Time { get; private set; }
-    public ActionUrl? ActionUrl { get; private set; } 
+    public ActionUrl ActionUrl { get; private set; } = null!;
 
     public Guid UserId { get; private set; }
     public Guid? ProjectId { get; private set; }
@@ -57,6 +57,7 @@ public sealed class Notification : BaseEntity
     public Project? Project { get; private set; }
     public ProjectTask? Task { get; private set; }
     public User? TriggeredBy { get; private set; }
+
 
     public Result MarkAsRead()
     {

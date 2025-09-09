@@ -10,11 +10,13 @@ namespace TeamHub.Domain.TaskAttachments.Entity;
 
 public sealed class TaskAttachment : BaseEntity
 {
+    private TaskAttachment() { }
+
     public TaskAttachment(
         Guid id,
-        FileName? fileName,
-        FilePath? filePath,
-        FileType? fileType,
+        FileName fileName,
+        FilePath filePath,
+        FileType fileType,
         FileSize fileSize, 
         DateTime uploadedAt, 
         Guid taskId, 
@@ -29,9 +31,9 @@ public sealed class TaskAttachment : BaseEntity
         UploadedById = uploadedById;
     }
 
-    public FileName? FileName { get; private set; }
-    public FilePath? FilePath { get; private set; }
-    public FileType? FileType { get; private set; }
+    public FileName FileName { get; private set; } = null!;
+    public FilePath FilePath { get; private set; } = null!;
+    public FileType FileType { get; private set; } = null!;
     public FileSize FileSize { get; private set; }
     public DateTime UploadedAt { get; private set; }
 

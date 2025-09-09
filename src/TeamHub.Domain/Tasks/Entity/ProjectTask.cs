@@ -41,8 +41,8 @@ public sealed class ProjectTask : BaseEntity
         CreatedById = createdById;
     }
 
-    public Title? Title { get; private set; }
-    public Description? Description { get; private set; }
+    public Title Title { get; private set; } = null!;
+    public Description Description { get; private set; } = null!;
     public TaskPriority Priority { get; private set; }
     public Taskstatus Status { get; private set; }
     public DateTime? DueDate { get; private set; }

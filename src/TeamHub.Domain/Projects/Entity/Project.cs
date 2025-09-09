@@ -34,15 +34,16 @@ public sealed class Project : BaseEntity
     }
 
     public Guid CreatedById { get; private set; }
-    public ProjectName? Name { get; private set; }
-    public ProjectDescription? Description { get; private set; }
-    public ProjectColor? Color { get; private set; }
+    public ProjectName Name { get; private set; } = null!;
+    public ProjectDescription Description { get; private set; } = null!;
+    public ProjectColor Color { get; private set; } = null!;
     public DateTime CreatedAt { get; private set; }
     public bool IsActive { get; private set; }
 
     public User? CreatedBy { get; private set; }
     public IReadOnlyCollection<ProjectMember> Members => _members.AsReadOnly();
     public IReadOnlyCollection<ProjectTask> Tasks => _tasks.AsReadOnly();
+
 
     public Result UpdateDetails(
         string name,
