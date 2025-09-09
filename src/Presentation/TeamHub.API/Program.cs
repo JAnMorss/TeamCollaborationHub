@@ -1,3 +1,4 @@
+using TeamHub.API.Extensions;
 using TeamHub.Application;
 using TeamHub.Infrastructure;
 
@@ -9,8 +10,8 @@ builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
+builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddCors(opt =>
 {
@@ -30,11 +31,17 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
     app.UseSwagger();
     app.UseSwaggerUI();
+
+    app.ApplyMigrations();
 }
 
 app.UseCors("CorsPolicy");
 
 app.UseHttpsRedirection();
+
+app.UseCustomExceptionHandler();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
