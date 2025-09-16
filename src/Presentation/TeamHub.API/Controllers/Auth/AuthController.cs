@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TeamHub.API.Abstractions;
 using TeamHub.Application.Auth.Commands.Login;
@@ -34,7 +35,7 @@ public class AuthController : ApiController
             cancellationToken);
 
         return result.IsSuccess
-            ? Ok(new ApiResponse<AuthResponse>(
+            ? Ok(new ApiResponse<UserResponse>(
                     result.Value, 
                     "User registered successfully"))
             : HandleFailure(result);
@@ -59,4 +60,5 @@ public class AuthController : ApiController
                     "Login successful"))
             : HandleFailure(result);
     }
+
 }

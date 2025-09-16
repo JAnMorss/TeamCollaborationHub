@@ -19,14 +19,6 @@ public class UserController : ApiController
     {
     }
 
-    protected Guid? GetUserId()
-    {
-        var userId = User.FindFirst("sub")?.Value;
-        return string.IsNullOrEmpty(userId) 
-            ? null 
-            : Guid.Parse(userId);
-    }
-
     [Authorize]
     [HttpGet("me")]
     public async Task<IActionResult> GetMyProfile(CancellationToken cancellationToken)

@@ -1,4 +1,5 @@
 using TeamHub.API.Extensions;
+using TeamHub.API.Swagger;
 using TeamHub.Application;
 using TeamHub.Infrastructure;
 
@@ -12,6 +13,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddSwaggerDocumentation();
 
 builder.Services.AddCors(opt =>
 {

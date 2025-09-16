@@ -7,10 +7,11 @@ using TeamHub.Application.Abstractions;
 using TeamHub.Application.Auth.Response;
 using TeamHub.Application.Users.Responses;
 using Microsoft.EntityFrameworkCore;
+using TeamHub.Domain.Users.ValueObjects;
 
 namespace TeamHub.Application.Auth.Commands.Register;
 
-public sealed class RegisterCommandHandler : ICommandHandler<RegisterCommand, AuthResponse>
+public sealed class RegisterCommandHandler : ICommandHandler<RegisterCommand, UserResponse>
 {
     private readonly IUserRepository _userRepository;
     private readonly IJwtProvider _jwtProvider;
@@ -26,20 +27,23 @@ public sealed class RegisterCommandHandler : ICommandHandler<RegisterCommand, Au
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<Result<AuthResponse>> Handle(
-        RegisterCommand request,
-        CancellationToken cancellationToken)
+    public async Task<Result<UserResponse>> Handle(
+    RegisterCommand request,
+    CancellationToken cancellationToken)
     {
+        var passwordHash = PasswordHash.FromPlainText(request.Password);
+
         var userResult = User.Create(
             Guid.NewGuid(),
             request.FirstName,
             request.LastName,
             request.Email,
             request.Avatar,
-            request.Password);
+            passwordHash.Value 
+        );
 
         if (userResult.IsFailure)
-            return Result.Failure<AuthResponse>(userResult.Error);
+            return Result.Failure<UserResponse>(userResult.Error);
 
         var user = userResult.Value;
 
@@ -57,11 +61,8 @@ public sealed class RegisterCommandHandler : ICommandHandler<RegisterCommand, Au
             throw;
         }
 
-
-        return Result.Success(new AuthResponse(
-                token,
-                UserResponse.FromEntity(user)
-            ));
+        return Result.Success(UserResponse.FromEntity(user));
     }
+
 }
 

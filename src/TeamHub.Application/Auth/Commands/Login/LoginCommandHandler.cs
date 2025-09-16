@@ -1,6 +1,5 @@
 ﻿using TeamHub.Application.Abstractions;
 using TeamHub.Application.Auth.Response;
-using TeamHub.Application.Users.Responses;
 using TeamHub.Domain.Users.Errors;
 using TeamHub.Domain.Users.Interface;
 using TeamHub.Domain.Users.ValueObjects;
@@ -47,9 +46,6 @@ public sealed class LoginCommandHandler
 
         var token = _jwtProvider.Generate(user);
 
-        return Result.Success(new AuthResponse(
-            token,
-            UserResponse.FromEntity(user)
-        ));
+        return Result.Success(new AuthResponse(token));
     }
 }

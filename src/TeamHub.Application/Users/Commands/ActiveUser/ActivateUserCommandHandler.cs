@@ -1,5 +1,6 @@
 ﻿using TeamHub.Domain.Users.Errors;
 using TeamHub.Domain.Users.Interface;
+using TeamHub.SharedKernel;
 using TeamHub.SharedKernel.ErrorHandling;
 using TeamHub.SharedKernel.Messaging.Command;
 
@@ -8,10 +9,12 @@ namespace TeamHub.Application.Users.Commands.ActiveUser;
 public sealed class ActivateUserCommandHandler : ICommandHandler<ActivateUserCommand>
 {
     private readonly IUserRepository _userRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public ActivateUserCommandHandler(IUserRepository userRepository)
+    public ActivateUserCommandHandler(IUserRepository userRepository, IUnitOfWork unitOfWork)
     {
         _userRepository = userRepository;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<Result> Handle(
@@ -27,6 +30,7 @@ public sealed class ActivateUserCommandHandler : ICommandHandler<ActivateUserCom
             return result;
 
         await _userRepository.UpdateAsync(user, cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Success();
     }
