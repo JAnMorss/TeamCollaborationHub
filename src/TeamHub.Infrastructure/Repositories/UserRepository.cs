@@ -12,9 +12,26 @@ internal sealed class UserRepository : Repository<User>, IUserRepository
     {
     }
 
-    public async Task<User?> GetByEmailAsync(EmailAddress email, CancellationToken cancellationToken = default)
+    public async Task<User?> GetByEmailAsync(
+        EmailAddress email, 
+        CancellationToken cancellationToken = default)
     {
         return await _context.Users
-            .FirstOrDefaultAsync(u => u.Email.Value == email.Value, cancellationToken);
+            .FirstOrDefaultAsync(
+                u => u.Email.Value == email.Value, 
+                cancellationToken
+            );
+    }
+
+    public async Task<User?> GetByIdentityIdAsync(
+        Guid identityId, 
+        CancellationToken cancellationToken = default)
+    {
+        return await _context.Users
+            .FirstOrDefaultAsync(
+                u => u.IdentityId == identityId.ToString(), 
+                cancellationToken
+            );
+
     }
 }

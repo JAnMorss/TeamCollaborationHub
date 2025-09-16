@@ -1,46 +1,45 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using System.Text;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using TeamHub.Application.Abstractions;
 using TeamHub.Domain.Users.Entities;
+using Microsoft.Extensions.Options;
 
 namespace TeamHub.Infrastructure.Authentication;
 
-internal sealed class JwtProvider : IJwtProvider
+public sealed class JwtProvider : IJwtProvider
 {
     private readonly JwtOptions _options;
 
-    public JwtProvider(IOptions<JwtOptions> options)
+    public JwtProvider(IOptions<JwtOptions> options)  
     {
         _options = options.Value;
     }
 
     public string Generate(User user)
     {
-        var claims = new Claim[] 
+        var claims = new[]
         {
-            new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new(JwtRegisteredClaimNames.Email, user.Email.Value)
+            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new Claim(JwtRegisteredClaimNames.Email, user.Email.Value)
         };
 
-        var signingCredentials = new SigningCredentials(
-            new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(_options.SecretKey)),
-                SecurityAlgorithms.HmacSha256);
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecretKey));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var token = new JwtSecurityToken(
-            _options.Issuer,
-            _options.Audience,
-            claims,
-            null,
-            DateTime.UtcNow.AddHours(1),
-            signingCredentials);
+            issuer: _options.Issuer,
+            audience: _options.Audience,
+            claims: claims,
+            expires: DateTime.UtcNow.AddHours(1),
+            signingCredentials: creds
+        );
 
-        string tokenValue = new JwtSecurityTokenHandler()
-            .WriteToken(token);
+        Console.WriteLine($"[JwtProvider] Issuer: {_options.Issuer}");
+        Console.WriteLine($"[JwtProvider] Audience: {_options.Audience}");
+        Console.WriteLine($"[JwtProvider] Secret (first 10 chars): {_options.SecretKey.Substring(0, 10)}...");
 
-        return tokenValue;
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }

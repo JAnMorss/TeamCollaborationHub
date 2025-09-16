@@ -1,11 +1,10 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TeamHub.Application.Abstractions;
 using TeamHub.Domain.Users.Interface;
 using TeamHub.Infrastructure.Authentication;
-using TeamHub.Infrastructure.OptionsSetup;
+using TeamHub.Infrastructure.Extensions;
 using TeamHub.Infrastructure.Repositories;
 using TeamHub.SharedKernel;
 
@@ -32,17 +31,14 @@ public static class DependencyInjection
             });
         });
 
-        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer();
+        services.Configure<JwtOptions>(configuration.GetSection("Jwt"));
 
-        services.ConfigureOptions<JwtOptionsSetup>();
-        services.ConfigureOptions<JwtBearerOptionsSetup>();
+        services.AddJwtAuthentication(configuration);
 
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ApplicationDbContext>());
-
         services.AddScoped<IUserRepository, UserRepository>();
-        services.AddScoped<IJwtProvider, JwtProvider>();
 
+        services.AddScoped<IJwtProvider, JwtProvider>();
 
         return services;
     }

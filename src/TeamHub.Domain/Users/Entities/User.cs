@@ -48,7 +48,7 @@ public sealed class User : BaseEntity
     public DateTime CreatedAt { get; private set; }
     public bool IsActive { get; private set; }
     public DateTime? UpdatedAt { get; private set; }
-    public string IdentityId { get; private set; }
+    public string? IdentityId { get; private set; }
 
 
     public IReadOnlyCollection<ProjectMember> ProjectMemberships => _projectMemberships.AsReadOnly();
