@@ -3,8 +3,8 @@ using TeamHub.Domain.TaskAttachments.Events;
 using TeamHub.Domain.TaskAttachments.ValueObjects;
 using TeamHub.Domain.Tasks.Entity;
 using TeamHub.Domain.Users.Entities;
-using TeamHub.SharedKernel.Domain;
-using TeamHub.SharedKernel.ErrorHandling;
+using TeamHub.SharedKernel.Domain.Entities;
+using TeamHub.SharedKernel.Domain.ErrorHandling;
 
 namespace TeamHub.Domain.TaskAttachments.Entity;
 

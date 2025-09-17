@@ -1,4 +1,4 @@
-﻿using TeamHub.SharedKernel.Domain;
+﻿using TeamHub.SharedKernel.Domain.Entities;
 
 namespace TeamHub.Domain.Projects.Events;
 

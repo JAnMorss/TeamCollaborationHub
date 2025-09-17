@@ -1,4 +1,4 @@
-﻿using TeamHub.SharedKernel.ErrorHandling;
+﻿using TeamHub.SharedKernel.Domain.ErrorHandling;
 
 namespace TeamHub.Domain.Users.Errors;
 

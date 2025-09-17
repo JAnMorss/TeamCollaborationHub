@@ -2,7 +2,7 @@
 using TeamHub.Domain.ProjectMembers.Events;
 using TeamHub.Domain.Projects.Entity;
 using TeamHub.Domain.Users.Entities;
-using TeamHub.SharedKernel.Domain;
+using TeamHub.SharedKernel.Domain.Entities;
 
 namespace TeamHub.Domain.ProjectMembers.Entity;
 

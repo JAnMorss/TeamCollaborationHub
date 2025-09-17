@@ -6,8 +6,8 @@ using TeamHub.Domain.Projects.Events;
 using TeamHub.Domain.Projects.ValueObjects;
 using TeamHub.Domain.Tasks.Entity;
 using TeamHub.Domain.Users.Entities;
-using TeamHub.SharedKernel.Domain;
-using TeamHub.SharedKernel.ErrorHandling;
+using TeamHub.SharedKernel.Domain.Entities;
+using TeamHub.SharedKernel.Domain.ErrorHandling;
 
 namespace TeamHub.Domain.Projects.Entity;
 
@@ -31,6 +31,7 @@ public sealed class Project : BaseEntity
         Color = color;
         CreatedAt = DateTime.UtcNow;
         IsActive = true;
+        IsArchived = true;
     }
 
     public Guid CreatedById { get; private set; }
@@ -39,11 +40,43 @@ public sealed class Project : BaseEntity
     public ProjectColor Color { get; private set; } = null!;
     public DateTime CreatedAt { get; private set; }
     public bool IsActive { get; private set; }
+    public bool IsArchived { get; private set; }
 
     public User? CreatedBy { get; private set; }
     public IReadOnlyCollection<ProjectMember> Members => _members.AsReadOnly();
     public IReadOnlyCollection<ProjectTask> Tasks => _tasks.AsReadOnly();
 
+
+    public static Result Create(
+        Guid id,
+        Guid createdById,
+        string name,
+        string description,
+        string color)
+    {
+        var nameResult = ProjectName.Create(name);
+        if (nameResult.IsFailure)
+            return Result.Failure(nameResult.Error);
+
+        var descriptionResult = ProjectDescription.Create(description);
+        if (descriptionResult.IsFailure)
+            return Result.Failure(descriptionResult.Error);
+
+        var colorResult = ProjectColor.Create(color);
+        if (colorResult.IsFailure)
+            return Result.Failure(colorResult.Error);
+
+        var project = new Project(
+            id,
+            createdById,
+            nameResult.Value,
+            descriptionResult.Value,
+            colorResult.Value);
+
+        project.RaiseDomainEvent(new ProjectCreatedDomainEvent(project.Id));
+
+        return Result.Success(project);
+    }
 
     public Result UpdateDetails(
         string name,

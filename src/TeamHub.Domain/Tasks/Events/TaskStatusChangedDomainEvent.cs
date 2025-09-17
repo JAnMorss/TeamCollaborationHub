@@ -1,5 +1,5 @@
 ﻿using TeamHub.Domain.Tasks.Enums;
-using TeamHub.SharedKernel.Domain;
+using TeamHub.SharedKernel.Domain.Entities;
 
 namespace TeamHub.Domain.Tasks.Events;
 

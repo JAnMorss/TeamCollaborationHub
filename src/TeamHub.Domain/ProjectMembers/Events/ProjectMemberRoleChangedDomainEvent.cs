@@ -1,5 +1,5 @@
 ﻿using TeamHub.Domain.ProjectMembers.Enums;
-using TeamHub.SharedKernel.Domain;
+using TeamHub.SharedKernel.Domain.Entities;
 
 namespace TeamHub.Domain.ProjectMembers.Events;
 
