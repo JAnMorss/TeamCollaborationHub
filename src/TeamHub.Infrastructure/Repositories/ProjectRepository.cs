@@ -1,0 +1,91 @@
+﻿using Azure.Core;
+using Microsoft.EntityFrameworkCore;
+using TeamHub.Domain.Projects.Entity;
+using TeamHub.Domain.Projects.Interface;
+using TeamHub.SharedKernel.Application.Helpers;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+
+namespace TeamHub.Infrastructure.Repositories;
+
+internal class ProjectRepository : Repository<Project>, IProjectRepository
+{
+    public ProjectRepository(ApplicationDbContext context) 
+        : base(context)
+    {
+    }
+
+    public override async Task<IEnumerable<Project>> GetAllAsync(
+        QueryObject query, 
+        CancellationToken cancellationToken = default)
+    {
+        var project = _context.Projects
+            .Include(p => p.Members)
+            .Include(p => p.Tasks)
+            .Include(p => p.CreatedBy)
+            .AsQueryable();
+
+        project = query.SortBy?.ToLower() switch
+        {
+            "name" => query.Descending 
+                      ? project.OrderByDescending(p => p.Name.Value) 
+                      : project.OrderBy(p => p.Name.Value),
+            _ => project
+        };
+
+        var page = query.Page <= 0 ? 1 : query.PageSize;
+        var pageSize = query.PageSize <= 0 ? 10 : query.PageSize;
+
+        var skip = (page - 1) * pageSize;
+
+        return await project
+            .Skip(skip)
+            .Take(query.PageSize)
+            .ToListAsync(cancellationToken);
+    }
+
+    public override async Task<Project?> GetByIdAsync(
+        Guid id,
+        CancellationToken cancellationToken = default)
+    {
+        return await _context.Projects
+            .Include(p => p.Members)
+            .Include(p => p.Tasks)
+            .Include(p => p.CreatedBy)
+            .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
+    }
+
+    public async Task<IEnumerable<Project>> GetArchivedProjectsAsync(CancellationToken cancellationToken = default)
+    {
+        return await _context.Projects
+            .Where(p => p.IsArchived)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IEnumerable<Project>> GetProjectsOwnedByUserAsync(
+        Guid userId, 
+        CancellationToken cancellationToken = default)
+    {
+        return await _context.Projects
+            .Where(p => p.CreatedById == userId)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IEnumerable<Project>> SearchProjectsByNameAsync(
+        string name, 
+        QueryObject query, 
+        CancellationToken cancellationToken = default)
+    {
+        var projects = _context.Projects.AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(name))
+        {
+            projects = projects.Where(p => p.Name.Value.Contains(name));
+        }
+
+        var skip = (query.Page - 1) * query.PageSize;
+        return await projects
+            .Skip(skip)
+            .Take(query.PageSize)
+            .ToListAsync(cancellationToken);
+    }
+}
