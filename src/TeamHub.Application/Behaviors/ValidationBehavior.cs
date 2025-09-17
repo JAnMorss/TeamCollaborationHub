@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using MediatR;
-using TeamHub.SharedKernel.Exceptions;
-using TeamHub.SharedKernel.Messaging.Command;
+using TeamHub.SharedKernel.Application.Mediator.Command;
+using TeamHub.SharedKernel.Domain.Exceptions;
 
 namespace TeamHub.Application.Behaviors;
 public class ValidationBehavior<TRequest, TResponse>
@@ -39,7 +39,7 @@ public class ValidationBehavior<TRequest, TResponse>
 
         if (validationErrors.Any())
         {
-            throw new SharedKernel.Exceptions.ValidationException(validationErrors);
+            throw new SharedKernel.Domain.Exceptions.ValidationException(validationErrors);
         }
 
         return await next();

@@ -1,5 +1,5 @@
 ﻿using TeamHub.Application.Users.Responses;
-using TeamHub.SharedKernel.Messaging.Command;
+using TeamHub.SharedKernel.Application.Mediator.Command;
 
 namespace TeamHub.Application.Users.Commands.UpdateDetails;
 

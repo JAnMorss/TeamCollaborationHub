@@ -4,8 +4,12 @@ using Microsoft.EntityFrameworkCore;
 using TeamHub.Domain.Projects.Entity;
 using TeamHub.Domain.Tasks.Entity;
 using TeamHub.Domain.Users.Entities;
-using TeamHub.SharedKernel.Domain;
 using TeamHub.SharedKernel;
+using TeamHub.Domain.ProjectMembers.Entity;
+using TeamHub.Domain.Comments.Entity;
+using TeamHub.Domain.TaskAttachments.Entity;
+using TeamHub.Domain.Notifications.Entity;
+using TeamHub.SharedKernel.Domain.Entities;
 
 namespace TeamHub.Infrastructure;
 
@@ -21,7 +25,12 @@ public sealed class ApplicationDbContext : DbContext, IUnitOfWork
 
     public DbSet<User> Users { get; set; }
     public DbSet<Project> Projects { get; set; }
+    public DbSet<ProjectMember> ProjectMembers { get; set; }
     public DbSet<ProjectTask> Tasks { get; set; }
+    public DbSet<TaskAttachment> TaskAttachments { get; set; }
+    public DbSet<Comment> Comments { get; set; }
+    public DbSet<Notification> Notifications { get; set; }
+
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -7,6 +7,7 @@ using TeamHub.Application.Users.Commands.DeactivateUser;
 using TeamHub.Application.Users.Commands.UpdateDetails;
 using TeamHub.Application.Users.Queries.GetMyProfile;
 using TeamHub.Application.Users.Responses;
+using TeamHub.SharedKernel;
 
 namespace TeamHub.API.Controllers.Users;
 

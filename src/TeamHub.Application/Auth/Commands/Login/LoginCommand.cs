@@ -1,5 +1,5 @@
 ﻿using TeamHub.Application.Auth.Response;
-using TeamHub.SharedKernel.Messaging.Command;
+using TeamHub.SharedKernel.Application.Mediator.Command;
 
 namespace TeamHub.Application.Auth.Commands.Login;
 

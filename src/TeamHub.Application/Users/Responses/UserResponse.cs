@@ -7,9 +7,7 @@ public sealed class UserResponse
 {
     public Guid Id { get; init; }
 
-    public string? FirstName { get; init; } = string.Empty;
-
-    public string? LastName { get; init; } = string.Empty;
+    public string? FullName { get; init; } = string.Empty;
 
     [EmailAddress]
     public string? Email { get; init; }
@@ -26,8 +24,7 @@ public sealed class UserResponse
         return new UserResponse
         {
             Id = user.Id,
-            FirstName = user.FirstName?.Value,
-            LastName = user.LastName?.Value,
+            FullName = $"{user.FirstName.Value} {user.LastName.Value}",
             Email = user.Email?.Value,
             Avatar = user.Avatar?.Value,
             IsActive = user.IsActive,

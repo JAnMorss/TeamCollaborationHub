@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using TeamHub.Domain.Shared;
-using TeamHub.SharedKernel.ErrorHandling;
+using TeamHub.SharedKernel.Domain.ErrorHandling;
 
 namespace TeamHub.API.Abstractions;
 

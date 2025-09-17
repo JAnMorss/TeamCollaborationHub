@@ -6,6 +6,7 @@ using TeamHub.Application.Auth.Commands.Login;
 using TeamHub.Application.Auth.Commands.Register;
 using TeamHub.Application.Auth.Response;
 using TeamHub.Application.Users.Responses;
+using TeamHub.SharedKernel;
 
 namespace TeamHub.API.Controllers.Auth;
 

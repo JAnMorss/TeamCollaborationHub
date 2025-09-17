@@ -1,5 +1,5 @@
 ﻿using TeamHub.Application.Users.Responses;
-using TeamHub.SharedKernel.Messaging.Query;
+using TeamHub.SharedKernel.Application.Mediator.Query;
 
 namespace TeamHub.Application.Users.Queries.GetMyProfile;
 

@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TeamHub.SharedKernel.Domain;
-using TeamHub.SharedKernel.Helpers;
+using TeamHub.SharedKernel.Application.Helpers;
+using TeamHub.SharedKernel.Domain.Entities;
 
 namespace TeamHub.Infrastructure.Repositories;
 
@@ -34,7 +34,7 @@ internal abstract class Repository<T> where T : BaseEntity
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<T?> GetByIdAsync(
+    public virtual async Task<T?> GetByIdAsync(
         Guid id,
         CancellationToken cancellationToken = default)
     {
@@ -78,5 +78,12 @@ internal abstract class Repository<T> where T : BaseEntity
         }
 
         return false;
+    }
+
+    public async Task<int> CountAsync(CancellationToken cancellationToken = default)
+    {
+        return await _context
+            .Set<T>()
+            .CountAsync(cancellationToken);
     }
 }

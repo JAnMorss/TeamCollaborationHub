@@ -1,8 +1,8 @@
 ﻿using TeamHub.Application.Users.Responses;
 using TeamHub.Domain.Users.Errors;
 using TeamHub.Domain.Users.Interface;
-using TeamHub.SharedKernel.ErrorHandling;
-using TeamHub.SharedKernel.Messaging.Query;
+using TeamHub.SharedKernel.Application.Mediator.Query;
+using TeamHub.SharedKernel.Domain.ErrorHandling;
 
 namespace TeamHub.Application.Users.Queries.GetMyProfile;
 

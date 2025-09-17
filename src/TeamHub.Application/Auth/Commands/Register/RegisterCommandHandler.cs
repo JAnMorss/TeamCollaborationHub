@@ -1,13 +1,13 @@
 ﻿using TeamHub.Domain.Users.Entities;
 using TeamHub.Domain.Users.Interface;
-using TeamHub.SharedKernel.ErrorHandling;
-using TeamHub.SharedKernel.Messaging.Command;
 using TeamHub.SharedKernel;
 using TeamHub.Application.Abstractions;
 using TeamHub.Application.Auth.Response;
 using TeamHub.Application.Users.Responses;
 using Microsoft.EntityFrameworkCore;
 using TeamHub.Domain.Users.ValueObjects;
+using TeamHub.SharedKernel.Application.Mediator.Command;
+using TeamHub.SharedKernel.Domain.ErrorHandling;
 
 namespace TeamHub.Application.Auth.Commands.Register;
 

@@ -3,8 +3,8 @@ using TeamHub.Domain.Users.Errors;
 using TeamHub.Domain.Users.Interface;
 using TeamHub.Domain.Users.ValueObjects;
 using TeamHub.SharedKernel;
-using TeamHub.SharedKernel.ErrorHandling;
-using TeamHub.SharedKernel.Messaging.Command;
+using TeamHub.SharedKernel.Application.Mediator.Command;
+using TeamHub.SharedKernel.Domain.ErrorHandling;
 
 namespace TeamHub.Application.Users.Commands.UpdateDetails;
 

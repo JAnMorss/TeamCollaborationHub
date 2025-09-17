@@ -2,6 +2,9 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TeamHub.Application.Abstractions;
+using TeamHub.Domain.ProjectMembers.Interface;
+using TeamHub.Domain.Projects.Interface;
+using TeamHub.Domain.Tasks.Interface;
 using TeamHub.Domain.Users.Interface;
 using TeamHub.Infrastructure.Authentication;
 using TeamHub.Infrastructure.Extensions;
@@ -37,6 +40,9 @@ public static class DependencyInjection
 
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ApplicationDbContext>());
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IProjectRepository, ProjectRepository>();
+        services.AddScoped<IProjectMemberRepository, ProjectMemberRepository>();
+        services.AddScoped<ITaskRepository, TaskRepository>();
 
         services.AddScoped<IJwtProvider, JwtProvider>();
 

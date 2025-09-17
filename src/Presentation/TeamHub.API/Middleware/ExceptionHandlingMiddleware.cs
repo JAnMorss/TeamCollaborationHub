@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using TeamHub.SharedKernel.Exceptions;
+using TeamHub.SharedKernel.Domain.Exceptions;
 
 namespace TeamHub.API.Middleware;
 
