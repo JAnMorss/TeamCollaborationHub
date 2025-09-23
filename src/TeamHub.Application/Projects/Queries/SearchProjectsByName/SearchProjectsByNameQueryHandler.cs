@@ -17,7 +17,9 @@ public sealed class SearchProjectsByNameQueryHandler
         _projectRepository = projectRepository;
     }
 
-    public async Task<Result<PaginatedResult<ProjectResponse>>> Handle(SearchProjectsByNameQuery request, CancellationToken cancellationToken)
+    public async Task<Result<PaginatedResult<ProjectResponse>>> Handle(
+        SearchProjectsByNameQuery request, 
+        CancellationToken cancellationToken)
     {
         var query = request.Query ?? new QueryObject();
 

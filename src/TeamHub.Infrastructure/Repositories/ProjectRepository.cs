@@ -15,8 +15,8 @@ internal class ProjectRepository : Repository<Project>, IProjectRepository
     }
 
     public override async Task<IEnumerable<Project>> GetAllAsync(
-        QueryObject query, 
-        CancellationToken cancellationToken = default)
+    QueryObject query,
+    CancellationToken cancellationToken = default)
     {
         var project = _context.Projects
             .Include(p => p.Members)
@@ -26,22 +26,23 @@ internal class ProjectRepository : Repository<Project>, IProjectRepository
 
         project = query.SortBy?.ToLower() switch
         {
-            "name" => query.Descending 
-                      ? project.OrderByDescending(p => p.Name.Value) 
+            "name" => query.Descending
+                      ? project.OrderByDescending(p => p.Name.Value)
                       : project.OrderBy(p => p.Name.Value),
-            _ => project
+            _ => project.OrderBy(p => p.CreatedAt) 
         };
 
-        var page = query.Page <= 0 ? 1 : query.PageSize;
+        var page = query.Page <= 0 ? 1 : query.Page;
         var pageSize = query.PageSize <= 0 ? 10 : query.PageSize;
 
         var skip = (page - 1) * pageSize;
 
         return await project
             .Skip(skip)
-            .Take(query.PageSize)
+            .Take(pageSize)
             .ToListAsync(cancellationToken);
     }
+
 
     public override async Task<Project?> GetByIdAsync(
         Guid id,
@@ -80,6 +81,24 @@ internal class ProjectRepository : Repository<Project>, IProjectRepository
         if (!string.IsNullOrWhiteSpace(name))
         {
             projects = projects.Where(p => p.Name.Value.Contains(name));
+        }
+
+        var validSortColumns = new[]
+        {
+            "Name",
+            "CreatedAt",
+            "UpdatedAt"
+        };
+
+        if (!string.IsNullOrWhiteSpace(query.SortBy) && validSortColumns.Contains(query.SortBy))
+        {
+            projects = query.Descending
+                ? projects.OrderByDescending(e => EF.Property<object>(e, query.SortBy))
+                : projects.OrderBy(e => EF.Property<object>(e, query.SortBy));
+        }
+        else
+        {
+            projects = projects.OrderBy(p => p.CreatedAt);
         }
 
         var skip = (query.Page - 1) * query.PageSize;

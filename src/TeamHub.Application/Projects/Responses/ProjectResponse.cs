@@ -9,7 +9,7 @@ public sealed class ProjectResponse
 
     public Guid CreatedById { get; set; }
 
-    public UserResponse? CreatedBy { get; set; }
+    public string? CreatedBy { get; set; }
 
     public string? Name { get; set; }
 
@@ -27,13 +27,7 @@ public sealed class ProjectResponse
             Description = project.Description.Value,
             Color = project.Color.Value,
             CreatedById = project.CreatedById,
-            CreatedBy = project.CreatedBy is not null
-                ? new UserResponse
-                {
-                    FullName = $"{project.CreatedBy.FirstName.Value} {project.CreatedBy.LastName.Value}",
-                    Email = project.CreatedBy.Email.Value
-                }
-                : null
+            CreatedBy = $"{project.CreatedBy?.FirstName.Value} {project.CreatedBy?.LastName.Value}"
         };
     }
 }

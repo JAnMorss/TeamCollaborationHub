@@ -47,7 +47,7 @@ public sealed class Project : BaseEntity
     public IReadOnlyCollection<ProjectTask> Tasks => _tasks.AsReadOnly();
 
 
-    public static Result Create(
+    public static Result<Project> Create(
         Guid id,
         Guid createdById,
         string name,
@@ -56,15 +56,15 @@ public sealed class Project : BaseEntity
     {
         var nameResult = ProjectName.Create(name);
         if (nameResult.IsFailure)
-            return Result.Failure(nameResult.Error);
+            return Result.Failure<Project>(nameResult.Error);
 
         var descriptionResult = ProjectDescription.Create(description);
         if (descriptionResult.IsFailure)
-            return Result.Failure(descriptionResult.Error);
+            return Result.Failure<Project>(descriptionResult.Error);
 
         var colorResult = ProjectColor.Create(color);
         if (colorResult.IsFailure)
-            return Result.Failure(colorResult.Error);
+            return Result.Failure<Project>(colorResult.Error);
 
         var project = new Project(
             id,

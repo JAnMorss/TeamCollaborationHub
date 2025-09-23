@@ -2,10 +2,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TeamHub.API.Abstractions;
+using TeamHub.Application.Projects.Commands.Createproject;
 using TeamHub.Application.Projects.Queries.GetAllProjects;
 using TeamHub.Application.Projects.Queries.SearchProjectsByName;
 using TeamHub.Application.Projects.Responses;
-using TeamHub.Application.Users.Responses;
 using TeamHub.SharedKernel;
 using TeamHub.SharedKernel.Application.Helpers;
 using TeamHub.SharedKernel.Application.PageSize;
@@ -53,6 +53,33 @@ public class ProjectsController : ApiController
             ? Ok(new ApiResponse<PaginatedResult<ProjectResponse>>(
                 result.Value, 
                 "Projects fetched successfully"))
+            : HandleFailure(result);
+    }
+
+    [Authorize]
+    [HttpPost]
+    public async Task<IActionResult> CreateProject(
+        [FromBody] ProjectRequest request,
+        CancellationToken cancellationToken)
+    {
+        var userId = GetUserId();
+        if (userId is null)
+            return Unauthorized();
+
+        var command = new CreateProjectCommand(
+                userId.Value,
+                request.Name,
+                request.Description,
+                request.Color);
+
+        var result = await _sender.Send(
+            command,
+            cancellationToken);
+
+        return result.IsSuccess
+            ? Ok(new ApiResponse<ProjectResponse>(
+                result.Value,
+                "Projects Create successfully"))
             : HandleFailure(result);
     }
 
