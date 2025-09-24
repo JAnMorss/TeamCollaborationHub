@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
-using TeamHub.Application.Users.Commands.UpdateAvatar;
 
-namespace TeamHub.Application.Users.Validators;
+namespace TeamHub.Application.Users.Commands.UpdateAvatar;
 
 public class UpdateAvatarCommandValidator : AbstractValidator<UpdateAvatarCommand>
 {

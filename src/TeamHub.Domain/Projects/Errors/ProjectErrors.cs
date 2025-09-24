@@ -23,4 +23,9 @@ public static class ProjectErrors
     public static readonly Error AlreadyArchived = new(
         "Project.AlreadyArchived",
         "The project is already archived.");
+
+    public static readonly Error NoMembers = new(
+    "Project.NoMembers",
+    "This project has no members. Please add a member.");
+
 }

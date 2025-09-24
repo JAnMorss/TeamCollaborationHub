@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
-using TeamHub.Application.Users.Commands.DeactivateUser;
 
-namespace TeamHub.Application.Users.Validators;
+namespace TeamHub.Application.Users.Commands.DeactivateUser;
 
 public class DeactivateUserCommandValidator : AbstractValidator<DeactivateUserCommand>
 {

@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
-using TeamHub.Application.Auth.Commands.Register;
 
-namespace TeamHub.Application.Auth.Commands.Validators;
+namespace TeamHub.Application.Auth.Commands.Register;
 
 public class RegisterCommandValidator : AbstractValidator<RegisterCommand>
 {

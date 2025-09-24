@@ -25,7 +25,9 @@ public sealed class GetAllProjectsQueryHandler
 
         var projects = await _projectRepository.GetAllAsync(query, cancellationToken);
 
-        var mapped = projects.Select(ProjectResponse.FromEntity).ToList();
+        var mapped = projects
+            .Select(ProjectResponse.FromEntity)
+            .ToList();
 
         var totalCount = await _projectRepository.CountAsync(cancellationToken);
 

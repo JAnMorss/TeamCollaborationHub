@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
-using TeamHub.Application.Users.Commands.ActiveUser;
 
-namespace TeamHub.Application.Users.Validators;
+namespace TeamHub.Application.Users.Commands.ActiveUser;
 
 public class ActivateUserCommandValidator : AbstractValidator<ActivateUserCommand>
 {

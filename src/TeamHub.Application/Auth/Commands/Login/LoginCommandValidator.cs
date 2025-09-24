@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
-using TeamHub.Application.Auth.Commands.Login;
 
-namespace TeamHub.Application.Auth.Commands.Validators;
+namespace TeamHub.Application.Auth.Commands.Login;
 
 public class LoginCommandValidator : AbstractValidator<LoginCommand>
 {

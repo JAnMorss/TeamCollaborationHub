@@ -31,7 +31,7 @@ public sealed class Project : BaseEntity
         Color = color;
         CreatedAt = DateTime.UtcNow;
         IsActive = true;
-        IsArchived = true;
+        IsArchived = false;
     }
 
     public Guid CreatedById { get; private set; }
@@ -163,6 +163,7 @@ public sealed class Project : BaseEntity
             return Result.Failure(ProjectErrors.AlreadyArchived);
 
         IsActive = false;
+        IsArchived = true;
         RaiseDomainEvent(new ProjectArchivedDomainEvent(Id));
 
         return Result.Success();

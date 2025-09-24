@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TeamHub.API.Abstractions;
 using TeamHub.Application.Projects.Commands.Createproject;
+using TeamHub.Application.Projects.Commands.UpdateProject;
 using TeamHub.Application.Projects.Queries.GetAllProjects;
+using TeamHub.Application.Projects.Queries.GetProjectById;
 using TeamHub.Application.Projects.Queries.SearchProjectsByName;
 using TeamHub.Application.Projects.Responses;
 using TeamHub.SharedKernel;
@@ -35,6 +37,23 @@ public class ProjectsController : ApiController
             ? Ok(new ApiResponse<PaginatedResult<ProjectResponse>>(
                 result.Value,
                 "Project fetched successfully"))
+            : HandleFailure(result);
+    }
+
+    [Authorize]
+    [HttpGet("{id:Guid}")]
+    public async Task<IActionResult> GetProjectById(
+        [FromRoute] Guid id,
+        CancellationToken cancellationToken)
+    {
+        var query = new GetProjectByIdQuery(id);
+
+        var result = await _sender.Send(query, cancellationToken);
+
+        return result.IsSuccess
+            ? Ok(new ApiResponse<ProjectResponse>(
+                result.Value,
+                "Fetching Project By Id is successfull."))
             : HandleFailure(result);
     }
 
@@ -83,4 +102,27 @@ public class ProjectsController : ApiController
             : HandleFailure(result);
     }
 
+    [Authorize]
+    [HttpPut("{id:guid}/details")]
+    public async Task<IActionResult> UpdateProject(
+        [FromRoute] Guid id,
+        [FromBody] ProjectRequest request,
+        CancellationToken cancellationToken)
+    {
+        var command = new UpdateProjectCommand(
+            id,
+            request.Name,
+            request.Description,
+            request.Color);
+
+        var result = await _sender.Send(
+            command,
+            cancellationToken);
+
+        return result.IsSuccess
+            ? Ok(new ApiResponse<ProjectResponse>(
+                result.Value,
+                "Project updated successfully"))
+            : HandleFailure(result);
+    }
 }
