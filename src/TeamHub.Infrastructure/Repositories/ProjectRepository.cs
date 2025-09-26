@@ -1,9 +1,7 @@
-﻿using Azure.Core;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using TeamHub.Domain.Projects.Entity;
 using TeamHub.Domain.Projects.Interface;
 using TeamHub.SharedKernel.Application.Helpers;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace TeamHub.Infrastructure.Repositories;
 
@@ -20,6 +18,7 @@ internal class ProjectRepository : Repository<Project>, IProjectRepository
     {
         var project = _context.Projects
             .Include(p => p.Members)
+                .ThenInclude(m => m.User)
             .Include(p => p.Tasks)
             .Include(p => p.CreatedBy)
             .AsQueryable();

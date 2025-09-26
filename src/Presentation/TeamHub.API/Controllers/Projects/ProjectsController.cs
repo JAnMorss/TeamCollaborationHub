@@ -1,9 +1,13 @@
-﻿using MediatR;
+﻿using System.Threading;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TeamHub.API.Abstractions;
 using TeamHub.Application.Projects.Commands.Createproject;
+using TeamHub.Application.Projects.Commands.DeleteProject;
 using TeamHub.Application.Projects.Commands.UpdateProject;
+using TeamHub.Application.Projects.ProjectMembers.Commands.AddProjectMember;
+using TeamHub.Application.Projects.ProjectMembers.Commands.RemoveProjectMember;
 using TeamHub.Application.Projects.Queries.GetAllProjects;
 using TeamHub.Application.Projects.Queries.GetProjectById;
 using TeamHub.Application.Projects.Queries.SearchProjectsByName;
@@ -91,9 +95,7 @@ public class ProjectsController : ApiController
                 request.Description,
                 request.Color);
 
-        var result = await _sender.Send(
-            command,
-            cancellationToken);
+        var result = await _sender.Send(command, cancellationToken);
 
         return result.IsSuccess
             ? Ok(new ApiResponse<ProjectResponse>(
@@ -103,7 +105,7 @@ public class ProjectsController : ApiController
     }
 
     [Authorize]
-    [HttpPut("{id:guid}/details")]
+    [HttpPut("{id:Guid}/details")]
     public async Task<IActionResult> UpdateProject(
         [FromRoute] Guid id,
         [FromBody] ProjectRequest request,
@@ -115,14 +117,61 @@ public class ProjectsController : ApiController
             request.Description,
             request.Color);
 
-        var result = await _sender.Send(
-            command,
-            cancellationToken);
+        var result = await _sender.Send(command, cancellationToken);
 
         return result.IsSuccess
             ? Ok(new ApiResponse<ProjectResponse>(
                 result.Value,
                 "Project updated successfully"))
+            : HandleFailure(result);
+    }
+
+    [Authorize]
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> DeleteProject(
+        [FromRoute] Guid id,
+        CancellationToken cancellationToken)
+    {
+        var command = new DeleteProjectCommand(id);
+
+        var result = await _sender.Send(command, cancellationToken);
+
+        return result.IsSuccess
+           ? Ok(new ApiResponse("The project was deleted successfully."))
+           : HandleFailure(result);
+    }
+
+    [Authorize]
+    [HttpPost("/api/projects/{projectId}/members")]
+    public async Task<IActionResult> AddProjectMembers(
+    [FromRoute] Guid projectId,
+    [FromBody] ProjectMemberRequest request,
+    CancellationToken cancellationToken)
+    {
+        var command = new AddProjectMemberCommand(projectId, request.UserId);
+
+        var result = await _sender.Send(command, cancellationToken);
+
+        return result.IsSuccess
+            ? Ok(new ApiResponse<ProjectMemberResponse>(
+                result.Value,
+                "Member Added Successfully"))
+            : HandleFailure(result);
+    }
+
+    [Authorize]
+    [HttpDelete("/api/projects/{projectId:Guid}/members")]
+    public async Task<IActionResult> RemoveProjectMember(
+        [FromRoute] Guid projectId,
+        [FromBody] ProjectMemberRequest request,
+        CancellationToken cancellationToken)
+    {
+        var command = new RemoveProjectMemberCommand(projectId, request.UserId);
+
+        var result = await _sender.Send(command, cancellationToken);
+
+        return result.IsSuccess
+            ? Ok(new ApiResponse("Member Remove Successfully"))
             : HandleFailure(result);
     }
 }

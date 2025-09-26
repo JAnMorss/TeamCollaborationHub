@@ -123,24 +123,20 @@ public sealed class Project : BaseEntity
         return Result.Success(this);
     }
 
-    public Result AddMember(User user, ProjectRole role)
+    public Result<ProjectMember> AddMember(User user, ProjectRole role)
     {
         if (_members.Any(m => m.UserId == user.Id))
         {
-            return Result.Failure(ProjectErrors.AlreadyMember);
+            return Result.Failure<ProjectMember>(ProjectErrors.AlreadyMember);
         }
 
-        var newMember = new ProjectMember(
-            Guid.NewGuid(),
-            Id,
-            user.Id,
-            role);
+        var member = ProjectMember.Create(Id, user.Id, role);
 
-        _members.Add(newMember);
+        _members.Add(member);
 
         RaiseDomainEvent(new ProjectMemberAddedDomainEvent(Id, user.Id));
 
-        return Result.Success(newMember);
+        return Result.Success(member);
     }
 
     public Result RemoveMember(Guid userId)

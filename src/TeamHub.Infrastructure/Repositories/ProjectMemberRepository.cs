@@ -12,6 +12,15 @@ internal class ProjectMemberRepository : Repository<ProjectMember>, IProjectMemb
     {
     }
 
+    public async Task<ProjectMember?> FindAsync(
+        Guid projectId, 
+        Guid userId, 
+        CancellationToken cancellationToken = default)
+    {
+        return await _context.ProjectMembers
+            .FirstOrDefaultAsync(m => m.ProjectId == projectId && m.UserId == userId, cancellationToken);
+    }
+
     public async Task<IEnumerable<ProjectMember>> GetAdminsByProjectAsync(
         Guid projectId, 
         CancellationToken cancellationToken = default)

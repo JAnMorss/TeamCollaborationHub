@@ -30,6 +30,19 @@ public sealed class ProjectMember : BaseEntity
     public Project? Project { get; private set; }
     public User? User { get; private set; }
 
+    public static ProjectMember Create(
+        Guid projectId, 
+        Guid userId, 
+        ProjectRole role)
+    {
+        return new ProjectMember
+        {
+            ProjectId = projectId,
+            UserId = userId,
+            Role = role
+        };
+    }
+
     public void ChangeRole(ProjectRole newRole)
     {
         if (Role == newRole) return;

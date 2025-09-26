@@ -5,6 +5,7 @@ namespace TeamHub.Domain.ProjectMembers.Interface;
 public interface IProjectMemberRepository
 {
     Task<ProjectMember?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<ProjectMember?> FindAsync(Guid projectId, Guid userId, CancellationToken cancellationToken = default);
 
     Task<IEnumerable<ProjectMember>> GetMembersByProjectAsync(Guid projectId, CancellationToken cancellationToken = default);
     Task<IEnumerable<ProjectMember>> GetProjectsByUserAsync(Guid userId, CancellationToken cancellationToken = default);
