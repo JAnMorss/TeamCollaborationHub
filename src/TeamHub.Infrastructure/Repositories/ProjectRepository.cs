@@ -75,7 +75,11 @@ internal class ProjectRepository : Repository<Project>, IProjectRepository
         QueryObject query, 
         CancellationToken cancellationToken = default)
     {
-        var projects = _context.Projects.AsQueryable();
+        var projects = _context.Projects
+            .Include(p => p.Members)
+                .ThenInclude(m => m.User)
+            .Include(p => p.Tasks)
+            .Include(p => p.CreatedBy).AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(name))
         {

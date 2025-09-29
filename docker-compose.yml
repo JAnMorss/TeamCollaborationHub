@@ -1,0 +1,37 @@
+﻿services:
+  teamhub.api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: netcodehub/teamcollaborationhubapi:v1
+    container_name: teamhub.api
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__Database=Server=teamhub.db,1433;Database=TeamHub;User Id=sa;Password=Root1234;Trusted_Connection=False;TrustServerCertificate=true
+    depends_on:
+      - teamhub.db
+    networks:
+      - my_network
+
+  teamhub.db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: teamhub.db
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Root1234
+      - MSSQL_PID=Developer
+    ports:
+      - "2025:1433"
+    networks:
+      - my_network
+    volumes:
+      - mssql-data:/var/opt/mssql
+
+networks:
+  my_network:
+    driver: bridge
+
+volumes:
+  mssql-data:

@@ -13,6 +13,7 @@ namespace TeamHub.API.Controllers.Users;
 
 [ApiController]
 [Route("api/user")]
+[Authorize]
 public class UserController : ApiController
 {
     public UserController(ISender sender)
@@ -20,7 +21,6 @@ public class UserController : ApiController
     {
     }
 
-    [Authorize]
     [HttpGet("me")]
     public async Task<IActionResult> GetMyProfile(CancellationToken cancellationToken)
     {
@@ -41,7 +41,6 @@ public class UserController : ApiController
             : HandleFailure(result);
     }
 
-    [Authorize]
     [HttpPut("activate")]
     public async Task<IActionResult> ActivateUser(CancellationToken cancellationToken)
     {
@@ -60,7 +59,6 @@ public class UserController : ApiController
             : HandleFailure(result);
     }
 
-    [Authorize]
     [HttpPut("deactivate")]
     public async Task<IActionResult> DeactivateUser(CancellationToken cancellationToken)
     {
@@ -79,7 +77,6 @@ public class UserController : ApiController
             : HandleFailure(result);
     }
 
-    [Authorize]
     [HttpPut("details")]
     public async Task<IActionResult> UserUpdateDetails(
         [FromBody] UserRequest request,

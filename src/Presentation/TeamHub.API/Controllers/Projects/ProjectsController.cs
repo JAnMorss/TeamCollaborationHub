@@ -1,5 +1,4 @@
-﻿using System.Threading;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TeamHub.API.Abstractions;
@@ -20,6 +19,7 @@ namespace TeamHub.API.Controllers.Projects;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class ProjectsController : ApiController
 {
     public ProjectsController(ISender sender) 
@@ -27,7 +27,7 @@ public class ProjectsController : ApiController
     {
     }
 
-    [Authorize]
+    [AllowAnonymous]
     [HttpGet]
     public async Task<IActionResult> GetAllProjects(
         [FromQuery] QueryObject queryObject,
@@ -44,7 +44,7 @@ public class ProjectsController : ApiController
             : HandleFailure(result);
     }
 
-    [Authorize]
+    [AllowAnonymous]
     [HttpGet("{id:Guid}")]
     public async Task<IActionResult> GetProjectById(
         [FromRoute] Guid id,
@@ -61,7 +61,7 @@ public class ProjectsController : ApiController
             : HandleFailure(result);
     }
 
-    [Authorize]
+    [AllowAnonymous]
     [HttpGet("search")]
     public async Task<IActionResult> SearchProjectsByName(
     [FromQuery] string name,
@@ -79,7 +79,6 @@ public class ProjectsController : ApiController
             : HandleFailure(result);
     }
 
-    [Authorize]
     [HttpPost]
     public async Task<IActionResult> CreateProject(
         [FromBody] ProjectRequest request,
@@ -104,7 +103,6 @@ public class ProjectsController : ApiController
             : HandleFailure(result);
     }
 
-    [Authorize]
     [HttpPut("{id:Guid}/details")]
     public async Task<IActionResult> UpdateProject(
         [FromRoute] Guid id,
@@ -126,7 +124,6 @@ public class ProjectsController : ApiController
             : HandleFailure(result);
     }
 
-    [Authorize]
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteProject(
         [FromRoute] Guid id,
@@ -141,7 +138,6 @@ public class ProjectsController : ApiController
            : HandleFailure(result);
     }
 
-    [Authorize]
     [HttpPost("/api/projects/{projectId}/members")]
     public async Task<IActionResult> AddProjectMembers(
     [FromRoute] Guid projectId,
@@ -159,7 +155,6 @@ public class ProjectsController : ApiController
             : HandleFailure(result);
     }
 
-    [Authorize]
     [HttpDelete("/api/projects/{projectId:Guid}/members")]
     public async Task<IActionResult> RemoveProjectMember(
         [FromRoute] Guid projectId,
