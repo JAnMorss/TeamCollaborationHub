@@ -43,14 +43,6 @@ public sealed class ProjectMember : BaseEntity
         };
     }
 
-    public void ChangeRole(ProjectRole newRole)
-    {
-        if (Role == newRole) return;
-
-        Role = newRole;
-        RaiseDomainEvent(new ProjectMemberRoleChangedDomainEvent(Id, newRole));
-    }
-
     public void LeaveProject()
     {
         RaiseDomainEvent(new LeaveProjectDomainEvent(Id, ProjectId, UserId));

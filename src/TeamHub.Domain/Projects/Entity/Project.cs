@@ -139,17 +139,17 @@ public sealed class Project : BaseEntity
         return Result.Success(member);
     }
 
-    public Result RemoveMember(Guid userId)
+    public Result<ProjectMember> RemoveMember(Guid userId)
     {
         var member = _members.FirstOrDefault(m => m.UserId == userId);
         if (member is null)
-            return Result.Failure(ProjectErrors.MemberNotFound);
+            return Result.Failure<ProjectMember>(ProjectErrors.MemberNotFound);
 
         _members.Remove(member);
 
         RaiseDomainEvent(new ProjectMemberRemovedDomainEvent(Id, userId));
 
-        return Result.Success();
+        return Result.Success(member);
     }
 
 

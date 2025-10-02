@@ -2,6 +2,7 @@
 using TeamHub.Domain.Notifications.Entity;
 using TeamHub.Domain.ProjectMembers.Entity;
 using TeamHub.Domain.Tasks.Entity;
+using TeamHub.Domain.Users.Enums;
 using TeamHub.Domain.Users.Errors;
 using TeamHub.Domain.Users.Events;
 using TeamHub.Domain.Users.ValueObjects;
@@ -42,6 +43,7 @@ public sealed class User : BaseEntity
 
     public FirstName FirstName { get; private set; } = null!;
     public LastName LastName { get; private set; } = null!;
+    public UserRole Role { get; private set; } = UserRole.User;
     public EmailAddress Email { get; private set; } = null!;
     public Avatar? Avatar { get; private set; }
     public PasswordHash PasswordHash { get; private set; } = null!;
@@ -179,13 +181,26 @@ public sealed class User : BaseEntity
 
     public void SetIdentityId(string identityId) 
         => IdentityId = identityId;
+    
+    public Result PromoteToAdmin()
+    {
+        if (Role == UserRole.Admin)
+            return Result.Failure(UserErrors.AlreadyAdmin);
 
-    public void AddProjectMembership(ProjectMember member)
-        => _projectMemberships.Add(member);
-    public void AddAssignedTask(ProjectTask task) 
-        => _assignedTasks.Add(task);
-    public void AddNotification(Notification notification) 
-        => _notifications.Add(notification);
-    public void AddComment(Comment comment) 
-        => _comments.Add(comment);
+        Role = UserRole.Admin;
+        RaiseDomainEvent(new UserPromotedToAdminDomainEvent(Id));
+
+        return Result.Success();
+    }
+
+    public Result DemoteToUser()
+    {
+        if (Role == UserRole.User)
+            return Result.Failure(UserErrors.AlreadyUser);
+
+        Role = UserRole.User;
+        RaiseDomainEvent(new UserDemotedToUserDomainEvent(Id));
+
+        return Result.Success();
+    }
 }

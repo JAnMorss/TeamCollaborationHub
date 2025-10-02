@@ -25,7 +25,15 @@ public static class UserErrors
         "The user is already inactive.");
 
     public static readonly Error InvalidCredentials = new(
-    "User.InvalidCredentials",
-    "The provided credentials are incorrect.");
+        "User.InvalidCredentials",
+        "The provided credentials are incorrect.");
+
+    public static readonly Error AlreadyAdmin = new(
+        "User.AlreadyAdmin", 
+        "The user is already an admin.");
+
+    public static readonly Error AlreadyUser = new(
+        "User.AlreadyUser", 
+        "The user is already a regular user.");
 
 }
