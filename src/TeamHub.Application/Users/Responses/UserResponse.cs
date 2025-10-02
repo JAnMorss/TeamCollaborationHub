@@ -9,6 +9,8 @@ public sealed class UserResponse
 
     public string? FullName { get; init; } = string.Empty;
 
+    public string Role { get; set; } = string.Empty;
+
     [EmailAddress]
     public string? Email { get; init; }
 
@@ -25,6 +27,7 @@ public sealed class UserResponse
         {
             Id = user.Id,
             FullName = $"{user.FirstName.Value} {user.LastName.Value}",
+            Role = user.Role.ToString(),
             Email = user.Email?.Value,
             Avatar = user.Avatar?.Value,
             IsActive = user.IsActive,

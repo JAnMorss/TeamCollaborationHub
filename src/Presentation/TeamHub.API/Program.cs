@@ -2,6 +2,7 @@ using TeamHub.API.Extensions;
 using TeamHub.API.Swagger;
 using TeamHub.Application;
 using TeamHub.Infrastructure;
+using TeamHub.Infrastructure.Seeding;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +36,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 
     app.ApplyMigrations();
+}
+
+using (var scope = app.Services.CreateScope())
+{
+    await DataSeeder.SeedAsync(scope.ServiceProvider);
 }
 
 app.UseCors("CorsPolicy");

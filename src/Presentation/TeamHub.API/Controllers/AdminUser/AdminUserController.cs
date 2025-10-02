@@ -1,20 +1,25 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TeamHub.API.Abstractions;
 using TeamHub.API.Controllers.Users;
+using TeamHub.Application.Users.Commands.DemoteUserToUser;
+using TeamHub.Application.Users.Commands.PromoteUserToAdmin;
 using TeamHub.Application.Users.Commands.UpdateDetails;
+using TeamHub.Application.Users.Responses;
+using TeamHub.SharedKernel;
 
 namespace TeamHub.API.Controllers.AdminUser;
 
 [ApiController]
 [Route("api/admin/users")]
 [Authorize(Roles = "Admin")]
-public class AdminUserController : ControllerBase
+public class AdminUserController : ApiController
 {
-    private readonly ISender _sender;
-
     public AdminUserController(ISender sender) 
-        => _sender = sender;
+        : base(sender)
+    {
+    }
 
     [HttpPut("{id:Guid}/details")]
     public async Task<IActionResult> UpdateAdminUserDetails(
@@ -31,7 +36,37 @@ public class AdminUserController : ControllerBase
         var result = await _sender.Send(command, cancellationToken);
 
         return result.IsSuccess
-            ? Ok(result.Value)
-            : BadRequest(result.Error);
+            ? Ok(new ApiResponse<UserResponse>(
+                    result.Value,
+                    "User details updated successfully"))
+            : HandleFailure(result);
+    }
+
+    [HttpPost("{userId:Guid}/promote")]
+    public async Task<IActionResult> PromoteUserToAdmin(
+        [FromRoute] Guid userId,
+        CancellationToken cancellationToken)
+    {
+        var command = new PromoteUserToAdminCommand(userId);
+
+        var result = await _sender.Send(command, cancellationToken);
+
+        return result.IsSuccess
+            ? Ok("User promoted to Admin successfully")
+            : HandleFailure(result);
+    }
+
+    [HttpPost("{userId:Guid}/demote")]
+    public async Task<IActionResult> DemoteUserToUser(
+        [FromRoute] Guid userId,
+        CancellationToken cancellationToken)
+    {
+        var command = new DemoteUserToUserCommand(userId);
+
+        var result = await _sender.Send(command, cancellationToken);
+
+        return result.IsSuccess
+            ? Ok("User demoted to User successfully")
+            : HandleFailure(result);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using TeamHub.Domain.ProjectMembers.Interface;
+using TeamHub.Domain.Projects.Entity;
 using TeamHub.Domain.Projects.Errors;
 using TeamHub.Domain.Projects.Interface;
 using TeamHub.Domain.Users.Interface;
@@ -35,14 +36,11 @@ public sealed class RemoveProjectMemberCommandHandler : ICommandHandler<RemovePr
         if (project is null)
             return Result.Failure<Unit>(ProjectErrors.NotFound);
 
-        var member = await _projectMemberRepository.FindAsync(
-            request.ProjectId, 
-            request.UserId, 
-            cancellationToken);
+        var member = project.RemoveMember(request.UserId);
         if (member is null)
-            return Result.Failure<Unit>(ProjectErrors.NotFound);
+            return Result.Failure<Unit>(ProjectErrors.MemberNotFound);
 
-        await _projectMemberRepository.DeleteAsync(member.Id, cancellationToken);
+        await _projectMemberRepository.DeleteAsync(member.Value.Id, cancellationToken);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 

@@ -22,7 +22,8 @@ public sealed class JwtProvider : IJwtProvider
         var claims = new[]
         {
             new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new Claim(JwtRegisteredClaimNames.Email, user.Email.Value)
+            new Claim(JwtRegisteredClaimNames.Email, user.Email.Value),
+            new Claim(ClaimTypes.Role, user.Role.ToString())
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecretKey));
@@ -35,10 +36,6 @@ public sealed class JwtProvider : IJwtProvider
             expires: DateTime.UtcNow.AddHours(1),
             signingCredentials: creds
         );
-
-        Console.WriteLine($"[JwtProvider] Issuer: {_options.Issuer}");
-        Console.WriteLine($"[JwtProvider] Audience: {_options.Audience}");
-        Console.WriteLine($"[JwtProvider] Secret (first 10 chars): {_options.SecretKey.Substring(0, 10)}...");
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }

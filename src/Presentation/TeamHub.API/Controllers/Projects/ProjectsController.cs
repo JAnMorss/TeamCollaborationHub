@@ -134,7 +134,7 @@ public class ProjectsController : ApiController
         var result = await _sender.Send(command, cancellationToken);
 
         return result.IsSuccess
-           ? Ok(new ApiResponse("The project was deleted successfully."))
+           ? Ok("The project was deleted successfully.")
            : HandleFailure(result);
     }
 
@@ -166,7 +166,7 @@ public class ProjectsController : ApiController
         var result = await _sender.Send(command, cancellationToken);
 
         return result.IsSuccess
-            ? Ok(new ApiResponse("Member Remove Successfully"))
+            ? Ok("Member Remove Successfully")
             : HandleFailure(result);
     }
 }

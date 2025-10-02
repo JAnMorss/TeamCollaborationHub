@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TeamHub.Application.Abstractions;
@@ -45,6 +46,8 @@ public static class DependencyInjection
         services.AddScoped<ITaskRepository, TaskRepository>();
 
         services.AddScoped<IJwtProvider, JwtProvider>();
+
+        //services.AddSingleton<IAuthorizationMiddlewareResultHandler, CustomAuthorizationMiddlewareResultHandler>();
 
         return services;
     }
