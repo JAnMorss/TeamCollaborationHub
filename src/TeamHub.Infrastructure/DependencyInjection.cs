@@ -47,8 +47,6 @@ public static class DependencyInjection
 
         services.AddScoped<IJwtProvider, JwtProvider>();
 
-        //services.AddSingleton<IAuthorizationMiddlewareResultHandler, CustomAuthorizationMiddlewareResultHandler>();
-
         return services;
     }
 }
