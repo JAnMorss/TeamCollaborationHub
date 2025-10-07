@@ -8,6 +8,8 @@ using TeamHub.Domain.Tasks.ValueObjects;
 using TeamHub.Domain.Users.Entities;
 using TeamHub.SharedKernel.Domain.Entities;
 using TeamHub.SharedKernel.Domain.ErrorHandling;
+using TeamHub.Domain.Projects.Events;
+using TeamHub.Domain.Projects.ValueObjects;
 
 namespace TeamHub.Domain.Tasks.Entity;
 
@@ -59,6 +61,40 @@ public sealed class ProjectTask : BaseEntity
     public IReadOnlyCollection<Comment> Comments => _comments.AsReadOnly();
     public IReadOnlyCollection<TaskAttachment> Attachments => _attachments.AsReadOnly();
 
+    public static Result<ProjectTask> Create(
+        Guid id,
+        string title,
+        string description,
+        TaskPriority priority,
+        Taskstatus status,
+        DateTime? dueDate,
+        Guid projectId,
+        Guid? assignedToId,
+        Guid createdById)
+    {
+        var titleResult = Title.Create(title);
+        if (titleResult.IsFailure)
+            return Result.Failure<ProjectTask>(titleResult.Error);
+
+        var descriptionResult = Description.Create(description);
+        if (descriptionResult.IsFailure)
+            return Result.Failure<ProjectTask>(descriptionResult.Error);
+
+        var task = new ProjectTask(
+            id,
+            titleResult.Value,
+            descriptionResult.Value,
+            priority,
+            status,
+            dueDate,
+            projectId,
+            assignedToId,
+            createdById);
+
+        task.RaiseDomainEvent(new TaskCreatedDomainEvent(task.Id));
+
+        return Result.Success(task);
+    }
 
     public Result UpdateDetails(
         string title, 
@@ -135,18 +171,6 @@ public sealed class ProjectTask : BaseEntity
         return Result.Success(this);
     }
 
-    public Result AddComment(Comment comment)
-    {
-        if (comment is null)
-            return Result.Failure(TaskErrors.InvalidComment);
-
-        _comments.Add(comment);
-        UpdatedAt = DateTime.UtcNow;
-
-        RaiseDomainEvent(new TaskCommentAddedDomainEvent(Id, comment.Id));
-
-        return Result.Success(comment);
-    }
 
     public Result AddAttachment(TaskAttachment attachment)
     {

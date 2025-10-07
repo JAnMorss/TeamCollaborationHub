@@ -21,14 +21,17 @@ public class AdminUserController : ApiController
     {
     }
 
-    [HttpPut("{id:Guid}/details")]
+    [HttpPut("adminDetails")]
     public async Task<IActionResult> UpdateAdminUserDetails(
-        [FromRoute] Guid id,
         [FromBody] UserRequest request,
         CancellationToken cancellationToken)
     {
+        var userId = GetUserId();
+        if (userId is null)
+            return Unauthorized();
+
         var command = new UpdateDetailsCommand(
-            id,
+            userId.Value,
             request.FirstName,
             request.LastName,
             request.Email);

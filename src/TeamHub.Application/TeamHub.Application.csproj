@@ -20,6 +20,9 @@
 
   <ItemGroup>
     <Folder Include="Projects\ProjectMembers\Queries\" />
+    <Folder Include="Tasks\Commands\" />
+    <Folder Include="Tasks\Responses\" />
+    <Folder Include="Tasks\Queries\" />
   </ItemGroup>
 
 </Project>
