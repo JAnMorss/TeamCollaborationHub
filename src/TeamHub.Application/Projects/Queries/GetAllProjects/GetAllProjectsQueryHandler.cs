@@ -1,4 +1,5 @@
 ﻿using TeamHub.Application.Projects.Responses;
+using TeamHub.Domain.Projects.Errors;
 using TeamHub.Domain.Projects.Interface;
 using TeamHub.SharedKernel.Application.Helpers;
 using TeamHub.SharedKernel.Application.Mediator.Query;
@@ -24,6 +25,8 @@ public sealed class GetAllProjectsQueryHandler
         var query = request.Query ?? new QueryObject();
 
         var projects = await _projectRepository.GetAllAsync(query, cancellationToken);
+        if (projects is null)
+            return Result.Failure<PaginatedResult<ProjectResponse>>(ProjectErrors.NotFound);
 
         var mapped = projects
             .Select(ProjectResponse.FromEntity)
