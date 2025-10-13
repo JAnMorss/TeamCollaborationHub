@@ -18,9 +18,4 @@
     <ProjectReference Include="..\TeamHub.Domain\TeamHub.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Projects\ProjectMembers\Queries\" />
-    <Folder Include="Tasks\Commands\CreateTask\" />
-  </ItemGroup>
-
 </Project>

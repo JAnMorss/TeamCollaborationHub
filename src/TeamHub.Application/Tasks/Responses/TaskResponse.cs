@@ -15,7 +15,6 @@ public sealed class TaskResponse
     public string? Status { get; set; }
     public DateTime? DueDate { get; set; }
     public DateTime CreatedAt { get; set; }
-    public DateTime UpdatedAt { get; set; }
 
     public string? CreatedBy { get; set; }
     public string? AssignedTo { get; set; }
@@ -38,7 +37,6 @@ public sealed class TaskResponse
             Status = task.Status.ToString(),
             DueDate = task.DueDate,
             CreatedAt = task.CreatedAt,
-            UpdatedAt = task.UpdatedAt,
 
             CreatedBy = task.CreatedBy is not null
                         ? $"{task.CreatedBy.FirstName.Value} {task.CreatedBy.LastName.Value}"
