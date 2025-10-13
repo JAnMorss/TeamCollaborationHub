@@ -38,6 +38,7 @@ public sealed class User : BaseEntity
         PasswordHash = passwordHash;
         CreatedAt = DateTime.UtcNow;
         IsActive = isActive;
+        UpdatedAt = null;
     }
 
 

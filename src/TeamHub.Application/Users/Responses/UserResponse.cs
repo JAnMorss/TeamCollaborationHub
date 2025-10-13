@@ -18,6 +18,8 @@ public sealed class UserResponse
 
     public bool IsActive { get; init; }
 
+    public DateTime? UpdatedAt { get; set; }
+
     public string? IdentityId { get; init; }
 
 
@@ -31,6 +33,7 @@ public sealed class UserResponse
             Email = user.Email?.Value,
             Avatar = user.Avatar?.Value,
             IsActive = user.IsActive,
+            UpdatedAt = user.UpdatedAt,
             IdentityId = user.IdentityId
         };
     }
