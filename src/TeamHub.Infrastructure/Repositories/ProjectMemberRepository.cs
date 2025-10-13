@@ -2,6 +2,7 @@
 using TeamHub.Domain.ProjectMembers.Entity;
 using TeamHub.Domain.ProjectMembers.Enums;
 using TeamHub.Domain.ProjectMembers.Interface;
+using TeamHub.SharedKernel.Application.Helpers;
 
 namespace TeamHub.Infrastructure.Repositories;
 
@@ -11,6 +12,42 @@ internal class ProjectMemberRepository : Repository<ProjectMember>, IProjectMemb
         : base(context)
     {
     }
+
+    public override async Task<IEnumerable<ProjectMember>> GetAllAsync(
+        QueryObject query,
+        CancellationToken cancellationToken = default)
+    {
+        var projectMembers = _context.ProjectMembers
+            .Include(pm => pm.User)
+            .AsQueryable();
+
+        projectMembers = query.SortBy?.ToLower() switch
+        {
+            "fullname" => query.Descending
+                ? projectMembers.OrderByDescending(pm => pm.User.FirstName.Value)
+                                .ThenByDescending(pm => pm.User.LastName.Value)
+                : projectMembers.OrderBy(pm => pm.User.FirstName.Value)
+                                .ThenBy(pm => pm.User.LastName.Value),
+
+            "role" => query.Descending
+                ? projectMembers.OrderByDescending(pm => pm.Role)
+                : projectMembers.OrderBy(pm => pm.Role),
+
+            _ => query.Descending
+                ? projectMembers.OrderByDescending(pm => pm.JoinedAt)
+                : projectMembers.OrderBy(pm => pm.JoinedAt)
+        };
+
+        var page = query.Page <= 0 ? 1 : query.Page;
+        var pageSize = query.PageSize <= 0 ? 10 : query.PageSize;
+        var skip = (page - 1) * pageSize;
+
+        return await projectMembers
+            .Skip(skip)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+    }
+
 
     public async Task<ProjectMember?> FindAsync(
         Guid projectId, 
@@ -49,4 +86,43 @@ internal class ProjectMemberRepository : Repository<ProjectMember>, IProjectMemb
             .Where(pm => pm.UserId == userId)
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<IEnumerable<ProjectMember>> GetAllByProjectIdAsync(
+    Guid projectId,
+    QueryObject query,
+    CancellationToken cancellationToken = default)
+    {
+        var projectMembers = _context.ProjectMembers
+            .Include(pm => pm.User)
+            .Where(pm => pm.ProjectId == projectId)
+            .AsQueryable();
+
+        projectMembers = query.SortBy?.ToLower() switch
+        {
+            "fullname" => query.Descending
+                ? projectMembers.OrderByDescending(pm => pm.User.FirstName.Value)
+                                .ThenByDescending(pm => pm.User.LastName.Value)
+                : projectMembers.OrderBy(pm => pm.User.FirstName.Value)
+                                .ThenBy(pm => pm.User.LastName.Value),
+
+            "role" => query.Descending
+                ? projectMembers.OrderByDescending(pm => pm.Role)
+                : projectMembers.OrderBy(pm => pm.Role),
+
+            _ => query.Descending
+                ? projectMembers.OrderByDescending(pm => pm.JoinedAt)
+                : projectMembers.OrderBy(pm => pm.JoinedAt)
+        };
+
+        var page = query.Page <= 0 ? 1 : query.Page;
+        var pageSize = query.PageSize <= 0 ? 10 : query.PageSize;
+        var skip = (page - 1) * pageSize;
+
+        return await projectMembers
+            .Skip(skip)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+    }
+
+
 }

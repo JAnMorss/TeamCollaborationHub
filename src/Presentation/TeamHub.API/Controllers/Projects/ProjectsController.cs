@@ -7,6 +7,8 @@ using TeamHub.Application.Projects.Commands.DeleteProject;
 using TeamHub.Application.Projects.Commands.UpdateProject;
 using TeamHub.Application.Projects.ProjectMembers.Commands.AddProjectMember;
 using TeamHub.Application.Projects.ProjectMembers.Commands.RemoveProjectMember;
+using TeamHub.Application.Projects.ProjectMembers.Queries.GetAllMembersOfProject;
+using TeamHub.Application.Projects.ProjectMembers.Queries.GetAllProjectsMembers;
 using TeamHub.Application.Projects.Queries.GetAllProjects;
 using TeamHub.Application.Projects.Queries.GetProjectById;
 using TeamHub.Application.Projects.Queries.SearchProjectsByName;
@@ -17,8 +19,8 @@ using TeamHub.SharedKernel.Application.PageSize;
 
 namespace TeamHub.API.Controllers.Projects;
 
-[Route("api/[controller]")]
 [ApiController]
+[Route("api/project")]
 [Authorize]
 public class ProjectsController : ApiController
 {
@@ -27,7 +29,6 @@ public class ProjectsController : ApiController
     {
     }
 
-    [AllowAnonymous]
     [HttpGet]
     public async Task<IActionResult> GetAllProjects(
         [FromQuery] QueryObject queryObject,
@@ -44,7 +45,6 @@ public class ProjectsController : ApiController
             : HandleFailure(result);
     }
 
-    [AllowAnonymous]
     [HttpGet("{id:Guid}")]
     public async Task<IActionResult> GetProjectById(
         [FromRoute] Guid id,
@@ -61,7 +61,6 @@ public class ProjectsController : ApiController
             : HandleFailure(result);
     }
 
-    [AllowAnonymous]
     [HttpGet("search")]
     public async Task<IActionResult> SearchProjectsByName(
     [FromQuery] string name,
@@ -134,11 +133,46 @@ public class ProjectsController : ApiController
         var result = await _sender.Send(command, cancellationToken);
 
         return result.IsSuccess
-           ? Ok("The project was deleted successfully.")
+           ? Ok(new ApiResponse("The project was deleted successfully."))
            : HandleFailure(result);
     }
 
-    [HttpPost("/api/projects/{projectId}/members")]
+    //Project Members
+    [HttpGet("/api/projects/members")]
+    public async Task<IActionResult> GetAllProjectMembers(
+        [FromQuery] QueryObject queryObject,
+        CancellationToken cancellationToken)
+    {
+        var query = new GetAllProjectsMembersQuery(queryObject);
+
+        var result = await _sender.Send(query, cancellationToken);
+
+        return result.IsSuccess
+            ? Ok(new ApiResponse<PaginatedResult<ProjectMemberResponse>>(
+                result.Value,
+                "Project Members fetched successfully"))
+            : HandleFailure(result);
+    }
+
+    [HttpGet("{projectId:Guid}/members")]
+    public async Task<IActionResult> GetAllMembersOfProject(
+        [FromRoute] Guid projectId,
+        [FromQuery] QueryObject queryObject,
+        CancellationToken cancellationToken)
+    {
+        var query = new GetAllMembersOfProjectQuery(projectId, queryObject);
+
+        var result = await _sender.Send(query, cancellationToken);
+
+        return result.IsSuccess
+            ? Ok(new ApiResponse<PaginatedResult<ProjectMemberResponse>>(
+                result.Value,
+                "Project members fetched successfully"))
+            : HandleFailure(result);
+    }
+
+
+    [HttpPost("/api/projects/{projectId:Guid}/members")]
     public async Task<IActionResult> AddProjectMembers(
     [FromRoute] Guid projectId,
     [FromBody] ProjectMemberRequest request,

@@ -32,6 +32,7 @@ public sealed class Project : BaseEntity
         CreatedAt = DateTime.UtcNow;
         IsActive = true;
         IsArchived = false;
+        UpdatedAt = null;
     }
 
     public Guid CreatedById { get; private set; }
@@ -41,6 +42,7 @@ public sealed class Project : BaseEntity
     public DateTime CreatedAt { get; private set; }
     public bool IsActive { get; private set; }
     public bool IsArchived { get; private set; }
+    public DateTime? UpdatedAt { get; private set; }
 
     public User? CreatedBy { get; private set; }
     public IReadOnlyCollection<ProjectMember> Members => _members.AsReadOnly();

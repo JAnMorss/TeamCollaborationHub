@@ -13,8 +13,8 @@ internal class ProjectRepository : Repository<Project>, IProjectRepository
     }
 
     public override async Task<IEnumerable<Project>> GetAllAsync(
-    QueryObject query,
-    CancellationToken cancellationToken = default)
+        QueryObject query,
+        CancellationToken cancellationToken = default)
     {
         var project = _context.Projects
             .Include(p => p.Members)

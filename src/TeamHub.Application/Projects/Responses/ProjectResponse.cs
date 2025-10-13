@@ -12,7 +12,7 @@ public sealed class ProjectResponse
     public string? Color { get; set; }
     public bool IsActive { get; set; }
     public bool IsArchived { get; set; }
-
+    public DateTime? UpdatedAt { get; set; }
     public object Members { get; set; } = new();
 
     public static ProjectResponse FromEntity(Project project)
@@ -25,6 +25,7 @@ public sealed class ProjectResponse
             Color = project.Color.Value,
             IsActive = project.IsActive,
             IsArchived = project.IsArchived,
+            UpdatedAt = project.UpdatedAt,
             CreatedById = project.CreatedById,
             CreatedBy = project.CreatedBy is not null
                         ? $"{project.CreatedBy.FirstName.Value} {project.CreatedBy.LastName.Value}"
