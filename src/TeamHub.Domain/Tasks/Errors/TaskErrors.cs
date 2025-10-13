@@ -28,8 +28,4 @@ public static class TaskErrors
         "Task.InvalidAttachment",
         "The provided attachment is invalid.");
 
-    public static readonly Error Empty = new(
-        "Task.Empty",
-        "This project has no tasks yet. Add some tasks first.");
-
 }

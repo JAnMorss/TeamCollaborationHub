@@ -20,25 +20,25 @@ public sealed class ProjectTask : BaseEntity
 
     public ProjectTask(
         Guid id,
+        Guid projectId,
+        Guid createdById,
         Title title,
         Description description,
         TaskPriority priority,
         Taskstatus status,
         DateTime? dueDate,
-        Guid projectId,
-        Guid? assignedToId,
-        Guid createdById) : base(id)
+        Guid? assignedToId) : base(id)
     {
+        ProjectId = projectId;
+        CreatedById = createdById;
         Title = title ?? throw new ArgumentNullException(nameof(title));
         Description = description ?? throw new ArgumentNullException(nameof(description));
         Priority = priority;
         Status = status;
         DueDate = dueDate;
         CreatedAt = DateTime.UtcNow;
-        UpdatedAt = DateTime.UtcNow;
-        ProjectId = projectId;
+        UpdatedAt = null;
         AssignedToId = assignedToId;
-        CreatedById = createdById;
     }
 
     public Title Title { get; private set; } = null!;
@@ -47,7 +47,7 @@ public sealed class ProjectTask : BaseEntity
     public Taskstatus Status { get; private set; }
     public DateTime? DueDate { get; private set; }
     public DateTime CreatedAt { get; private set; }
-    public DateTime UpdatedAt { get; private set; }
+    public DateTime? UpdatedAt { get; private set; }
 
     public Guid ProjectId { get; private set; }
     public Guid? AssignedToId { get; private set; }
@@ -61,14 +61,14 @@ public sealed class ProjectTask : BaseEntity
 
     public static Result<ProjectTask> Create(
         Guid id,
+        Guid projectId,
+        Guid createdById,
         string title,
         string description,
         TaskPriority priority,
         Taskstatus status,
         DateTime? dueDate,
-        Guid projectId,
-        Guid? assignedToId,
-        Guid createdById)
+        Guid? assignedToId)
     {
         var titleResult = Title.Create(title);
         if (titleResult.IsFailure)
@@ -80,14 +80,14 @@ public sealed class ProjectTask : BaseEntity
 
         var task = new ProjectTask(
             id,
+            projectId,
+            createdById,
             titleResult.Value,
             descriptionResult.Value,
             priority,
             status,
             dueDate,
-            projectId,
-            assignedToId,
-            createdById);
+            assignedToId);
 
         task.RaiseDomainEvent(new TaskCreatedDomainEvent(task.Id));
 
