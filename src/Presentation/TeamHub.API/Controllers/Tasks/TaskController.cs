@@ -2,8 +2,13 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TeamHub.API.Abstractions;
+using TeamHub.Application.Projects.Commands.DeleteProject;
+using TeamHub.Application.Tasks.Commands.CreateTask;
+using TeamHub.Application.Tasks.Commands.DeleteTask;
+using TeamHub.Application.Tasks.Commands.UpdateTask;
 using TeamHub.Application.Tasks.Queries.GetAllTasks;
 using TeamHub.Application.Tasks.Queries.GetTaskById;
+using TeamHub.Application.Tasks.Queries.GetTasksByAssignedUser;
 using TeamHub.Application.Tasks.Queries.GetTasksByProjectId;
 using TeamHub.Application.Tasks.Responses;
 using TeamHub.SharedKernel;
@@ -21,7 +26,6 @@ public class TaskController : ApiController
     {
     }
 
-    [AllowAnonymous]
     [HttpGet]
     public async Task<IActionResult> GetAllTasks(
         [FromQuery] QueryObject queryObject,
@@ -38,7 +42,6 @@ public class TaskController : ApiController
             : HandleFailure(result);
     }
 
-    [AllowAnonymous]
     [HttpGet("{id:Guid}")]
     public async Task<IActionResult> GetTaskById(
         [FromRoute] Guid id,
@@ -55,8 +58,7 @@ public class TaskController : ApiController
             : HandleFailure(result);
     }
 
-    [AllowAnonymous]
-    [HttpGet("by-project/{projectId:guid}")]
+    [HttpGet("by-project/{projectId:Guid}")]
     public async Task<IActionResult> GetTaskByProjectId(
         [FromRoute] Guid projectId,
         CancellationToken cancellationToken)
@@ -68,7 +70,93 @@ public class TaskController : ApiController
         return result.IsSuccess
             ? Ok(new ApiResponse<IEnumerable<TaskResponse>>(
                 result.Value,
-                "Tasks by project ID fetched successfully"))
+                result.Value.Any()
+                    ? "Tasks by project ID fetched successfully"
+                    : "This project has no tasks yet. Add some tasks first."))
             : HandleFailure(result);
+    }
+
+    [HttpGet("assigned")]
+    public async Task<IActionResult> GetTaskByAssignedUser(
+        CancellationToken cancellationToken)
+    {
+        var userId = GetUserId();
+        if (userId is null)
+            return Unauthorized();
+
+        var query = new GetTasksByAssignedUserQuery(userId.Value);
+
+        var result = await _sender.Send(query, cancellationToken);
+
+        return result.IsSuccess
+            ? Ok(new ApiResponse<IEnumerable<TaskResponse>>(
+                result.Value,
+                result.Value.Any()
+                    ? "Tasks assigned to you were fetched successfully."
+                    : "You currently have no assigned tasks."))
+            : HandleFailure(result);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> CreateTask(
+        [FromBody] TaskRequest request,
+        CancellationToken cancellationToken)
+    {
+        var userId = GetUserId();
+        if (userId is null) return Unauthorized();
+
+        var command = new CreateTaskCommand(
+            request.ProjectId,
+            userId.Value,
+            request.Title,
+            request.Description,
+            request.Priority,
+            request.Status,
+            request.DueDate,
+            request.AssignedUserId);
+
+        var result = await _sender.Send(command, cancellationToken);
+
+        return result.IsSuccess
+            ? Ok(new ApiResponse<TaskResponse>(
+                result.Value,
+                "Task Create successfully"))
+            : HandleFailure(result);
+    }
+
+    [HttpPut("{id:Guid}/details")]
+    public async Task<IActionResult> UpdateTask(
+        [FromRoute] Guid id,
+        [FromBody] TaskRequest request,
+        CancellationToken cancellationToken)
+    {
+        var command = new UpdateTaskCommand(
+            id,
+            request.Title,
+            request.Description,
+            request.Priority,
+            request.DueDate);
+
+        var result = await _sender.Send(command, cancellationToken);
+
+        return result.IsSuccess
+            ? Ok(new ApiResponse<TaskResponse>(
+                result.Value,
+                "Task updated successfully"))
+            : HandleFailure(result);
+    }
+
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> DeleteProject(
+        [FromRoute] Guid id,
+        CancellationToken cancellationToken)
+    {
+        var command = new DeleteTaskCommand(id);
+
+        var result = await _sender.Send(command, cancellationToken);
+
+        return result.IsSuccess
+           ? Ok(new ApiResponse("The task was deleted successfully."))
+           : HandleFailure(result);
     }
 }
