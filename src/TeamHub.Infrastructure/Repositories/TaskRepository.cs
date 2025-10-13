@@ -19,9 +19,11 @@ internal class TaskRepository : Repository<ProjectTask>, ITaskRepository
     CancellationToken cancellationToken = default)
     {
         var task = _context.Tasks
-            .Include(p => p.Comments)
-            .Include(p => p.Attachments)
-            .Include(p => p.CreatedBy)
+            .Include(t => t.CreatedBy)
+            .Include(t => t.AssignedTo)
+            .Include(t => t.Comments)
+                .ThenInclude(c => c.Author)
+            .Include(t => t.Attachments)
             .AsQueryable();
 
         task = query.SortBy?.ToLower() switch
