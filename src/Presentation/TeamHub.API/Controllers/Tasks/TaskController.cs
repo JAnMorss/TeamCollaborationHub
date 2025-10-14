@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TeamHub.API.Abstractions;
 using TeamHub.Application.Projects.Commands.DeleteProject;
+using TeamHub.Application.Tasks.Commands.AssignTask;
 using TeamHub.Application.Tasks.Commands.CreateTask;
 using TeamHub.Application.Tasks.Commands.DeleteTask;
 using TeamHub.Application.Tasks.Commands.UpdateTask;
@@ -112,8 +113,7 @@ public class TaskController : ApiController
             request.Description,
             request.Priority,
             request.Status,
-            request.DueDate,
-            request.AssignedUserId);
+            request.DueDate);
 
         var result = await _sender.Send(command, cancellationToken);
 
@@ -147,7 +147,7 @@ public class TaskController : ApiController
     }
 
     [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> DeleteProject(
+    public async Task<IActionResult> DeleteTask(
         [FromRoute] Guid id,
         CancellationToken cancellationToken)
     {
@@ -158,5 +158,20 @@ public class TaskController : ApiController
         return result.IsSuccess
            ? Ok(new ApiResponse("The task was deleted successfully."))
            : HandleFailure(result);
+    }
+
+    [HttpPut("{taskId:Guid}/assign")]
+    public async Task<IActionResult> AssignTask(
+        [FromRoute] Guid taskId,
+        [FromBody] AssignTaskRequest request,
+        CancellationToken cancellationToken)
+    {
+        var command = new AssignTaskCommand(taskId, request.UserId);
+
+        var result = await _sender.Send(command, cancellationToken);
+
+        return result.IsSuccess
+            ? Ok(new ApiResponse("Task assigned successfully"))
+            : HandleFailure(result);
     }
 }

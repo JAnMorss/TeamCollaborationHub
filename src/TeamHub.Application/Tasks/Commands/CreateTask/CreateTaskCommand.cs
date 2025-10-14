@@ -11,5 +11,4 @@ public sealed record CreateTaskCommand(
     string Description,
     TaskPriority Priority,
     Taskstatus Status,
-    DateTime? DueDate,
-    Guid? AssignedUserId) : ICommand<TaskResponse>;
+    DateTime? DueDate) : ICommand<TaskResponse>;

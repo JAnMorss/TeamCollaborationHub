@@ -41,13 +41,6 @@ public sealed class CreateTaskCommandHandler : ICommandHandler<CreateTaskCommand
         if (createdById is null)
             return Result.Failure<TaskResponse>(UserErrors.NotFound);
 
-        if (request.AssignedUserId is not null)
-        {
-            var assignedUser = await _userRepository.GetByIdAsync(request.AssignedUserId.Value, cancellationToken);
-            if (assignedUser is null)
-                return Result.Failure<TaskResponse>(UserErrors.NotFound);
-        }
-
         var createResult = ProjectTask.Create(
             Guid.NewGuid(),
             request.ProjectId,
@@ -56,8 +49,7 @@ public sealed class CreateTaskCommandHandler : ICommandHandler<CreateTaskCommand
             request.Description,
             request.Priority,
             request.Status,
-            request.DueDate,
-            request.AssignedUserId);
+            request.DueDate);
 
         if (createResult.IsFailure)
             return Result.Failure<TaskResponse>(createResult.Error);

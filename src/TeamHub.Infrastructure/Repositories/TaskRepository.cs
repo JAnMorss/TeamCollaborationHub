@@ -15,10 +15,11 @@ internal class TaskRepository : Repository<ProjectTask>, ITaskRepository
     }
 
     public override async Task<IEnumerable<ProjectTask>> GetAllAsync(
-    QueryObject query,
-    CancellationToken cancellationToken = default)
+        QueryObject query,
+        CancellationToken cancellationToken = default)
     {
         var task = _context.Tasks
+            .Include(t => t.Project)
             .Include(t => t.CreatedBy)
             .Include(t => t.AssignedTo)
             .Include(t => t.Comments)
@@ -43,6 +44,20 @@ internal class TaskRepository : Repository<ProjectTask>, ITaskRepository
             .Skip(skip)
             .Take(pageSize)
             .ToListAsync(cancellationToken);
+    }
+
+    public override async Task<ProjectTask?> GetByIdAsync(
+        Guid id, 
+        CancellationToken cancellationToken = default)
+    {
+        return await _context.Tasks
+            .Include(t => t.Project)
+            .Include(t => t.CreatedBy)
+            .Include(t => t.AssignedTo)
+            .Include(t => t.Comments)
+                .ThenInclude(c => c.Author)
+            .Include(t => t.Attachments)
+            .FirstOrDefaultAsync(t => t.Id == id, cancellationToken);
     }
 
     public async Task<IEnumerable<ProjectTask>> GetOpenTasksByProjectAsync(
@@ -75,10 +90,13 @@ internal class TaskRepository : Repository<ProjectTask>, ITaskRepository
     public async Task<IEnumerable<ProjectTask>> GetTasksByProjectIdAsync(Guid projectId, CancellationToken cancellationToken = default)
     {
         return await _context.Tasks
+            .Include(t => t.Project)
             .Include(t => t.Comments)
             .Include(t => t.Attachments)
             .Include(t => t.CreatedBy)
+            .Include(t => t.AssignedTo)
             .Where(t => t.ProjectId == projectId)
             .ToListAsync(cancellationToken);
     }
+
 }

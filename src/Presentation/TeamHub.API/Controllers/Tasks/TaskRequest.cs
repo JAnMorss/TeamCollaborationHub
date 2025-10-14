@@ -8,6 +8,5 @@ public sealed record TaskRequest(
     string Description,
     TaskPriority Priority,      
     Taskstatus Status,     
-    DateTime? DueDate,
-    Guid? AssignedUserId
+    DateTime? DueDate
 );

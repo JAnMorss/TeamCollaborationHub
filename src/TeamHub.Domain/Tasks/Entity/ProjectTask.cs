@@ -26,8 +26,7 @@ public sealed class ProjectTask : BaseEntity
         Description description,
         TaskPriority priority,
         Taskstatus status,
-        DateTime? dueDate,
-        Guid? assignedToId) : base(id)
+        DateTime? dueDate) : base(id)
     {
         ProjectId = projectId;
         CreatedById = createdById;
@@ -38,7 +37,7 @@ public sealed class ProjectTask : BaseEntity
         DueDate = dueDate;
         CreatedAt = DateTime.UtcNow;
         UpdatedAt = null;
-        AssignedToId = assignedToId;
+        AssignedToId = null;
     }
 
     public Title Title { get; private set; } = null!;
@@ -67,8 +66,7 @@ public sealed class ProjectTask : BaseEntity
         string description,
         TaskPriority priority,
         Taskstatus status,
-        DateTime? dueDate,
-        Guid? assignedToId)
+        DateTime? dueDate)
     {
         var titleResult = Title.Create(title);
         if (titleResult.IsFailure)
@@ -86,8 +84,7 @@ public sealed class ProjectTask : BaseEntity
             descriptionResult.Value,
             priority,
             status,
-            dueDate,
-            assignedToId);
+            dueDate);
 
         task.RaiseDomainEvent(new TaskCreatedDomainEvent(task.Id));
 
