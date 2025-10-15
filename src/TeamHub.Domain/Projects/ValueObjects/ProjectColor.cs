@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using TeamHub.SharedKernel.Domain.Entities;
-using TeamHub.SharedKernel.Domain.ErrorHandling;
+using TeamHub.SharedKernel.ErrorHandling;
 
 namespace TeamHub.Domain.Projects.ValueObjects;
 

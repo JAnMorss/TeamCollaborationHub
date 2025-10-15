@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using System.Security.Cryptography;
 using TeamHub.SharedKernel.Domain.Entities;
-using TeamHub.SharedKernel.Domain.ErrorHandling;
+using TeamHub.SharedKernel.ErrorHandling;
 
 namespace TeamHub.Domain.Users.ValueObjects;
 

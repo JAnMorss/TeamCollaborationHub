@@ -6,7 +6,7 @@ using TeamHub.Domain.Projects.Entity;
 using TeamHub.Domain.Tasks.Entity;
 using TeamHub.Domain.Users.Entities;
 using TeamHub.SharedKernel.Domain.Entities;
-using TeamHub.SharedKernel.Domain.ErrorHandling;
+using TeamHub.SharedKernel.ErrorHandling;
 
 namespace TeamHub.Domain.Notifications.Entity;
 

@@ -7,7 +7,7 @@ using TeamHub.Domain.Tasks.Errors;
 using TeamHub.Domain.Tasks.ValueObjects;
 using TeamHub.Domain.Users.Entities;
 using TeamHub.SharedKernel.Domain.Entities;
-using TeamHub.SharedKernel.Domain.ErrorHandling;
+using TeamHub.SharedKernel.ErrorHandling;
 
 namespace TeamHub.Domain.Tasks.Entity;
 

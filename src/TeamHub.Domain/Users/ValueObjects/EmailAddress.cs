@@ -1,6 +1,6 @@
 ﻿using System.Net.Mail;
 using TeamHub.SharedKernel.Domain.Entities;
-using TeamHub.SharedKernel.Domain.ErrorHandling;
+using TeamHub.SharedKernel.ErrorHandling;
 
 namespace TeamHub.Domain.Users.ValueObjects;
 
