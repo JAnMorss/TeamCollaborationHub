@@ -1,7 +1,7 @@
 ﻿using TeamHub.Domain.Users.Errors;
 using TeamHub.Domain.Users.Interface;
 using TeamHub.SharedKernel.Application.Mediator.Command;
-using TeamHub.SharedKernel.Domain.ErrorHandling;
+using TeamHub.SharedKernel.ErrorHandling;
 
 namespace TeamHub.Application.Users.Commands.UpdateAvatar;
 

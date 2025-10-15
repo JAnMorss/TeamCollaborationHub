@@ -3,7 +3,7 @@ using TeamHub.Domain.Projects.Interface;
 using TeamHub.SharedKernel.Application.Helpers;
 using TeamHub.SharedKernel.Application.Mediator.Query;
 using TeamHub.SharedKernel.Application.PageSize;
-using TeamHub.SharedKernel.Domain.ErrorHandling;
+using TeamHub.SharedKernel.ErrorHandling;
 
 namespace TeamHub.Application.Projects.Queries.SearchProjectsByName;
 

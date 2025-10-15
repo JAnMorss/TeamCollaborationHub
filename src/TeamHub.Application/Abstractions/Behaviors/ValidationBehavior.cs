@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using TeamHub.SharedKernel.Application.Mediator.Command;
 using TeamHub.SharedKernel.Domain.Exceptions;
 
@@ -9,10 +10,14 @@ public class ValidationBehavior<TRequest, TResponse>
     where TRequest : IBaseCommand
 {
     private readonly IEnumerable<IValidator<TRequest>> _validators;
+    private readonly ILogger<ValidationBehavior<TRequest, TResponse>> _logger;
 
-    public ValidationBehavior(IEnumerable<IValidator<TRequest>> validators)
+    public ValidationBehavior(
+        IEnumerable<IValidator<TRequest>> validators, 
+        ILogger<ValidationBehavior<TRequest, TResponse>> logger)
     {
         _validators = validators;
+        _logger = logger;
     }
 
     public async Task<TResponse> Handle(
@@ -39,6 +44,8 @@ public class ValidationBehavior<TRequest, TResponse>
 
         if (validationErrors.Any())
         {
+            _logger.LogWarning("Validation failed for {RequestName}. Errors: {@Errors}", typeof(TRequest).Name, validationErrors);
+
             throw new SharedKernel.Domain.Exceptions.ValidationException(validationErrors);
         }
 

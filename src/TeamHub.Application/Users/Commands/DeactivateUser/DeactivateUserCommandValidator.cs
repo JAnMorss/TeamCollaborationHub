@@ -2,7 +2,7 @@
 
 namespace TeamHub.Application.Users.Commands.DeactivateUser;
 
-public class DeactivateUserCommandValidator : AbstractValidator<DeactivateUserCommand>
+internal sealed class DeactivateUserCommandValidator : AbstractValidator<DeactivateUserCommand>
 {
     public DeactivateUserCommandValidator()
     {

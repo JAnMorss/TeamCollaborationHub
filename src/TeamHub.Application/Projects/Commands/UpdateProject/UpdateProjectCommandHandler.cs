@@ -3,7 +3,7 @@ using TeamHub.Domain.Projects.Errors;
 using TeamHub.Domain.Projects.Interface;
 using TeamHub.SharedKernel;
 using TeamHub.SharedKernel.Application.Mediator.Command;
-using TeamHub.SharedKernel.Domain.ErrorHandling;
+using TeamHub.SharedKernel.ErrorHandling;
 
 namespace TeamHub.Application.Projects.Commands.UpdateProject;
 

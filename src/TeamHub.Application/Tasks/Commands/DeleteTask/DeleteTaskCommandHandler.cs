@@ -2,7 +2,7 @@
 using TeamHub.Domain.Tasks.Interface;
 using TeamHub.SharedKernel;
 using TeamHub.SharedKernel.Application.Mediator.Command;
-using TeamHub.SharedKernel.Domain.ErrorHandling;
+using TeamHub.SharedKernel.ErrorHandling;
 
 namespace TeamHub.Application.Tasks.Commands.DeleteTask;
 

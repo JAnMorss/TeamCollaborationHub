@@ -2,7 +2,7 @@
 
 namespace TeamHub.Application.Users.Commands.UpdateAvatar;
 
-public class UpdateAvatarCommandValidator : AbstractValidator<UpdateAvatarCommand>
+internal sealed class UpdateAvatarCommandValidator : AbstractValidator<UpdateAvatarCommand>
 {
     public UpdateAvatarCommandValidator()
     {

@@ -1,7 +1,7 @@
 ﻿using TeamHub.Application.Tasks.Responses;
 using TeamHub.Domain.Tasks.Interface;
 using TeamHub.SharedKernel.Application.Mediator.Query;
-using TeamHub.SharedKernel.Domain.ErrorHandling;
+using TeamHub.SharedKernel.ErrorHandling;
 
 namespace TeamHub.Application.Tasks.Queries.GetTasksByAssignedUser;
 

@@ -2,7 +2,7 @@
 
 namespace TeamHub.Application.Auth.Commands.Register;
 
-public class RegisterCommandValidator : AbstractValidator<RegisterCommand>
+internal sealed class RegisterCommandValidator : AbstractValidator<RegisterCommand>
 {
     public RegisterCommandValidator()
     {

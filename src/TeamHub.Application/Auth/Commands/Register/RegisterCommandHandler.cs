@@ -7,7 +7,7 @@ using TeamHub.Application.Users.Responses;
 using Microsoft.EntityFrameworkCore;
 using TeamHub.Domain.Users.ValueObjects;
 using TeamHub.SharedKernel.Application.Mediator.Command;
-using TeamHub.SharedKernel.Domain.ErrorHandling;
+using TeamHub.SharedKernel.ErrorHandling;
 
 namespace TeamHub.Application.Auth.Commands.Register;
 

@@ -6,7 +6,7 @@ using TeamHub.Domain.Projects.Interface;
 using TeamHub.Domain.Users.Interface;
 using TeamHub.SharedKernel;
 using TeamHub.SharedKernel.Application.Mediator.Command;
-using TeamHub.SharedKernel.Domain.ErrorHandling;
+using TeamHub.SharedKernel.ErrorHandling;
 
 namespace TeamHub.Application.Projects.ProjectMembers.Commands.RemoveProjectMember;
 

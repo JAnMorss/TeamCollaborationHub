@@ -2,7 +2,7 @@
 using TeamHub.Domain.Users.Interface;
 using TeamHub.SharedKernel;
 using TeamHub.SharedKernel.Application.Mediator.Command;
-using TeamHub.SharedKernel.Domain.ErrorHandling;
+using TeamHub.SharedKernel.ErrorHandling;
 
 namespace TeamHub.Application.Users.Commands.PromoteUserToAdmin;
 
