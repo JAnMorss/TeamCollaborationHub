@@ -44,7 +44,7 @@ public class ValidationBehavior<TRequest, TResponse>
 
         if (validationErrors.Any())
         {
-            _logger.LogWarning("Validation failed for {RequestName}. Errors: {@Errors}", typeof(TRequest).Name, validationErrors);
+            _logger.LogError("🚨 Validation triggered for {Request}", typeof(TRequest).Name);
 
             throw new SharedKernel.Domain.Exceptions.ValidationException(validationErrors);
         }
