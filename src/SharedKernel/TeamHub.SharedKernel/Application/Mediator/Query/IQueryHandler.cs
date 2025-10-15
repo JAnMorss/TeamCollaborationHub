@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using TeamHub.SharedKernel.Domain.ErrorHandling;
+using TeamHub.SharedKernel.ErrorHandling;
 
 namespace TeamHub.SharedKernel.Application.Mediator.Query;
 

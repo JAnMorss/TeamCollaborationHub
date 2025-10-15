@@ -1,4 +1,4 @@
-﻿namespace TeamHub.SharedKernel.Domain.ErrorHandling;
+﻿namespace TeamHub.SharedKernel.ErrorHandling;
 
 public record Error(string Code, string Message)
 {
