@@ -10,8 +10,10 @@
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__Database=Server=teamhub.db,1433;Database=TeamHub;User Id=sa;Password=Root1234;Trusted_Connection=False;TrustServerCertificate=true
+      - Seq__ServerUrl=http://teamhub-seq:5341
     depends_on:
       - teamhub.db
+      - teamhub-seq
     networks:
       - my_network
 
@@ -29,9 +31,24 @@
     volumes:
       - mssql-data:/var/opt/mssql
 
+  teamhub-seq:
+    image: datalust/seq:latest
+    container_name: teamhub-seq
+    environment:
+      - ACCEPT_EULA=Y
+      - SEQ_FIRSTRUN_NOAUTHENTICATION=true
+    ports:
+      - "5341:5341"   
+      - "8081:80"    
+    networks:
+      - my_network
+    volumes:
+      - seq-data:/data
+
 networks:
   my_network:
     driver: bridge
 
 volumes:
   mssql-data:
+  seq-data:

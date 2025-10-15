@@ -1,3 +1,4 @@
+using Serilog;
 using TeamHub.API.Extensions;
 using TeamHub.API.Swagger;
 using TeamHub.Application;
@@ -6,6 +7,8 @@ using TeamHub.Infrastructure.Seeding;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Host.UseSerilog((context, loggerConfig) => 
+    loggerConfig.ReadFrom.Configuration(context.Configuration));
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
@@ -46,6 +49,10 @@ using (var scope = app.Services.CreateScope())
 app.UseCors("CorsPolicy");
 
 app.UseHttpsRedirection();
+
+app.UseRequestContextLogging();
+
+app.UseSerilogRequestLogging();
 
 app.UseCustomExceptionHandler();
 
