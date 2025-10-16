@@ -1,30 +1,29 @@
-import type { UserDTO } from "../../models/users/UserDto";
+import axios from "axios";
+import type { UserProfileDTO } from "../../models/users/UserProfileDTO";
+import type { ApiResponse } from "../../models/users/ApiResponse";
 
-const dummyUser: UserDTO = {
-    id: "u-123",
-    Firstname: "Jane",
-    Lastname: "Doe",
-    EmailAddress: "jane.doe@example.com",
-    AvatarUrl: "", 
-    PasswordHash: "hashed_password",
-    CreatedAt: new Date("2024-01-01T08:00:00Z"),
-    IsActive: true,
-};
+const API_BASE_URL = "http://localhost:8080/api/user";
 
-export const userAPI = {
-    getCurrentUser: async (): Promise<UserDTO> => {
-        try {
-            await new Promise((resolve) => setTimeout(resolve, 300));
+export async function getMyProfile(): Promise<UserProfileDTO> {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("No token found in localStorage");
+      throw new Error("Unauthorized");
+    }
 
-            const user: UserDTO = {
-                ...dummyUser,
-                CreatedAt: new Date(dummyUser.CreatedAt), 
-            };
+    const response = await axios.get<ApiResponse<UserProfileDTO>>(
+      `${API_BASE_URL}/me`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
-            return user;
-        } catch (error) {
-            console.error("Error fetching user:", error);
-            throw error;
-        }
-    },
-};
+    return response.data.data;
+  } catch (error: any) {
+    console.error("Failed to fetch user profile:", error);
+    throw error;
+  }
+}

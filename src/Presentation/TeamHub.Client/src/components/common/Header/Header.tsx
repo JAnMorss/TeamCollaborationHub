@@ -1,38 +1,36 @@
 import { useEffect, useState } from "react";
-import type { UserDTO } from "../../../models/users/UserDto";
+import type { UserProfileDTO } from "../../../models/users/UserProfileDTO";
 import type { NotificationDTO } from "../../../models/notifications/NotificationDTO";
 
-import { userAPI } from "../../../services/api/userApiConnector";
 import { notificationAPI } from "../../../services/api/notificationApiConnector";
 import SearchBar from "../SearchBar/SearchBar";
 import NotificationBell from "../../features/UserNotifications/NotificationBell";
 import UserProfile from "../../features/UserProfile/UserProfile";
 import LogoTitle from "../LogoTitle/LogoTitle";
-
+import { getMyProfile } from "../../../services/api/userApiConnector";
 
 export default function Header() {
-  const [user, setUser] = useState<UserDTO | null>(null);
+  const [user, setUser] = useState<UserProfileDTO | null>(null);
   const [notifications, setNotifications] = useState<NotificationDTO[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const [userData, notificationData] = await Promise.all([
-          userAPI.getCurrentUser(),
-          notificationAPI.getNotifications(),
-        ]);
-        setUser(userData);
-        setNotifications(notificationData);
-      } catch (error) {
-        console.error("Failed to fetch user data:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+useEffect(() => {
+  const fetchUserData = async () => {
+    try {
+      const userData = await getMyProfile();
+      setUser(userData);
 
-    fetchUserData();
-  }, []);
+      const notificationData = await notificationAPI.getNotifications();
+      setNotifications(notificationData);
+    } catch (error) {
+      console.error("Which one failed:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  fetchUserData();
+}, []);
+
 
   if (isLoading) {
     return (
