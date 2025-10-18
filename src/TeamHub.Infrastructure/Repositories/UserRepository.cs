@@ -17,6 +17,7 @@ internal sealed class UserRepository : Repository<User>, IUserRepository
         CancellationToken cancellationToken = default)
     {
         return await _context.Users
+            .Include(u => u.RefreshTokens)
             .FirstOrDefaultAsync(
                 u => u.Email.Value == email.Value, 
                 cancellationToken

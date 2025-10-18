@@ -1,5 +1,6 @@
 ﻿using TeamHub.Application.Abstractions;
 using TeamHub.Application.Auth.Response;
+using TeamHub.Domain.Users.Entities;
 using TeamHub.Domain.Users.Errors;
 using TeamHub.Domain.Users.Interface;
 using TeamHub.Domain.Users.ValueObjects;
@@ -45,7 +46,18 @@ public sealed class LoginCommandHandler
             return Result.Failure<AuthResponse>(UserErrors.InvalidCredentials);
 
         var token = _jwtProvider.Generate(user);
+        var refreshToken = _jwtProvider.GenerateRefreshToken();
 
-        return Result.Success(new AuthResponse(token));
+        var refreshTokenEntity = new RefreshToken(
+            user.Id, 
+            refreshToken,
+            DateTime.UtcNow.AddDays(7));
+
+        user.AddRefreshToken(refreshTokenEntity);
+
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        return Result.Success(new AuthResponse(token, refreshToken));
+
     }
 }

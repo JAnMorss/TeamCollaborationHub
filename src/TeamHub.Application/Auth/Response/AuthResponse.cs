@@ -1,22 +1,15 @@
-﻿using TeamHub.Application.Users.Responses;
-
-namespace TeamHub.Application.Auth.Response;
+﻿namespace TeamHub.Application.Auth.Response;
 
 public sealed class AuthResponse
 {
-    public string Token { get; init; } = string.Empty;
+    public string Token { get; init; }
+    public string RefreshToken { get; init; }
 
-    //public UserResponse User { get; init; } = default!;
-
-    public AuthResponse(string token)
+    public AuthResponse(
+        string token, 
+        string refreshToken)
     {
         Token = token;
+        RefreshToken = refreshToken;
     }
-
-    //public AuthResponse(string token, UserResponse user)
-    //{
-    //    Token = token;
-    //    User = user;
-    //}
-
 }

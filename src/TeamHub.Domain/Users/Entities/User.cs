@@ -17,6 +17,7 @@ public sealed class User : BaseEntity
     private readonly List<ProjectTask> _assignedTasks = new();
     private readonly List<Notification> _notifications = new();
     private readonly List<Comment> _comments = new();
+    private readonly List<RefreshToken> _refreshTokens = new();
 
     private User() { }
 
@@ -53,11 +54,16 @@ public sealed class User : BaseEntity
     public DateTime? UpdatedAt { get; private set; }
     public string? IdentityId { get; private set; }
 
-
-    public IReadOnlyCollection<ProjectMember> ProjectMemberships => _projectMemberships.AsReadOnly();
-    public IReadOnlyCollection<ProjectTask> AssignedTasks => _assignedTasks.AsReadOnly();
-    public IReadOnlyCollection<Notification> Notifications => _notifications.AsReadOnly();
-    public IReadOnlyCollection<Comment> Comments => _comments.AsReadOnly();
+    public IReadOnlyCollection<ProjectMember> ProjectMemberships
+        => _projectMemberships.AsReadOnly();
+    public IReadOnlyCollection<ProjectTask> AssignedTasks 
+        => _assignedTasks.AsReadOnly();
+    public IReadOnlyCollection<Notification> Notifications 
+        => _notifications.AsReadOnly();
+    public IReadOnlyCollection<Comment> Comments 
+        => _comments.AsReadOnly();
+    public IReadOnlyCollection<RefreshToken> RefreshTokens
+        => _refreshTokens.AsReadOnly();
 
     public static Result<User> Create(
         Guid id,
@@ -203,5 +209,10 @@ public sealed class User : BaseEntity
         RaiseDomainEvent(new UserDemotedToUserDomainEvent(Id));
 
         return Result.Success();
+    }
+
+    public void AddRefreshToken(RefreshToken refreshToken)
+    {
+        _refreshTokens.Add(refreshToken);
     }
 }

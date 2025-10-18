@@ -5,6 +5,7 @@ using System.IdentityModel.Tokens.Jwt;
 using TeamHub.Application.Abstractions;
 using TeamHub.Domain.Users.Entities;
 using Microsoft.Extensions.Options;
+using System.Security.Cryptography;
 
 namespace TeamHub.Infrastructure.Authentication;
 
@@ -38,5 +39,16 @@ public sealed class JwtProvider : IJwtProvider
         );
 
         return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    public string GenerateRefreshToken()
+    {
+        var randomNumber = new byte[32];
+
+        using var rng = RandomNumberGenerator.Create();
+
+        rng.GetBytes(randomNumber);
+
+        return Convert.ToBase64String(randomNumber);
     }
 }
