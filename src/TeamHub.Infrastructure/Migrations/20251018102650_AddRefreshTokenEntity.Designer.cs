@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TeamHub.Infrastructure;
 
@@ -11,9 +12,11 @@ using TeamHub.Infrastructure;
 namespace TeamHub.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251018102650_AddRefreshTokenEntity")]
+    partial class AddRefreshTokenEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -256,7 +259,7 @@ namespace TeamHub.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RefreshTokens", (string)null);
+                    b.ToTable("RefreshTokens");
                 });
 
             modelBuilder.Entity("TeamHub.Domain.Users.Entities.User", b =>
@@ -317,7 +320,7 @@ namespace TeamHub.Infrastructure.Migrations
 
                             b1.HasKey("CommentId");
 
-                            b1.ToTable("Comments", (string)null);
+                            b1.ToTable("Comments");
 
                             b1.WithOwner()
                                 .HasForeignKey("CommentId");
@@ -367,7 +370,7 @@ namespace TeamHub.Infrastructure.Migrations
 
                             b1.HasKey("NotificationId");
 
-                            b1.ToTable("Notifications", (string)null);
+                            b1.ToTable("Notifications");
 
                             b1.WithOwner()
                                 .HasForeignKey("NotificationId");
@@ -386,7 +389,7 @@ namespace TeamHub.Infrastructure.Migrations
 
                             b1.HasKey("NotificationId");
 
-                            b1.ToTable("Notifications", (string)null);
+                            b1.ToTable("Notifications");
 
                             b1.WithOwner()
                                 .HasForeignKey("NotificationId");
@@ -405,7 +408,7 @@ namespace TeamHub.Infrastructure.Migrations
 
                             b1.HasKey("NotificationId");
 
-                            b1.ToTable("Notifications", (string)null);
+                            b1.ToTable("Notifications");
 
                             b1.WithOwner()
                                 .HasForeignKey("NotificationId");
@@ -469,7 +472,7 @@ namespace TeamHub.Infrastructure.Migrations
 
                             b1.HasKey("ProjectId");
 
-                            b1.ToTable("Projects", (string)null);
+                            b1.ToTable("Projects");
 
                             b1.WithOwner()
                                 .HasForeignKey("ProjectId");
@@ -488,7 +491,7 @@ namespace TeamHub.Infrastructure.Migrations
 
                             b1.HasKey("ProjectId");
 
-                            b1.ToTable("Projects", (string)null);
+                            b1.ToTable("Projects");
 
                             b1.WithOwner()
                                 .HasForeignKey("ProjectId");
@@ -507,7 +510,7 @@ namespace TeamHub.Infrastructure.Migrations
 
                             b1.HasKey("ProjectId");
 
-                            b1.ToTable("Projects", (string)null);
+                            b1.ToTable("Projects");
 
                             b1.WithOwner()
                                 .HasForeignKey("ProjectId");
@@ -552,7 +555,7 @@ namespace TeamHub.Infrastructure.Migrations
 
                             b1.HasKey("TaskAttachmentId");
 
-                            b1.ToTable("TaskAttachments", (string)null);
+                            b1.ToTable("TaskAttachments");
 
                             b1.WithOwner()
                                 .HasForeignKey("TaskAttachmentId");
@@ -571,7 +574,7 @@ namespace TeamHub.Infrastructure.Migrations
 
                             b1.HasKey("TaskAttachmentId");
 
-                            b1.ToTable("TaskAttachments", (string)null);
+                            b1.ToTable("TaskAttachments");
 
                             b1.WithOwner()
                                 .HasForeignKey("TaskAttachmentId");
@@ -588,7 +591,7 @@ namespace TeamHub.Infrastructure.Migrations
 
                             b1.HasKey("TaskAttachmentId");
 
-                            b1.ToTable("TaskAttachments", (string)null);
+                            b1.ToTable("TaskAttachments");
 
                             b1.WithOwner()
                                 .HasForeignKey("TaskAttachmentId");
@@ -607,7 +610,7 @@ namespace TeamHub.Infrastructure.Migrations
 
                             b1.HasKey("TaskAttachmentId");
 
-                            b1.ToTable("TaskAttachments", (string)null);
+                            b1.ToTable("TaskAttachments");
 
                             b1.WithOwner()
                                 .HasForeignKey("TaskAttachmentId");
@@ -662,7 +665,7 @@ namespace TeamHub.Infrastructure.Migrations
 
                             b1.HasKey("ProjectTaskId");
 
-                            b1.ToTable("ProjectTasks", (string)null);
+                            b1.ToTable("ProjectTasks");
 
                             b1.WithOwner()
                                 .HasForeignKey("ProjectTaskId");
@@ -681,7 +684,7 @@ namespace TeamHub.Infrastructure.Migrations
 
                             b1.HasKey("ProjectTaskId");
 
-                            b1.ToTable("ProjectTasks", (string)null);
+                            b1.ToTable("ProjectTasks");
 
                             b1.WithOwner()
                                 .HasForeignKey("ProjectTaskId");
@@ -726,7 +729,7 @@ namespace TeamHub.Infrastructure.Migrations
 
                             b1.HasKey("UserId");
 
-                            b1.ToTable("Users", (string)null);
+                            b1.ToTable("Users");
 
                             b1.WithOwner()
                                 .HasForeignKey("UserId");
@@ -748,7 +751,7 @@ namespace TeamHub.Infrastructure.Migrations
                             b1.HasIndex("Value")
                                 .IsUnique();
 
-                            b1.ToTable("Users", (string)null);
+                            b1.ToTable("Users");
 
                             b1.WithOwner()
                                 .HasForeignKey("UserId");
@@ -767,7 +770,7 @@ namespace TeamHub.Infrastructure.Migrations
 
                             b1.HasKey("UserId");
 
-                            b1.ToTable("Users", (string)null);
+                            b1.ToTable("Users");
 
                             b1.WithOwner()
                                 .HasForeignKey("UserId");
@@ -786,7 +789,7 @@ namespace TeamHub.Infrastructure.Migrations
 
                             b1.HasKey("UserId");
 
-                            b1.ToTable("Users", (string)null);
+                            b1.ToTable("Users");
 
                             b1.WithOwner()
                                 .HasForeignKey("UserId");
@@ -805,7 +808,7 @@ namespace TeamHub.Infrastructure.Migrations
 
                             b1.HasKey("UserId");
 
-                            b1.ToTable("Users", (string)null);
+                            b1.ToTable("Users");
 
                             b1.WithOwner()
                                 .HasForeignKey("UserId");
