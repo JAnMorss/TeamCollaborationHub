@@ -1,12 +1,11 @@
 export interface UserProfileDTO {
   id: string;
   identityId: string;
-  firstName: string;
-  lastName: string;
+  fullName: string;
   email: string;
   avatar?: string;
-  role: string; 
+  role: string;
   isActive: boolean;
-  createdAt: string;
+  createdAt?: string;
   updatedAt?: string | null;
 }
