@@ -1,14 +1,30 @@
 import { useState } from "react";
 import type { UserProfileDTO } from "../../../models/users/UserProfileDTO";
+import { useNavigate } from "react-router-dom";
+import { authApiConnector } from "../../../services/api/authApiConnector";
 
 export default function UserProfile({ user }: { user: UserProfileDTO }) {
   const [showDropdown, setShowDropdown] = useState(false);
+  const navigate = useNavigate();
 
-  const fullName = `${user.firstName} ${user.lastName}`;
-  const initials = `${user.firstName?.[0] ?? ""}${user.lastName?.[0] ?? ""}`;
+  const fullName = user.fullName;
 
-  const handleProfileClick = () => {
+  const initials = user.fullName
+    ? user.fullName
+        .split(" ")
+        .map((word) => word[0])
+        .join("")
+        .slice(0, 2)
+        .toUpperCase()
+    : "";
+
+const handleProfileClick = () => {
     setShowDropdown(!showDropdown);
+  };
+
+  const handleSignOut = () => {
+    authApiConnector.logout();
+    navigate("/", { replace: true });
   };
 
   return (
@@ -43,7 +59,10 @@ export default function UserProfile({ user }: { user: UserProfileDTO }) {
               Account
             </button>
             <hr className="my-1" />
-            <button className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50">
+            <button
+              onClick={handleSignOut}
+              className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50"
+            >
               Sign Out
             </button>
           </div>

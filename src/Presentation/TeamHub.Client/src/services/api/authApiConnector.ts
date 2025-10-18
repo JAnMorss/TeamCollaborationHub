@@ -27,23 +27,33 @@ export const authApiConnector = {
         data
       );
 
-      const token = response.data.token;
+      const { token, refreshToken } = response.data.data || {};
+      
       if (token) {
         localStorage.setItem("token", token);
-        console.log("Token saved to localStorage:", token);
+        localStorage.setItem("refreshToken", refreshToken || "");
+      
+        const savedToken = localStorage.getItem("token");
+        const savedRefreshToken = localStorage.getItem("refreshToken");
+        
+        console.log("✅ Verification - Token saved:", !!savedToken);
+        console.log("✅ Verification - RefreshToken saved:", !!savedRefreshToken);
       } else {
-        console.warn("No token found in login response");
+        console.warn("⚠️ No token found in login response");
       }
 
       return response.data;
     } catch (error) {
-      console.error("Error during login:", error);
+      if (axios.isAxiosError(error)) {
+        console.error("📛 Axios error details:", error.response?.data);
+      }
       throw error;
     }
   },
 
-  logout: () => {
+  logout: (): void => {
     localStorage.removeItem("token");
-    console.log("Token removed from localStorage");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("user");
   },
 };

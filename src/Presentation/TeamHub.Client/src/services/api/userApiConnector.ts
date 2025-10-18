@@ -7,23 +7,43 @@ const API_BASE_URL = "http://localhost:8080/api/user";
 export async function getMyProfile(): Promise<UserProfileDTO> {
   try {
     const token = localStorage.getItem("token");
+    
     if (!token) {
-      console.error("No token found in localStorage");
-      throw new Error("Unauthorized");
+      throw new Error("Unauthorized - No token found");
     }
 
-    const response = await axios.get<ApiResponse<UserProfileDTO>>(
-      `${API_BASE_URL}/me`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await axios.get<ApiResponse<any>>(`${API_BASE_URL}/me`, {
+      headers: { 
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+    });
 
-    return response.data.data;
+    console.log("✅ Profile fetched successfully:", response.data);
+
+    const rawData = response.data.data;
+
+    const user: UserProfileDTO = {
+      id: rawData.id,
+      identityId: rawData.identityId,
+      fullName: rawData.fullName,
+      email: rawData.email,
+      avatar: rawData.avatar,
+      role: rawData.role,
+      isActive: rawData.isActive,
+      createdAt: rawData.createdAt ?? "",
+      updatedAt: rawData.updatedAt,
+    };
+
+    return user;
   } catch (error: any) {
-    console.error("Failed to fetch user profile:", error);
+    
+    if (error.response?.status === 401) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("refreshToken");
+      window.location.href = "/login";
+    }
+    
     throw error;
   }
 }
