@@ -124,5 +124,13 @@ internal class ProjectMemberRepository : Repository<ProjectMember>, IProjectMemb
             .ToListAsync(cancellationToken);
     }
 
-
+    public async Task<ProjectMember?> GetByProjectAndUserIdAsync(
+        Guid projectId, 
+        Guid userId, 
+        CancellationToken cancellationToken = default)
+    {
+        return await _context.ProjectMembers
+            .Include(pm => pm.User)
+            .FirstOrDefaultAsync(pm => pm.ProjectId == projectId && pm.UserId == userId, cancellationToken);
+    }
 }

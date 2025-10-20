@@ -2,10 +2,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TeamHub.API.Abstractions;
-using TeamHub.Application.Projects.Commands.DeleteProject;
 using TeamHub.Application.Tasks.Commands.AssignTask;
 using TeamHub.Application.Tasks.Commands.CreateTask;
 using TeamHub.Application.Tasks.Commands.DeleteTask;
+using TeamHub.Application.Tasks.Commands.UnassignTask;
 using TeamHub.Application.Tasks.Commands.UpdateTask;
 using TeamHub.Application.Tasks.Queries.GetAllTasks;
 using TeamHub.Application.Tasks.Queries.GetTaskById;
@@ -43,7 +43,7 @@ public class TaskController : ApiController
             : HandleFailure(result);
     }
 
-    [HttpGet("{id:Guid}")]
+    [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetTaskById(
         [FromRoute] Guid id,
         CancellationToken cancellationToken)
@@ -124,7 +124,7 @@ public class TaskController : ApiController
             : HandleFailure(result);
     }
 
-    [HttpPut("{id:Guid}/details")]
+    [HttpPut("{id:guid}/details")]
     public async Task<IActionResult> UpdateTask(
         [FromRoute] Guid id,
         [FromBody] TaskRequest request,
@@ -160,7 +160,7 @@ public class TaskController : ApiController
            : HandleFailure(result);
     }
 
-    [HttpPut("{taskId:Guid}/assign")]
+    [HttpPut("{taskId:guid}/assign")]
     public async Task<IActionResult> AssignTask(
         [FromRoute] Guid taskId,
         [FromBody] AssignTaskRequest request,
@@ -172,6 +172,20 @@ public class TaskController : ApiController
 
         return result.IsSuccess
             ? Ok(new ApiResponse("Task assigned successfully"))
+            : HandleFailure(result);
+    }
+
+    [HttpPut("{taskId:guid}/unassign")]
+    public async Task<IActionResult> UnassignTask(
+        Guid taskId,
+        CancellationToken cancellationToken)
+    {
+        var command = new UnassignTaskCommand(taskId);
+
+        var result = await _sender.Send(command, cancellationToken);
+
+        return result.IsSuccess
+            ? Ok(new ApiResponse("Unassign task successfully"))
             : HandleFailure(result);
     }
 }

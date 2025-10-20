@@ -1,9 +1,10 @@
 ﻿using TeamHub.Domain.Comments.Entity;
+using TeamHub.Domain.ProjectMembers.Entity;
 using TeamHub.Domain.Projects.Entity;
 using TeamHub.Domain.TaskAttachments.Entity;
 using TeamHub.Domain.Tasks.Enums;
-using TeamHub.Domain.Tasks.Events;
 using TeamHub.Domain.Tasks.Errors;
+using TeamHub.Domain.Tasks.Events;
 using TeamHub.Domain.Tasks.ValueObjects;
 using TeamHub.Domain.Users.Entities;
 using TeamHub.SharedKernel.Domain.Entities;
@@ -153,17 +154,36 @@ public sealed class ProjectTask : BaseEntity
         return Result.Success(this);
     }
 
-    public Result AssignTo(Guid userId)
+    public Result AssignTo(ProjectMember projectMember)
     {
-        if (AssignedToId == userId)
+        if (projectMember is null)
+            return Result.Failure(TaskErrors.InvalidAssignment);
+
+        if (ProjectId != projectMember.ProjectId)
+            return Result.Failure(TaskErrors.InvalidAssignment);
+
+        if (AssignedToId is not null)
             return Result.Failure(TaskErrors.AlreadyAssigned);
 
-        AssignedToId = userId;
+        AssignedToId = projectMember.UserId;
         UpdatedAt = DateTime.UtcNow;
 
-        RaiseDomainEvent(new TaskAssignedDomainEvent(Id, userId));
+        RaiseDomainEvent(new TaskAssignedDomainEvent(Id, ProjectId));
 
-        return Result.Success(this);
+        return Result.Success();
+    }
+
+    public Result Unassign()
+    {
+        if (AssignedToId is null)
+            return Result.Failure(TaskErrors.NotAssigned);
+
+        AssignedToId = null;
+        UpdatedAt = DateTime.UtcNow;
+
+        RaiseDomainEvent(new TaskUnassignedDomainEvent(Id, ProjectId));
+
+        return Result.Success();
     }
 
 

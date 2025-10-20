@@ -1,4 +1,4 @@
-﻿namespace TeamHub.SharedKernel.Domain.Exceptions;
+﻿namespace TeamHub.SharedKernel.Exceptions;
 
 public sealed class ValidationException : Exception
 {

@@ -1,4 +1,4 @@
-﻿using TeamHub.Application.Tasks.Responses;
+﻿using TeamHub.Domain.ProjectMembers.Interface;
 using TeamHub.Domain.Tasks.Errors;
 using TeamHub.Domain.Tasks.Interface;
 using TeamHub.SharedKernel;
@@ -10,13 +10,16 @@ namespace TeamHub.Application.Tasks.Commands.AssignTask;
 public sealed class AssignTaskCommandHandler : ICommandHandler<AssignTaskCommand, Guid>
 {
     private readonly ITaskRepository _taskRepository;
+    private readonly IProjectMemberRepository _projectMemberRepository;
     private readonly IUnitOfWork _unitOfWork;
 
     public AssignTaskCommandHandler(
-        ITaskRepository taskRepository, 
+        ITaskRepository taskRepository,
+        IProjectMemberRepository projectMemberRepository,
         IUnitOfWork unitOfWork)
     {
         _taskRepository = taskRepository;
+        _projectMemberRepository = projectMemberRepository;
         _unitOfWork = unitOfWork;
     }
 
@@ -28,7 +31,15 @@ public sealed class AssignTaskCommandHandler : ICommandHandler<AssignTaskCommand
         if (task is null)
             return Result.Failure<Guid>(TaskErrors.NotFound);
 
-        var assignResult = task.AssignTo(request.UserId);
+        var projectMember = await _projectMemberRepository
+            .GetByProjectAndUserIdAsync(
+                task.ProjectId, 
+                request.UserId,
+                cancellationToken);
+        if (projectMember is null)
+            return Result.Failure<Guid>(TaskErrors.InvalidAssignment);
+
+        var assignResult = task.AssignTo(projectMember);
         if (assignResult.IsFailure)
             return Result.Failure<Guid>(assignResult.Error);
 

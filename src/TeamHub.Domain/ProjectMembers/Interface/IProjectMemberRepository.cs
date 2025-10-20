@@ -15,4 +15,7 @@ public interface IProjectMemberRepository : IRepository<ProjectMember>
     Task<IEnumerable<ProjectMember>> GetAdminsByProjectAsync(Guid projectId, CancellationToken cancellationToken = default);
 
     Task<IEnumerable<ProjectMember>> GetAllByProjectIdAsync(Guid projectId, QueryObject query, CancellationToken cancellationToken = default);
+
+    Task<ProjectMember?> GetByProjectAndUserIdAsync(Guid projectId, Guid userId, CancellationToken cancellationToken = default);
+
 }

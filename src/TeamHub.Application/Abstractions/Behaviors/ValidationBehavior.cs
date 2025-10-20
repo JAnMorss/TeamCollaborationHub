@@ -2,7 +2,7 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
 using TeamHub.SharedKernel.Application.Mediator.Command;
-using TeamHub.SharedKernel.Domain.Exceptions;
+using TeamHub.SharedKernel.Exceptions;
 
 namespace TeamHub.Application.Behaviors;
 public class ValidationBehavior<TRequest, TResponse>
@@ -46,7 +46,7 @@ public class ValidationBehavior<TRequest, TResponse>
         {
             _logger.LogError("🚨 Validation triggered for {Request}", typeof(TRequest).Name);
 
-            throw new SharedKernel.Domain.Exceptions.ValidationException(validationErrors);
+            throw new SharedKernel.Exceptions.ValidationException(validationErrors);
         }
 
         return await next();

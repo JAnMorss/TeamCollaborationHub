@@ -43,6 +43,7 @@ public class AuthController : ApiController
     }
 
     [HttpPost("login")]
+    [Authorize(Roles = Roles.Registered)]
     public async Task<IActionResult> Login(
         [FromBody] LoginRequest request,
         CancellationToken cancellationToken)
