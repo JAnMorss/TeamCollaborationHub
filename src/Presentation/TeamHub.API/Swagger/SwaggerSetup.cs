@@ -8,7 +8,6 @@ public static class SwaggerSetup
     {
         services.AddSwaggerGen(option =>
         {
-            option.SwaggerDoc("v1", new OpenApiInfo { Title = "Team Collaboration Hub", Version = "v1" });
             option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 In = ParameterLocation.Header,
