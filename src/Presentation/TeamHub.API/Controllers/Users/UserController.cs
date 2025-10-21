@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Asp.Versioning;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TeamHub.API.Abstractions;
@@ -12,7 +13,8 @@ using TeamHub.SharedKernel;
 namespace TeamHub.API.Controllers.Users;
 
 [ApiController]
-[Route("api/user")]
+[ApiVersion(ApiVersions.V1)]
+[Route("api/v{version:apiVersion}/users")]
 [Authorize]
 public class UserController : ApiController
 {
@@ -22,7 +24,8 @@ public class UserController : ApiController
     }
 
     [HttpGet("me")]
-    public async Task<IActionResult> GetMyProfile(CancellationToken cancellationToken)
+    [MapToApiVersion(ApiVersions.V1)]
+    public async Task<IActionResult> GetMyProfileV1(CancellationToken cancellationToken)
     {
         var userId = GetUserId();
         if (userId is null)

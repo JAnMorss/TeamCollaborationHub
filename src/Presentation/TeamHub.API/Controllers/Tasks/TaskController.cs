@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Asp.Versioning;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TeamHub.API.Abstractions;
@@ -19,7 +20,8 @@ using TeamHub.SharedKernel.Application.PageSize;
 namespace TeamHub.API.Controllers.Tasks;
 
 [ApiController]
-[Route("api/task")]
+[ApiVersion(ApiVersions.V1)]
+[Route("api/v{version:apiVersion}/task")]
 [Authorize]
 public class TaskController : ApiController
 {
