@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Asp.Versioning;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TeamHub.API.Abstractions;
@@ -10,8 +11,9 @@ using TeamHub.SharedKernel;
 
 namespace TeamHub.API.Controllers.Auth;
 
-[Route("api/[controller]")]
 [ApiController]
+[ApiVersion(ApiVersions.V1)]
+[Route("api/v{version:apiVersion}/auth")]
 public class AuthController : ApiController
 {
     public AuthController(ISender sender)
@@ -43,7 +45,6 @@ public class AuthController : ApiController
     }
 
     [HttpPost("login")]
-    [Authorize(Roles = Roles.Registered)]
     public async Task<IActionResult> Login(
         [FromBody] LoginRequest request,
         CancellationToken cancellationToken)
