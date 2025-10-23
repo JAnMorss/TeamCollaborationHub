@@ -12,7 +12,7 @@ using TeamHub.SharedKernel;
 namespace TeamHub.API.Controllers.AdminUser;
 
 [ApiController]
-[Route("api/admin/users")]
+[Route("api/v{version:apiVersion}/admin/users")]
 [Authorize(Roles = "Admin")]
 public class AdminUserController : ApiController
 {

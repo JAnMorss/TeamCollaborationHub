@@ -5,7 +5,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace TeamHub.API.Swagger;
 
-public sealed class ConfigureSwaggerOptions : IConfigureNamedOptions<SwaggerGenOptions>
+internal sealed class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
 {
     private readonly IApiVersionDescriptionProvider _provider;
 
@@ -15,8 +15,9 @@ public sealed class ConfigureSwaggerOptions : IConfigureNamedOptions<SwaggerGenO
     }
     public void Configure(SwaggerGenOptions options)
     {
-        foreach (ApiVersionDescription description in _provider.ApiVersionDescriptions)
+        foreach (var description in _provider.ApiVersionDescriptions)
         {
+            Console.WriteLine($"Discovered API Version: {description.GroupName} - Deprecated: {description.IsDeprecated}");
             options.SwaggerDoc(description.GroupName, CreateVersionInfo(description));
         }
     }
@@ -26,19 +27,19 @@ public sealed class ConfigureSwaggerOptions : IConfigureNamedOptions<SwaggerGenO
         Configure(options);
     }
 
-    private static OpenApiInfo CreateVersionInfo(ApiVersionDescription apiVersionDescription)
+    private static OpenApiInfo CreateVersionInfo(ApiVersionDescription description)
     {
-        var openApiInfo = new OpenApiInfo
+        var info = new OpenApiInfo
         {
-            Title = $"TeamHub.Api v{apiVersionDescription.ApiVersion}",
-            Version = apiVersionDescription.ApiVersion.ToString()
+            Title = $"TeamHub.Api v{description.ApiVersion}",
+            Version = description.ApiVersion.ToString()
         };
 
-        if (apiVersionDescription.IsDeprecated)
+        if (description.IsDeprecated)
         {
-            openApiInfo.Description += " This API version has been deprecated.";
+            info.Description = " This API version has been deprecated.";
         }
 
-        return openApiInfo;
+        return info;
     }
 }

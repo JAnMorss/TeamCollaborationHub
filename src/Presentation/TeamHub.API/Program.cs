@@ -20,8 +20,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
-builder.Services.AddSwaggerDocumentation();
 builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
+builder.Services.AddSwaggerDocumentation();
 
 builder.Services.AddCors(opt =>
 {
@@ -41,14 +41,18 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(options =>
     {
-        var desciptions = app.DescribeApiVersions();
+        var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
 
-        foreach (ApiVersionDescription description in desciptions)
+        app.UseSwaggerUI(options =>
         {
-            string url = $"/swagger/{description.GroupName}/swagger.json";
-            string name = description.GroupName.ToUpperInvariant();
-            options.SwaggerEndpoint(url, name);
-        }
+            foreach (var description in provider.ApiVersionDescriptions)
+            {
+                options.SwaggerEndpoint(
+                    $"/swagger/{description.GroupName}/swagger.json",
+                    description.GroupName.ToUpperInvariant());
+            }
+        });
+
     });
 
 

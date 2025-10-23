@@ -14,8 +14,8 @@ namespace TeamHub.API.Controllers.Users;
 
 [ApiController]
 [ApiVersion(ApiVersions.V1)]
-[Route("api/v{version:apiVersion}/users")]
 [Authorize]
+[Route("api/v{version:apiVersion}/users")]
 public class UserController : ApiController
 {
     public UserController(ISender sender)
@@ -24,8 +24,7 @@ public class UserController : ApiController
     }
 
     [HttpGet("me")]
-    [MapToApiVersion(ApiVersions.V1)]
-    public async Task<IActionResult> GetMyProfileV1(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetMyProfile(CancellationToken cancellationToken)
     {
         var userId = GetUserId();
         if (userId is null)

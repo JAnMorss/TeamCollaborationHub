@@ -67,7 +67,7 @@ public static class DependencyInjection
     private static void AddApiVersioning(IServiceCollection services)
     {
         services
-            .AddApiVersioning(options =>
+            .AddApiVersioning(static options =>
             {
                 options.DefaultApiVersion = new ApiVersion(1, 0);
                 options.AssumeDefaultVersionWhenUnspecified = true;
