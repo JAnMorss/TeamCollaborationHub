@@ -13,6 +13,8 @@ using TeamHub.Application.Tasks.Queries.GetTaskById;
 using TeamHub.Application.Tasks.Queries.GetTasksByAssignedUser;
 using TeamHub.Application.Tasks.Queries.GetTasksByProjectId;
 using TeamHub.Application.Tasks.Responses;
+using TeamHub.Application.Tasks.TaskAttachments.Commands.UploadTaskAttachment;
+using TeamHub.Domain.TaskAttachments.Entity;
 using TeamHub.SharedKernel;
 using TeamHub.SharedKernel.Application.Helpers;
 using TeamHub.SharedKernel.Application.PageSize;
@@ -189,5 +191,30 @@ public class TaskController : ApiController
         return result.IsSuccess
             ? Ok(new ApiResponse("Unassign task successfully"))
             : HandleFailure(result);
+    }
+
+    [HttpPost("{taskId}/upload")]
+    public async Task<IActionResult> UploadAttachment(
+        [FromRoute] Guid taskId,
+        [FromForm] UploadAttachmentRequest request,
+        CancellationToken cancellationToken)
+    {
+        var userId = GetUserId();
+        if (userId is null) 
+            return Unauthorized();
+
+        if (request.File is null || request.File.Length == 0)
+            return BadRequest(new ApiResponse<string>(null, "File is required."));
+
+        var command = new UploadTaskAttachmentCommand(taskId, userId.Value, request.File);
+
+        var result = await _sender.Send(command, cancellationToken);
+
+        return result.IsSuccess
+             ? Ok(new ApiResponse<TaskAttachmentResponse>(
+                 result.Value.Value, 
+                 "File uploaded successfully."))
+             : HandleFailure(result);
+
     }
 }

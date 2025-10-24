@@ -44,6 +44,17 @@
       - my_network
     volumes:
       - seq-data:/data
+
+  teamhub-blob-storage:
+    image: mcr.microsoft.com/azure-storage/azurite:latest
+    container_name: teamhub.blob-storage
+    ports:
+      - "10000:10000"
+    volumes:
+      - ./.containers/blob_storage/data:/data
+    command:  "azurite-blob --blobHost 0.0.0.0 -l /data"
+    networks:
+      - my_network
       
 networks:
   my_network:

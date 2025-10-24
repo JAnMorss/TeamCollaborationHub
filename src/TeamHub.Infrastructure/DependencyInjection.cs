@@ -1,16 +1,20 @@
 ﻿using Asp.Versioning;
+using Azure.Storage.Blobs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TeamHub.Application.Abstractions;
 using TeamHub.Domain.ProjectMembers.Interface;
 using TeamHub.Domain.Projects.Interface;
+using TeamHub.Domain.TaskAttachments.Interface;
 using TeamHub.Domain.Tasks.Interface;
 using TeamHub.Domain.Users.Interface;
 using TeamHub.Infrastructure.Authentication;
 using TeamHub.Infrastructure.Extensions;
 using TeamHub.Infrastructure.Repositories;
+using TeamHub.Infrastructure.Storage;
 using TeamHub.SharedKernel;
+using TeamHub.SharedKernel.Storage;
 
 namespace TeamHub.Infrastructure;
 
@@ -51,8 +55,11 @@ public static class DependencyInjection
         services.AddScoped<IProjectRepository, ProjectRepository>();
         services.AddScoped<IProjectMemberRepository, ProjectMemberRepository>();
         services.AddScoped<ITaskRepository, TaskRepository>();
+        services.AddScoped<ITaskAttachmentRepository, TaskAttachmentRepository>();
 
-        
+        services.AddScoped<IBlobService, BlobService>();
+        services.AddScoped(_ => new BlobServiceClient(configuration.GetConnectionString("BlobStorage")));
+
     }
 
     private static void AddAuthentication(IServiceCollection services, IConfiguration configuration)
