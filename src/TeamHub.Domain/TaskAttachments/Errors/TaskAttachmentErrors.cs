@@ -9,7 +9,11 @@ public static class TaskAttachmentErrors
         "The Project with the specified identifier was not found.");
 
     public static readonly Error InvalidFileName = new(
-    "TaskAttachment.InvalidFileName",
-    "The file name provided is invalid.");
+        "TaskAttachment.InvalidFileName",
+        "The file name provided is invalid.");
+
+    public static readonly Error UploadFailed = new(
+        "Blob.UploadFailed",
+        "Failed to upload file to blob storage");
 
 }

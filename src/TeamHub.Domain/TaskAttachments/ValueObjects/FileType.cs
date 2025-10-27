@@ -7,9 +7,22 @@ public sealed class FileType : ValueObject
 {
     public string Value { get; }
 
-    private static readonly HashSet<string> AllowedTypes = new()
+    private static readonly Dictionary<string, string> MimeToExtension = new()
     {
-        "jpg", "png", "pdf", "docx", "xlsx", "txt"
+        { "image/jpeg", "jpg" },
+        { "image/jpg", "jpg" },
+        { "image/png", "png" },
+        { "application/pdf", "pdf" },
+        { "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "docx" },
+        { "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "xlsx" },
+        { "text/plain", "txt" },
+        { "application/zip", "zip" },
+        { "application/x-zip-compressed", "zip" }
+    };
+
+    private static readonly HashSet<string> AllowedExtensions = new()
+    {
+        "jpg", "png", "pdf", "docx", "xlsx", "txt", "zip"
     };
 
     private FileType(string value)
@@ -28,7 +41,12 @@ public sealed class FileType : ValueObject
 
         var normalized = fileType.Trim().ToLowerInvariant();
 
-        if (!AllowedTypes.Contains(normalized))
+        if (MimeToExtension.TryGetValue(normalized, out var mappedExtension))
+        {
+            normalized = mappedExtension;
+        }
+
+        if (!AllowedExtensions.Contains(normalized))
         {
             return Result.Failure<FileType>(new Error(
                 "FileType.Invalid",

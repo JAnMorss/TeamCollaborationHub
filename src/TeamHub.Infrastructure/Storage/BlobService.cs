@@ -25,7 +25,12 @@ internal sealed class BlobService(BlobServiceClient blobServiceClient) : IBlobSe
 
         Response<BlobDownloadResult> response = await blobClient.DownloadContentAsync(cancellationToken: cancellationToken);
 
-        return new FileResponse(response.Value.Content.ToStream(), response.Value.Details.ContentType);
+        var fileName = $"{fileId}";
+
+        return new FileResponse(
+            response.Value.Content.ToStream(), 
+            response.Value.Details.ContentType ?? "application/octet-stream",
+            fileName);
     }
 
     public async Task<Guid> UploadAsync(Stream stream, string contentType, CancellationToken cancellationToken = default)

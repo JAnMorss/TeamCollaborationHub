@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using TeamHub.Application.Tasks.Responses;
 using TeamHub.SharedKernel.Application.Mediator.Command;
-using TeamHub.SharedKernel.ErrorHandling;
 
 namespace TeamHub.Application.Tasks.TaskAttachments.Commands.UploadTaskAttachment;
 
 public sealed record UploadTaskAttachmentCommand(
     Guid TaskId,
     Guid UploadedById,
-    IFormFile File) : ICommand<Result<TaskAttachmentResponse>>;
+    IFormFile File) : ICommand<TaskAttachmentResponse>;
