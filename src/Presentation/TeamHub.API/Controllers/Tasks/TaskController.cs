@@ -13,8 +13,9 @@ using TeamHub.Application.Tasks.Queries.GetTaskById;
 using TeamHub.Application.Tasks.Queries.GetTasksByAssignedUser;
 using TeamHub.Application.Tasks.Queries.GetTasksByProjectId;
 using TeamHub.Application.Tasks.Responses;
+using TeamHub.Application.Tasks.TaskAttachments.Commands.RemoveTaskAttachment;
 using TeamHub.Application.Tasks.TaskAttachments.Commands.UploadTaskAttachment;
-using TeamHub.Domain.TaskAttachments.Entity;
+using TeamHub.Application.Tasks.TaskAttachments.Queries.DownloadTaskAttachment;
 using TeamHub.SharedKernel;
 using TeamHub.SharedKernel.Application.Helpers;
 using TeamHub.SharedKernel.Application.PageSize;
@@ -193,7 +194,7 @@ public class TaskController : ApiController
             : HandleFailure(result);
     }
 
-    [HttpPost("{taskId}/upload")]
+    [HttpPost("{taskId}/attachments/upload")]
     public async Task<IActionResult> UploadAttachment(
         [FromRoute] Guid taskId,
         [FromForm] UploadAttachmentRequest request,
@@ -212,9 +213,41 @@ public class TaskController : ApiController
 
         return result.IsSuccess
              ? Ok(new ApiResponse<TaskAttachmentResponse>(
-                 result.Value.Value, 
+                 result.Value, 
                  "File uploaded successfully."))
              : HandleFailure(result);
 
+    }
+
+    [HttpGet("attachments/{attachmentId:guid}/download")]
+    public async Task<IActionResult> DownloadAttachment(
+        [FromRoute] Guid attachmentId,
+        CancellationToken cancellationToken)
+    {
+        var query = new DownloadTaskAttachmentQuery(attachmentId);
+
+        var result = await _sender.Send(query, cancellationToken);
+
+        var file = result.Value;
+
+        return File(
+            file.Stream, 
+            file.ContentType, 
+            file.FileName
+        );
+    }
+
+    [HttpDelete("attachments/{attachmentId:guid}/remove")]
+    public async Task<IActionResult> RemoveAttachment(
+        [FromRoute] Guid attachmentId,
+        CancellationToken cancellationToken)
+    {
+        var command = new RemoveTaskAttachmentCommand(attachmentId);
+
+        var result = await _sender.Send(command, cancellationToken);
+
+        return result.IsSuccess
+            ? Ok(new ApiResponse("Deleted successfully."))
+            : HandleFailure(result);
     }
 }

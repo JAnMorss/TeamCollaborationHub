@@ -6,8 +6,10 @@ using TeamHub.API.Abstractions;
 using TeamHub.Application.Users.Commands.ActiveUser;
 using TeamHub.Application.Users.Commands.DeactivateUser;
 using TeamHub.Application.Users.Commands.UpdateDetails;
+using TeamHub.Application.Users.Commands.UpdateUserAvatar;
 using TeamHub.Application.Users.Queries.GetMyProfile;
 using TeamHub.Application.Users.Responses;
+using TeamHub.Domain.Users.ValueObjects;
 using TeamHub.SharedKernel;
 
 namespace TeamHub.API.Controllers.Users;
@@ -32,9 +34,7 @@ public class UserController : ApiController
 
         var query = new GetMyProfileQuery(userId.Value);
 
-        var result = await _sender.Send(
-            query, 
-            cancellationToken);
+        var result = await _sender.Send(query, cancellationToken);
 
         return result.IsSuccess
             ? Ok(new ApiResponse<UserResponse>(
@@ -52,9 +52,7 @@ public class UserController : ApiController
 
         var command = new ActivateUserCommand(userId.Value);
 
-        var result = await _sender.Send(
-            command, 
-            cancellationToken);
+        var result = await _sender.Send(command, cancellationToken);
 
         return result.IsSuccess
             ? Ok(new ApiResponse("User activated successfully"))
@@ -70,9 +68,7 @@ public class UserController : ApiController
 
         var command = new DeactivateUserCommand(userId.Value);
 
-        var result = await _sender.Send(
-            command, 
-            cancellationToken);
+        var result = await _sender.Send(command, cancellationToken);
 
         return result.IsSuccess
             ? Ok(new ApiResponse("User deactivated successfully"))
@@ -94,14 +90,30 @@ public class UserController : ApiController
             request.LastName,
             request.Email);
 
-        var result = await _sender.Send(
-            command, 
-            cancellationToken);
+        var result = await _sender.Send(command, cancellationToken);
 
         return result.IsSuccess
             ? Ok(new ApiResponse<UserResponse>(
                     result.Value, 
                     "User details updated successfully"))
+            : HandleFailure(result);
+    }
+
+    [HttpPut("updateAvatar")]
+    public async Task<IActionResult> UpdateUserAvatar(
+        [FromForm] UpdateAvatarRequest request,
+        CancellationToken cancellationToken)
+    {
+        var userId = GetUserId();
+        if (userId is null)
+            return Unauthorized();
+
+        var command = new UpdateUserAvatarCommand(userId.Value, request.File);
+
+        var result = await _sender.Send(command, cancellationToken);
+
+        return result.IsSuccess
+            ? Ok(new ApiResponse("User avatar updated successfully"))
             : HandleFailure(result);
     }
 }

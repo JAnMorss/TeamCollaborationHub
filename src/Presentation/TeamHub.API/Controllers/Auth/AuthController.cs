@@ -29,7 +29,6 @@ public class AuthController : ApiController
             request.FirstName,
             request.LastName,
             request.Email,
-            request.Avatar,
             request.Password);
 
         var result = await _sender.Send(
