@@ -27,7 +27,7 @@ public sealed class User : BaseEntity
         FirstName firstName,
         LastName lastName,
         EmailAddress email,
-        Avatar avatar,
+        Avatar? avatar,
         PasswordHash passwordHash,
         bool isActive) : base(id)
     {
@@ -70,7 +70,7 @@ public sealed class User : BaseEntity
         string firstName,
         string lastName,
         string email,
-        string avatar,
+        string? avatar,
         string passwordHash)
     {
         var firstNameResult = FirstName.Create(firstName);
@@ -85,9 +85,15 @@ public sealed class User : BaseEntity
         if (emailResult.IsFailure)
             return Result.Failure<User>(UserErrors.InvalidEmail);
 
-        var avatarResult = Avatar.Create(avatar);
-        if (avatarResult.IsFailure)
-            return Result.Failure<User>(UserErrors.AvatarInvalidUrl);
+        Avatar? avatarValue = null;
+        if (!string.IsNullOrWhiteSpace(avatar))
+        {
+            var avatarResult = Avatar.Create(avatar);
+            if (avatarResult.IsFailure)
+                return Result.Failure<User>(UserErrors.AvatarInvalidUrl);
+
+            avatarValue = avatarResult.Value;
+        }
 
         var passwordResult = PasswordHash.Create(passwordHash);
         if (passwordResult.IsFailure)
@@ -99,7 +105,7 @@ public sealed class User : BaseEntity
             firstNameResult.Value,
             lastNameResult.Value,
             emailResult.Value,
-            avatarResult.Value,
+            avatarValue,
             passwordResult.Value,
             true);
 
@@ -139,7 +145,7 @@ public sealed class User : BaseEntity
         {
             var emailResult = EmailAddress.Create(email);
             if (emailResult.IsFailure)
-                return Result.Failure<User>(UserErrors.InvalidEmail);
+                return Result.Failure<User>(emailResult.Error);
 
             Email = emailResult.Value;
             changed = true;
@@ -181,6 +187,8 @@ public sealed class User : BaseEntity
             return Result.Failure(UserErrors.AvatarInvalidUrl);
 
         Avatar = result.Value;
+        UpdatedAt = DateTime.UtcNow;
+
         RaiseDomainEvent(new UserAvatarUpdatedDomainEvent(Id));
 
         return Result.Success();
