@@ -14,6 +14,7 @@
     depends_on:
       - teamhub.db
       - teamhub-seq
+      - teamhub-blob-storage
     networks:
       - my_network
 
@@ -38,8 +39,8 @@
       - ACCEPT_EULA=Y
       - SEQ_FIRSTRUN_NOAUTHENTICATION=true
     ports:
-      - "5341:5341"   
-      - "8081:80"    
+      - "5341:5341"
+      - "8081:80"
     networks:
       - my_network
     volumes:
@@ -51,11 +52,11 @@
     ports:
       - "10000:10000"
     volumes:
-      - ./.containers/blob_storage/data:/data
-    command:  "azurite-blob --blobHost 0.0.0.0 -l /data"
+      - blob-storage-data:/data
+    command: "azurite-blob --blobHost 0.0.0.0 -l /data"
     networks:
       - my_network
-      
+
 networks:
   my_network:
     driver: bridge
@@ -63,3 +64,4 @@ networks:
 volumes:
   mssql-data:
   seq-data:
+  blob-storage-data:

@@ -58,6 +58,7 @@ public static class DependencyInjection
         services.AddScoped<ITaskAttachmentRepository, TaskAttachmentRepository>();
 
         services.AddScoped<IBlobService, BlobService>();
+        services.AddScoped<IAvatarBlobService, AvatarBlobService>();
         services.AddScoped(_ => new BlobServiceClient(configuration.GetConnectionString("BlobStorage")));
 
     }
