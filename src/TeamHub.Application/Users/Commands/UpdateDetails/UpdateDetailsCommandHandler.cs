@@ -1,7 +1,6 @@
 ﻿using TeamHub.Application.Users.Responses;
 using TeamHub.Domain.Users.Errors;
 using TeamHub.Domain.Users.Interface;
-using TeamHub.Domain.Users.ValueObjects;
 using TeamHub.SharedKernel;
 using TeamHub.SharedKernel.Application.Mediator.Command;
 using TeamHub.SharedKernel.ErrorHandling;
@@ -10,9 +9,8 @@ namespace TeamHub.Application.Users.Commands.UpdateDetails;
 
 public sealed class UpdateDetailsCommandHandler : ICommandHandler<UpdateDetailsCommand, UserResponse>
 {
-    public readonly IUserRepository _userRepository;
-    public readonly IUnitOfWork _unitOfWork;
-
+    private readonly IUserRepository _userRepository;
+    private readonly IUnitOfWork _unitOfWork;
     public UpdateDetailsCommandHandler(
         IUserRepository userRepository, 
         IUnitOfWork unitOfWork)
