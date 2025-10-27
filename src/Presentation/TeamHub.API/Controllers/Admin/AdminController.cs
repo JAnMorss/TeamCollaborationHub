@@ -9,14 +9,14 @@ using TeamHub.Application.Users.Commands.UpdateDetails;
 using TeamHub.Application.Users.Responses;
 using TeamHub.SharedKernel;
 
-namespace TeamHub.API.Controllers.AdminUser;
+namespace TeamHub.API.Controllers.Admin;
 
 [ApiController]
 [Route("api/v{version:apiVersion}/admin/users")]
 [Authorize(Roles = "Admin")]
-public class AdminUserController : ApiController
+public class AdminController : ApiController
 {
-    public AdminUserController(ISender sender) 
+    public AdminController(ISender sender) 
         : base(sender)
     {
     }
