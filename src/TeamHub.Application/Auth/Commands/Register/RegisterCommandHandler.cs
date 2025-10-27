@@ -38,7 +38,7 @@ public sealed class RegisterCommandHandler : ICommandHandler<RegisterCommand, Us
             request.FirstName,
             request.LastName,
             request.Email,
-            request.Avatar,
+            null,
             passwordHash.Value 
         );
 
@@ -51,16 +51,8 @@ public sealed class RegisterCommandHandler : ICommandHandler<RegisterCommand, Us
 
         await _userRepository.AddAsync(user, cancellationToken);
 
-        try
-        {
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
-        }
-        catch (DbUpdateException ex)
-        {
-            Console.WriteLine(ex.InnerException?.Message);
-            throw;
-        }
-
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        
         return Result.Success(UserResponse.FromEntity(user));
     }
 

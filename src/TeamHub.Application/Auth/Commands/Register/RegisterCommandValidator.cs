@@ -21,9 +21,5 @@ internal sealed class RegisterCommandValidator : AbstractValidator<RegisterComma
         RuleFor(x => x.Password)
             .NotEmpty().WithMessage("Password cannot be empty.")
             .MinimumLength(6).WithMessage("Password must be at least 6 characters long.");
-
-        RuleFor(x => x.Avatar)
-            .MaximumLength(500).WithMessage("Avatar URL cannot exceed 500 characters.")
-            .When(x => !string.IsNullOrEmpty(x.Avatar));
     }
 }
