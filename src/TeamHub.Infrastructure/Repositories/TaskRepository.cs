@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TeamHub.Domain.Projects.Entity;
+using System.Threading.Tasks;
 using TeamHub.Domain.Tasks.Entity;
 using TeamHub.Domain.Tasks.Enums;
 using TeamHub.Domain.Tasks.Interface;
@@ -14,25 +14,33 @@ internal class TaskRepository : Repository<ProjectTask>, ITaskRepository
     {
     }
 
-    public override async Task<IEnumerable<ProjectTask>> GetAllAsync(
-        QueryObject query,
+    public async Task<IEnumerable<ProjectTask>> GetAllByUserAsync(
+        QueryObject query, 
+        Guid userId, 
         CancellationToken cancellationToken = default)
     {
-        var task = _context.Tasks
+        var tasks = _context.Tasks
             .Include(t => t.Project)
+                .ThenInclude(p => p.Members)
             .Include(t => t.CreatedBy)
-            .Include(t => t.AssignedTo)
             .Include(t => t.Comments)
                 .ThenInclude(c => c.Author)
+            .Include(t => t.AssignedTo)
             .Include(t => t.Attachments)
             .AsQueryable();
 
-        task = query.SortBy?.ToLower() switch
+        tasks = tasks.Where(t =>
+            t.CreatedById == userId || 
+            t.AssignedToId == userId || 
+            t.Project.Members.Any(m => m.UserId == userId)
+        );
+
+        tasks = query.SortBy?.ToLower() switch
         {
             "name" => query.Descending
-                      ? task.OrderByDescending(p => p.Title.Value)
-                      : task.OrderBy(p => p.Title.Value),
-            _ => task.OrderBy(p => p.CreatedAt)
+                      ? tasks.OrderByDescending(p => p.Title.Value)
+                      : tasks.OrderBy(p => p.Title.Value),
+            _ => tasks.OrderBy(p => p.CreatedAt)
         };
 
         var page = query.Page <= 0 ? 1 : query.Page;
@@ -40,7 +48,7 @@ internal class TaskRepository : Repository<ProjectTask>, ITaskRepository
 
         var skip = (page - 1) * pageSize;
 
-        return await task
+        return await tasks
             .Skip(skip)
             .Take(pageSize)
             .ToListAsync(cancellationToken);

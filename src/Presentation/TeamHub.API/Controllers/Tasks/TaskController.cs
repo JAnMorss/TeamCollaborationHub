@@ -37,7 +37,11 @@ public class TaskController : ApiController
         [FromQuery] QueryObject queryObject,
         CancellationToken cancellationToken)
     {
-        var query = new GetAllTasksQuery(queryObject);
+        var userId = GetUserId();
+        if (userId is null)
+            return Unauthorized();
+
+        var query = new GetAllTasksQuery(queryObject, userId.Value);
 
         var result = await _sender.Send(query, cancellationToken);
 

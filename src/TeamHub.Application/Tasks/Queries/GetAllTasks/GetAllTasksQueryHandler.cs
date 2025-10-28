@@ -24,7 +24,7 @@ public sealed class GetAllTasksQueryHandler
     {
         var query = request.Query ?? new QueryObject();
 
-        var tasks = await _taskRepository.GetAllAsync(query, cancellationToken);
+        var tasks = await _taskRepository.GetAllByUserAsync(query, request.UserId, cancellationToken);
         if (tasks is null)
             return Result.Failure<PaginatedResult<TaskResponse>>(TaskErrors.NotFound);
 

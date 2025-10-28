@@ -5,4 +5,6 @@ using TeamHub.SharedKernel.Application.PageSize;
 
 namespace TeamHub.Application.Tasks.Queries.GetAllTasks;
 
-public sealed record GetAllTasksQuery(QueryObject? Query) : IQuery<PaginatedResult<TaskResponse>>;
+public sealed record GetAllTasksQuery(
+    QueryObject? Query,
+    Guid UserId) : IQuery<PaginatedResult<TaskResponse>>;
