@@ -36,7 +36,11 @@ public class ProjectsController : ApiController
         [FromQuery] QueryObject queryObject,
         CancellationToken cancellationToken)
     {
-        var query = new GetAllProjectsQuery(queryObject);
+        var userId = GetUserId();
+        if (userId is null)
+            return Unauthorized();
+
+        var query = new GetAllProjectsQuery(queryObject, userId.Value);
 
         var result = await _sender.Send(query, cancellationToken);
 

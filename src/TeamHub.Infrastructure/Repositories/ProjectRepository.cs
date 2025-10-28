@@ -42,6 +42,42 @@ internal class ProjectRepository : Repository<Project>, IProjectRepository
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<IEnumerable<Project>> GetAllByUserAsync(
+        QueryObject query, 
+        Guid userId, 
+        CancellationToken cancellationToken = default)
+    {
+        var projects = _context.Projects
+            .Include(p => p.Members)
+                .ThenInclude(m => m.User)
+            .Include(p => p.Tasks)
+            .Include(p => p.CreatedBy)
+            .AsQueryable();
+
+        projects = projects.Where(p =>
+            p.CreatedById == userId |
+            p.Members.Any(m => m.UserId == userId)
+        );
+
+        projects = query.SortBy?.ToLower() switch
+        {
+            "name" => query.Descending
+                      ? projects.OrderByDescending(p => p.Name.Value)
+                      : projects.OrderBy(p => p.Name.Value),
+            _ => projects.OrderBy(p => p.CreatedAt)
+        };
+
+        var page = query.Page <= 0 ? 1 : query.Page;
+        var pageSize = query.PageSize <= 0 ? 10 : query.PageSize;
+
+        var skip = (page - 1) * pageSize;
+
+        return await projects
+            .Skip(skip)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+    }
+
 
     public override async Task<Project?> GetByIdAsync(
         Guid id,
@@ -110,4 +146,5 @@ internal class ProjectRepository : Repository<Project>, IProjectRepository
             .Take(query.PageSize)
             .ToListAsync(cancellationToken);
     }
+
 }
