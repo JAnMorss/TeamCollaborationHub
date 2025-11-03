@@ -10,7 +10,6 @@ interface NotificationDropdownProps {
 const NotificationDropdown = forwardRef<HTMLDivElement, NotificationDropdownProps>(
   ({ notifications, onClose }, ref) => {
     const handleNotificationClick = (notificationId: string) => {
-      // Handle notification click (e.g., mark as read, navigate)
       console.log("Notification clicked:", notificationId);
     };
 
@@ -66,7 +65,7 @@ const NotificationDropdown = forwardRef<HTMLDivElement, NotificationDropdownProp
                         {notif.message}
                       </p>
                       <p className="text-xs text-gray-500 mt-2">
-                        {formatTime(notif.time)}
+                        {formatTime(notif.createdAt)}
                       </p>
                     </div>
                   </div>

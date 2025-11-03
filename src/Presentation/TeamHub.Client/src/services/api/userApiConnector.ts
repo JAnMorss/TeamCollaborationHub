@@ -2,7 +2,7 @@ import axios from "axios";
 import type { UserProfileDTO } from "../../models/users/UserProfileDTO";
 import type { ApiResponse } from "../../models/users/ApiResponse";
 
-const API_BASE_URL = "http://localhost:8080/api/user";
+const API_BASE_URL = "http://localhost:8080/api/v1/users";
 
 export async function getMyProfile(): Promise<UserProfileDTO> {
   try {

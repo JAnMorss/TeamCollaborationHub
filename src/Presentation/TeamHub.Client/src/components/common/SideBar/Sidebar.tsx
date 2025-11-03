@@ -1,80 +1,52 @@
 import { useState } from "react";
 import { CiCalendarDate } from "react-icons/ci";
 import { FaRegFolderOpen } from "react-icons/fa";
-import { FiMessageSquare, FiPlus } from "react-icons/fi";
+import { FiMessageSquare } from "react-icons/fi";
 import { IoHomeOutline, IoSettingsOutline } from "react-icons/io5";
 import { MdOutlineViewKanban } from "react-icons/md";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import LogoTitle from "../LogoTitle/LogoTitle";
 
 export default function Sidebar() {
-     const [currentView, setCurrentView] = useState('dashboard');
+  const location = useLocation();
+  const [currentView, setCurrentView] = useState(location.pathname);
 
-    return (
-        <aside className="w-64 bg-white border-r border-gray-200 min-h-screen relative hidden lg:block">
-            <nav className="p-4 space-y-2">
+  const menuItems = [
+    { name: "Dashboard", icon: IoHomeOutline, path: "/dashboard" },
+    { name: "Projects", icon: FaRegFolderOpen, path: "/dashboard/projects" },
+    { name: "Kanban Board", icon: MdOutlineViewKanban, path: "/dashboard/kanban" },
+    { name: "Calendar", icon: CiCalendarDate, path: "/dashboard/calendar" },
+    { name: "Messages", icon: FiMessageSquare, path: "/dashboard/messages" },
+    { name: "Settings", icon: IoSettingsOutline, path: "/dashboard/settings" },
+  ];
+
+  return (
+    <aside className="w-64 min-h-screen hidden lg:flex flex-col border-r border-gray-200">
+
+        <div className="p-3.5 border-b border-gray-200 ">
+            <LogoTitle />
+        </div>
+
+        <nav className="p-4 space-y-1">
+            {menuItems.map(({ name, icon: Icon, path }) => {
+            const isActive = currentView === path;
+            return (
                 <Link
-                    to={"/dashboard"} 
-                    onClick={() => setCurrentView('dashboard')}
-                    className={`w-full flex items-center space-x-3 px-4 py-2 rounded-lg text-left ${
-                        currentView === 'dashboard' ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'
+                key={name}
+                to={path}
+                onClick={() => setCurrentView(path)}
+                className={`flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors duration-150
+                    ${isActive 
+                    ? "bg-blue-600 text-white shadow-sm" 
+                    : "text-gray-700 hover:bg-blue-100 hover:text-blue-700"
                     }`}
-                    >
-                    <IoHomeOutline className="w-4 h-4"/>
-                    <span>Dashboard</span>
+                >
+                <Icon className="w-5 h-5" />
+                <span className="font-medium">{name}</span>
                 </Link>
-
-                <Link 
-                    to={"/dashboard/projects"}
-                    onClick={() => setCurrentView('projects')}
-                    className={`w-full flex items-center space-x-3 px-4 py-2 rounded-lg text-left ${
-                        currentView === 'projects' ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'
-                    }`}
-                    >
-                    <FaRegFolderOpen className="w-4 h-4 "/>
-                    <span>Projects</span>
-                </Link>
-            
-                <button 
-                    onClick={() => setCurrentView('kanban')}
-                    className={`w-full flex items-center space-x-3 px-4 py-2 rounded-lg text-left ${
-                        currentView === 'kanban' ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'
-                    }`}
-                    >
-                    <MdOutlineViewKanban className="w-4 h-4 "/>
-                    <span>Kanban Board</span>
-                </button>
-
-                <button 
-                    onClick={() => setCurrentView('calendar')}
-                    className={`w-full flex items-center space-x-3 px-4 py-2 rounded-lg text-left ${
-                        currentView === 'calendar' ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'
-                    }`}
-                    >
-                    <CiCalendarDate className="w-4 h-4" />
-                    <span>Calendar</span>
-                </button>
-                
-                <button 
-                    onClick={() => setCurrentView('messages')}
-                    className={`w-full flex items-center space-x-3 px-4 py-2 rounded-lg text-left ${
-                        currentView === 'messages' ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'
-                    }`}
-                    >
-                    <FiMessageSquare  className="w-4 h-4" />
-                    <span>Messages</span>
-                </button>
-                
-                <button 
-                    onClick={() => setCurrentView('settings')}
-                    className={`w-full flex items-center space-x-3 px-4 py-2 rounded-lg text-left ${
-                        currentView === 'settings' ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'
-                    }`}
-                    >
-                    <IoSettingsOutline  className="w-4 h-4" />
-                    <span>Settings</span>
-                </button>
-            </nav>
-        </aside>
-        
-    );
+            );
+            })}
+        </nav>
+    </aside>
+  );
 }

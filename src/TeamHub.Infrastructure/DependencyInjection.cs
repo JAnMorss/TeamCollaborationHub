@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TeamHub.Application.Abstractions;
+using TeamHub.Domain.Notifications.Interface;
 using TeamHub.Domain.ProjectMembers.Interface;
 using TeamHub.Domain.Projects.Interface;
 using TeamHub.Domain.TaskAttachments.Interface;
@@ -56,6 +57,7 @@ public static class DependencyInjection
         services.AddScoped<IProjectMemberRepository, ProjectMemberRepository>();
         services.AddScoped<ITaskRepository, TaskRepository>();
         services.AddScoped<ITaskAttachmentRepository, TaskAttachmentRepository>();
+        services.AddScoped<INotificationRepository, NotificationRepository>();
 
         services.AddScoped<IBlobService, BlobService>();
         services.AddScoped<IAvatarBlobService, AvatarBlobService>();
