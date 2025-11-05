@@ -1,9 +1,8 @@
 import { useEffect, useState, useRef } from "react";
 import { FaRegBell } from "react-icons/fa";
-import NotificationDropdown from "./NotificationDropdown";
 import type { NotificationDTO } from "../../../models/notifications/NotificationDTO";
-import { startConnection, connection } from "../../../services/signalR/notificationHub";
-import { notificationAPI } from "../../../services/api/notificationApiConnector";
+import NotificationDropdown from "./NotificationDropdown";
+import { createNotificationHub } from "../../../services/signalR/notificationHub";
 
 export default function NotificationBell() {
   const [notifications, setNotifications] = useState<NotificationDTO[]>([]);
@@ -12,29 +11,12 @@ export default function NotificationBell() {
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    const initialize = async () => {
-      try {
-        const existing = await notificationAPI.getNotifications();
-        setNotifications(existing);
-
-        await startConnection();
-        connection.on("ReceiveNotification", (newNotification: NotificationDTO) => {
-          console.log("🔔 Received:", newNotification);
-          setNotifications(prev => [newNotification, ...prev]);
-        });
-      } catch (error) {
-        console.error("❌ Notification setup failed:", error);
-      }
-    };
-
-    initialize();
-
-    return () => {
-      connection.off("ReceiveNotification");
-    };
+    createNotificationHub((notif: NotificationDTO) => {
+      setNotifications((prev) => [notif, ...prev]);
+    });
   }, []);
 
-  const unreadCount = notifications.filter(n => !n.isRead).length;
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -51,9 +33,8 @@ export default function NotificationBell() {
     if (showNotifications) {
       document.addEventListener("mousedown", handleClickOutside);
     }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showNotifications]);
 
   return (

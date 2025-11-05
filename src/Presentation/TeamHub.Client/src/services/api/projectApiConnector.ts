@@ -1,48 +1,88 @@
-import type { ProjectDTO } from "../../models/projects/ProjectDTO";
+import axios from "axios";
+import type { PaginatedResult } from "../../models/projects/PaginatedResult";
+import type { ProjectMemberRequest } from "../../models/projects/ProjectMemberRequest";
+import type { ProjectMemberResponse } from "../../models/projects/ProjectMemberResponse";
+import type { ProjectRequest } from "../../models/projects/ProjectRequest";
+import type { ProjectResponse } from "../../models/projects/ProjectResponse";
+import type { ApiResponse } from "../../models/users/ApiResponse";
 
-const dummyProjects: ProjectDTO[] = [
-  {
-    id: "1",
-    name: "Design System",
-    description: "Create a unified design language for our app",
-    color: "bg-blue-500",
-    members: 8,
-    tasks: 20,
-    completed: 12,
-  },
-  {
-    id: "2",
-    name: "Marketing Website",
-    description: "Redesign the company website for better conversion",
-    color: "bg-green-500",
-    members: 5,
-    tasks: 15,
-    completed: 9,
-  },
-  {
-    id: "3",
-    name: "Mobile App",
-    description: "Develop the iOS and Android app",
-    color: "bg-purple-500",
-    members: 12,
-    tasks: 40,
-    completed: 28,
-  },
-  {
-    id: "4",
-    name: "Internal Tools",
-    description: "Build tools for HR and finance teams",
-    color: "bg-yellow-500",
-    members: 6,
-    tasks: 10,
-    completed: 7,
-  },
-];
+const API_BASE_URL = "http://localhost:8080/api/v1/project";
 
-export function fetchProjects(): Promise<ProjectDTO[]> {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(dummyProjects);
-    }, 500); 
+function getAuthHeaders() {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("Unauthorized - No token found");
+  return { Authorization: `Bearer ${token}`, "Content-Type": "application/json" };
+}
+
+export async function getAllProjects(queryParams?: Record<string, any>): Promise<PaginatedResult<ProjectResponse>> {
+  const response = await axios.get<ApiResponse<PaginatedResult<ProjectResponse>>>(API_BASE_URL, {
+    headers: getAuthHeaders(),
+    params: queryParams,
+  });
+  return response.data.data;
+}
+
+export async function getProjectById(id: string): Promise<ProjectResponse> {
+  const response = await axios.get<ApiResponse<ProjectResponse>>(`${API_BASE_URL}/${id}`, {
+    headers: getAuthHeaders(),
+  });
+  return response.data.data;
+}
+
+export async function searchProjectsByName(name: string, queryParams?: Record<string, any>): Promise<PaginatedResult<ProjectResponse>> {
+  const response = await axios.get<ApiResponse<PaginatedResult<ProjectResponse>>>(`${API_BASE_URL}/search`, {
+    headers: getAuthHeaders(),
+    params: { name, ...queryParams },
+  });
+  return response.data.data;
+}
+
+export async function createProject(request: ProjectRequest): Promise<ProjectResponse> {
+  const response = await axios.post<ApiResponse<ProjectResponse>>(API_BASE_URL, request, {
+    headers: getAuthHeaders(),
+  });
+  return response.data.data;
+}
+
+export async function updateProject(id: string, request: ProjectRequest): Promise<ProjectResponse> {
+  const response = await axios.put<ApiResponse<ProjectResponse>>(`${API_BASE_URL}/${id}/details`, request, {
+    headers: getAuthHeaders(),
+  });
+  return response.data.data;
+}
+
+export async function deleteProject(id: string): Promise<void> {
+  await axios.delete(`${API_BASE_URL}/${id}`, {
+    headers: getAuthHeaders(),
+  });
+}
+
+export async function getAllProjectMembers(queryParams?: Record<string, any>): Promise<PaginatedResult<ProjectMemberResponse>> {
+  const response = await axios.get<ApiResponse<PaginatedResult<ProjectMemberResponse>>>(`http://localhost:8080/api/projects/members`, {
+    headers: getAuthHeaders(),
+    params: queryParams,
+  });
+  return response.data.data;
+}
+
+export async function getAllMembersOfProject(projectId: string, queryParams?: Record<string, any>): Promise<PaginatedResult<ProjectMemberResponse>> {
+  const response = await axios.get<ApiResponse<PaginatedResult<ProjectMemberResponse>>>(`${API_BASE_URL}/${projectId}/members`, {
+    headers: getAuthHeaders(),
+    params: queryParams,
+  });
+  return response.data.data;
+}
+
+export async function addProjectMember(projectId: string, request: ProjectMemberRequest): Promise<ProjectMemberResponse> {
+  const response = await axios.post<ApiResponse<ProjectMemberResponse>>(`http://localhost:8080/api/projects/${projectId}/members`, request, {
+    headers: getAuthHeaders(),
+  });
+  return response.data.data;
+}
+
+export async function removeProjectMember(projectId: string, request: ProjectMemberRequest): Promise<void> {
+  await axios.delete(`http://localhost:8080/api/projects/${projectId}/members`, {
+    headers: getAuthHeaders(),
+    data: request,
   });
 }

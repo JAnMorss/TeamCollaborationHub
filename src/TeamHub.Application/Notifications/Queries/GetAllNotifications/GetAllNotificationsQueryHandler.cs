@@ -21,7 +21,7 @@ public sealed class GetAllNotificationsQueryHandler : IQueryHandler<GetAllNotifi
     {
         var notifications = await _notificationRepository.GetByUserIdAsync(request.UserId, cancellationToken);
         if (notifications is null || !notifications.Any())
-            return Result.Failure<List<NotificationResponse>>(NotificationErrors.NotFound);
+            return Result.Success(new List<NotificationResponse>());
 
         var mapped = notifications
             .Select(NotificationResponse.FromEntity)

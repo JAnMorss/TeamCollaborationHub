@@ -4,8 +4,8 @@ using TeamHub.API.Extensions;
 using TeamHub.API.Swagger;
 using TeamHub.Application;
 using TeamHub.Infrastructure;
-using TeamHub.Infrastructure.Hubs;
 using TeamHub.Infrastructure.Seeding;
+using TeamHub.SignalR.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,7 +33,8 @@ builder.Services.AddCors(opt =>
         policyBuilder
         .AllowAnyHeader()
         .AllowAnyMethod()
-        .WithOrigins("http://localhost:5173");
+        .WithOrigins("http://localhost:5173")
+        .AllowCredentials();
     });
 });
 
@@ -71,8 +72,6 @@ app.UseCors("CorsPolicy");
 
 app.UseHttpsRedirection();
 
-app.MapHub<NotificationsHub>("/hubs/notifications");
-
 app.UseRequestContextLogging();
 
 app.UseSerilogRequestLogging();
@@ -84,5 +83,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHub<NotificationsHub>("/notifications");
 
 app.Run();

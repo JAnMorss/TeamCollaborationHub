@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamHub.API", "src\Presenta
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamHub.Infrastructure", "src\TeamHub.Infrastructure\TeamHub.Infrastructure.csproj", "{1774D6C3-8BB8-4ABA-97CF-8221EE7107E6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamHub.SignalR", "src\TeamHub.SignalR\TeamHub.SignalR.csproj", "{C60BCFC2-EFB7-4795-8800-76E09F8EB60C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +49,10 @@ Global
 		{1774D6C3-8BB8-4ABA-97CF-8221EE7107E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1774D6C3-8BB8-4ABA-97CF-8221EE7107E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1774D6C3-8BB8-4ABA-97CF-8221EE7107E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C60BCFC2-EFB7-4795-8800-76E09F8EB60C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C60BCFC2-EFB7-4795-8800-76E09F8EB60C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C60BCFC2-EFB7-4795-8800-76E09F8EB60C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C60BCFC2-EFB7-4795-8800-76E09F8EB60C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -59,6 +65,7 @@ Global
 		{2CB1E8E6-9032-40F3-9863-D0835FBDF050} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{B050F45A-C019-4156-BD51-680345BE9817} = {6B9C7492-8B67-4A50-9DE8-D0754E9FE657}
 		{1774D6C3-8BB8-4ABA-97CF-8221EE7107E6} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{C60BCFC2-EFB7-4795-8800-76E09F8EB60C} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2173ADD5-B210-4921-AD31-CE36973668BC}

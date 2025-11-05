@@ -1,24 +1,36 @@
 import * as signalR from "@microsoft/signalr";
+import type { NotificationDTO } from "../../models/notifications/NotificationDTO";
 
-const connection = new signalR.HubConnectionBuilder()
-  .withUrl("https://localhost:8080/hubs/notifications", {
-    accessTokenFactory: () => localStorage.getItem("token") || "",
-  })
-  .withAutomaticReconnect()
-  .build();
+let connection: signalR.HubConnection | null = null;
 
-connection.on("ReceiveNotification", (message) => {
-  console.log("🔔 Notification:", message);
-});
+export function createNotificationHub(onNotification: (notif: NotificationDTO) => void) {
+  if (typeof window === "undefined") return null; // browser check
+  if (connection) return connection;
 
-export async function startConnection() {
-  try {
-    await connection.start();
-    console.log("✅ SignalR Connected");
-  } catch (err) {
-    console.error("❌ SignalR Connection Error:", err);
-    setTimeout(startConnection, 5000);
-  }
+  connection = new signalR.HubConnectionBuilder()
+    .withUrl("http://localhost:8080/notifications", { 
+      accessTokenFactory: () => localStorage.getItem("token") || "",
+    })
+    .withAutomaticReconnect()
+    .configureLogging(signalR.LogLevel.Information)
+    .build();
+
+  connection.on("ReceiveNotification", (notif: NotificationDTO) => {
+    onNotification(notif);
+  });
+
+  const startConnection = async () => {
+    if (!connection) return;
+    try {
+      await connection.start();
+      console.log("✅ SignalR Connected");
+    } catch (err) {
+      console.error("❌ SignalR Connection Error:", err);
+      setTimeout(startConnection, 5000); // retry
+    }
+  };
+
+  startConnection();
+
+  return connection;
 }
-
-export { connection };
