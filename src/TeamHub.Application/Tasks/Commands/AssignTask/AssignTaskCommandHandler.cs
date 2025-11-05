@@ -4,6 +4,7 @@ using TeamHub.Domain.Tasks.Interface;
 using TeamHub.SharedKernel;
 using TeamHub.SharedKernel.Application.Mediator.Command;
 using TeamHub.SharedKernel.ErrorHandling;
+using TeamHub.SignalR.Abstractions;
 
 namespace TeamHub.Application.Tasks.Commands.AssignTask;
 
@@ -12,15 +13,18 @@ public sealed class AssignTaskCommandHandler : ICommandHandler<AssignTaskCommand
     private readonly ITaskRepository _taskRepository;
     private readonly IProjectMemberRepository _projectMemberRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly INotificationService _notificationService;
 
     public AssignTaskCommandHandler(
         ITaskRepository taskRepository,
         IProjectMemberRepository projectMemberRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        INotificationService notificationService)
     {
         _taskRepository = taskRepository;
         _projectMemberRepository = projectMemberRepository;
         _unitOfWork = unitOfWork;
+        _notificationService = notificationService;
     }
 
     public async Task<Result<Guid>> Handle(
@@ -36,6 +40,7 @@ public sealed class AssignTaskCommandHandler : ICommandHandler<AssignTaskCommand
                 task.ProjectId, 
                 request.UserId,
                 cancellationToken);
+
         if (projectMember is null)
             return Result.Failure<Guid>(TaskErrors.InvalidAssignment);
 
@@ -46,6 +51,12 @@ public sealed class AssignTaskCommandHandler : ICommandHandler<AssignTaskCommand
         await _taskRepository.UpdateAsync(task, cancellationToken);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _notificationService.SendNotificationToUser(
+            request.UserId,
+            "Task Assigned",
+            $"You've been assigned to task: {task.Title}"
+        );
 
         return Result.Success(task.Id);
     }

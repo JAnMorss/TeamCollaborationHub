@@ -4,7 +4,7 @@ import type { LoginResponseDTO } from "../../models/auth/login/LoginResponseDTO"
 import type { RegisterRequestDTO } from "../../models/auth/register/RegisterRequestDTO";
 import type { RegisterResponseDTO } from "../../models/auth/register/RegisterResponseDTO ";
 
-const BASE_URL = "http://localhost:8080/api/Auth";
+const BASE_URL = "http://localhost:8080/api/v1/auth";
 
 export const authApiConnector = {
   register: async (data: RegisterRequestDTO): Promise<RegisterResponseDTO> => {

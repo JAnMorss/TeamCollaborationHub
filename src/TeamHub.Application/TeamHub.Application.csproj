@@ -18,6 +18,11 @@
   <ItemGroup>
     <ProjectReference Include="..\SharedKernel\TeamHub.SharedKernel\TeamHub.SharedKernel.csproj" />
     <ProjectReference Include="..\TeamHub.Domain\TeamHub.Domain.csproj" />
+    <ProjectReference Include="..\TeamHub.SignalR\TeamHub.SignalR.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Notifications\Commands\" />
   </ItemGroup>
 
 </Project>

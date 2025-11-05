@@ -10,13 +10,13 @@ interface NotificationDropdownProps {
 const NotificationDropdown = forwardRef<HTMLDivElement, NotificationDropdownProps>(
   ({ notifications, onClose }, ref) => {
     const handleNotificationClick = (notificationId: string) => {
-      // Handle notification click (e.g., mark as read, navigate)
-      console.log("Notification clicked:", notificationId);
+      notifications.forEach((n) => {
+        if (n.id === notificationId) n.isRead = true;
+      });
     };
 
-    const formatTime = (time: string) => {
-      return time;
-    };
+    const formatTime = (time: string) =>
+      new Date(time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
     return (
       <div
@@ -25,15 +25,11 @@ const NotificationDropdown = forwardRef<HTMLDivElement, NotificationDropdownProp
       >
         <div className="p-4 border-b border-gray-200 flex items-center justify-between">
           <h3 className="font-semibold text-gray-900">Notifications</h3>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 text-sm"
-            aria-label="Close notifications"
-          >
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-sm">
             ✕
           </button>
         </div>
-        
+
         <div className="max-h-96 overflow-y-auto">
           {notifications.length === 0 ? (
             <div className="p-8 text-center">
@@ -53,21 +49,21 @@ const NotificationDropdown = forwardRef<HTMLDivElement, NotificationDropdownProp
                   }`}
                 >
                   <div className="flex items-start space-x-3">
-                    <div className={`w-2 h-2 rounded-full mt-2 ${
-                      !notif.isRead ? "bg-blue-500" : "bg-transparent"
-                    }`} />
+                    <div
+                      className={`w-2 h-2 rounded-full mt-2 ${
+                        !notif.isRead ? "bg-blue-500" : "bg-transparent"
+                      }`}
+                    />
                     <div className="flex-1 min-w-0">
-                      <p className={`text-sm font-medium text-gray-900 ${
-                        !notif.isRead ? "font-semibold" : ""
-                      }`}>
+                      <p
+                        className={`text-sm ${
+                          !notif.isRead ? "font-semibold text-gray-900" : "text-gray-900"
+                        }`}
+                      >
                         {notif.title}
                       </p>
-                      <p className="text-sm text-gray-600 mt-1 line-clamp-2">
-                        {notif.message}
-                      </p>
-                      <p className="text-xs text-gray-500 mt-2">
-                        {formatTime(notif.time)}
-                      </p>
+                      <p className="text-sm text-gray-600 mt-1 line-clamp-2">{notif.message}</p>
+                      <p className="text-xs text-gray-500 mt-2">{formatTime(notif.createdAt)}</p>
                     </div>
                   </div>
                 </div>
@@ -75,11 +71,14 @@ const NotificationDropdown = forwardRef<HTMLDivElement, NotificationDropdownProp
             </div>
           )}
         </div>
-        
+
         {notifications.length > 0 && (
           <div className="p-3 border-t border-gray-200">
-            <button className="w-full text-sm text-blue-600 hover:text-blue-800 font-medium">
-              View all notifications
+            <button
+              onClick={onClose}
+              className="w-full text-sm text-blue-600 hover:text-blue-800 font-medium"
+            >
+              Close
             </button>
           </div>
         )}

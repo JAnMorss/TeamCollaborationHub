@@ -5,6 +5,7 @@ using TeamHub.API.Swagger;
 using TeamHub.Application;
 using TeamHub.Infrastructure;
 using TeamHub.Infrastructure.Seeding;
+using TeamHub.SignalR.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +24,8 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
 builder.Services.AddSwaggerDocumentation();
 
+builder.Services.AddSignalR();
+
 builder.Services.AddCors(opt =>
 {
     opt.AddPolicy("CorsPolicy", policyBuilder =>
@@ -30,7 +33,8 @@ builder.Services.AddCors(opt =>
         policyBuilder
         .AllowAnyHeader()
         .AllowAnyMethod()
-        .WithOrigins("http://localhost:5173");
+        .WithOrigins("http://localhost:5173")
+        .AllowCredentials();
     });
 });
 
@@ -79,5 +83,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHub<NotificationsHub>("/notifications");
 
 app.Run();

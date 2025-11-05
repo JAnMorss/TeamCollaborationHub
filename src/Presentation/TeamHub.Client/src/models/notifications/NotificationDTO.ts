@@ -2,13 +2,7 @@ export interface NotificationDTO {
   id: string;
   title: string;
   message: string;
-  type:
-    | "TaskAssigned"
-    | "TaskCompleted"
-    | "CommentAdded"
-    | "ProjectMemberAdded"
-    | "TaskDueReminder"
-    | "TaskMoved";
+  type: string;      
   isRead: boolean;
-  time: string; 
+  createdAt: string; 
 }
