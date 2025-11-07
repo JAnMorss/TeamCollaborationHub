@@ -7,10 +7,12 @@ using TeamHub.Application.Users.Commands.ActiveUser;
 using TeamHub.Application.Users.Commands.DeactivateUser;
 using TeamHub.Application.Users.Commands.UpdateDetails;
 using TeamHub.Application.Users.Commands.UpdateUserAvatar;
+using TeamHub.Application.Users.Queries.GetAllUsers;
 using TeamHub.Application.Users.Queries.GetMyProfile;
 using TeamHub.Application.Users.Responses;
-using TeamHub.Domain.Users.ValueObjects;
 using TeamHub.SharedKernel;
+using TeamHub.SharedKernel.Application.Helpers;
+using TeamHub.SharedKernel.Application.PageSize;
 
 namespace TeamHub.API.Controllers.Users;
 
@@ -40,6 +42,22 @@ public class UserController : ApiController
             ? Ok(new ApiResponse<UserResponse>(
                     result.Value, 
                     "Profile fetched successfully"))
+            : HandleFailure(result);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAllUsers(
+        [FromQuery] QueryObject queryObject,
+        CancellationToken cancellationToken)
+    {
+        var query = new GetAllUsersQuery(queryObject);
+
+        var result = await _sender.Send(query, cancellationToken);
+
+        return result.IsSuccess
+            ? Ok(new ApiResponse<PaginatedResult<UserResponse>>(
+                result.Value,
+                "Users fetched successfully"))
             : HandleFailure(result);
     }
 
