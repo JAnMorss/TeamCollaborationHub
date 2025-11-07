@@ -1,6 +1,10 @@
 import React, { useState } from "react";
+import AsyncSelect from "react-select/async";
 import type { ProjectMemberRequest } from "../../../../models/projects/ProjectMemberRequest";
 import type { ProjectMemberResponse } from "../../../../models/projects/ProjectMemberResponse";
+import { searchUsers } from "../../../../services/api/userApiConnector";
+import type { UserProfileDTO } from "../../../../models/users/UserProfileDTO";
+import ConfirmModal from "../../../common/ConfirmModal/ConfirmModal";
 
 interface MembersModalProps {
   show: boolean;
@@ -8,7 +12,8 @@ interface MembersModalProps {
   members: ProjectMemberResponse[];
   onAddMember: (request: ProjectMemberRequest) => void;
   onRemoveMember: (request: ProjectMemberRequest) => void;
-  projectName?: string; 
+  projectName?: string;
+  currentUserId?: string | null;
 }
 
 const MembersModal: React.FC<MembersModalProps> = ({
@@ -18,84 +23,134 @@ const MembersModal: React.FC<MembersModalProps> = ({
   onAddMember,
   onRemoveMember,
   projectName,
+  currentUserId,
 }) => {
-  const [newMemberUserId, setNewMemberUserId] = useState("");
+  const [selectedUser, setSelectedUser] = useState<{ label: string; value: string } | null>(null);
+  const [confirmMember, setConfirmMember] = useState<ProjectMemberResponse | null>(null);
+
+  const loadUserOptions = async (inputValue: string) => {
+    if (!inputValue.trim()) return [];
+    const data = await searchUsers(inputValue);
+    return data.items.map((user: UserProfileDTO) => ({
+      label: user.fullName || user.email,
+      value: user.id,
+    }));
+  };
 
   const handleAdd = () => {
-    if (newMemberUserId.trim()) {
-      const request: ProjectMemberRequest = {
-        userId: newMemberUserId
-      };
+    if (selectedUser) {
+      const request: ProjectMemberRequest = { userId: selectedUser.value };
       onAddMember(request);
-      setNewMemberUserId("");
+      setSelectedUser(null);
     }
   };
 
-  const handleRemove = (member: ProjectMemberResponse) => {
-    const request: ProjectMemberRequest = {
-      userId: member.userId, 
-    };
+  const handleRemoveClick = (member: ProjectMemberResponse) => {
+    setConfirmMember(member); 
+  };
+
+  const handleConfirmRemove = () => {
+    if (!confirmMember) return;
+    const request: ProjectMemberRequest = { userId: confirmMember.userId };
     onRemoveMember(request);
+    setConfirmMember(null);
+  };
+
+  const handleCancelRemove = () => {
+    setConfirmMember(null);
   };
 
   if (!show) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
-        <h2 className="text-xl font-bold mb-4">
-          Manage Members {projectName ? `for ${projectName}` : ""}
-        </h2>
+    <>
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+          <h2 className="text-xl font-bold mb-4">
+            Manage Members {projectName ? `for ${projectName}` : ""}
+          </h2>
 
-        <div className="mb-4">
-          <h3 className="text-lg font-semibold mb-2">Add Member</h3>
-          <input
-            type="text"
-            placeholder="User ID"
-            value={newMemberUserId}
-            onChange={(e) => setNewMemberUserId(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded mb-2"
-          />
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold mb-2">Add Member</h3>
+
+            <AsyncSelect
+              cacheOptions
+              loadOptions={loadUserOptions}
+              defaultOptions
+              placeholder="Search for a user..."
+              value={selectedUser}
+              onChange={(option) => setSelectedUser(option)}
+            />
+
+            <button
+              onClick={handleAdd}
+              disabled={!selectedUser}
+              className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded mt-3 disabled:bg-gray-400"
+            >
+              Add Member
+            </button>
+          </div>
+
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold mb-2">Current Members</h3>
+
+            {members.length === 0 ? (
+              <p className="text-gray-500">No members yet.</p>
+            ) : (
+              <ul className="space-y-2">
+                {members.map((member) => {
+                  const isCurrentUser = member.userId === currentUserId;
+                  return (
+                    <li
+                      key={member.id}
+                      className="flex items-center justify-between p-2 border border-gray-200 rounded"
+                    >
+                      <span>
+                        {member.fullName || member.userId} - {member.role}
+                      </span>
+
+                      <button
+                        onClick={() => handleRemoveClick(member)}
+                        className={`${
+                          isCurrentUser
+                            ? "text-orange-500 hover:text-orange-700"
+                            : "text-red-500 hover:text-red-700"
+                        }`}
+                      >
+                        {isCurrentUser ? "Leave" : "Remove"}
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
 
           <button
-            onClick={handleAdd}
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded"
+            onClick={onClose}
+            className="w-full bg-gray-500 hover:bg-gray-600 text-white py-2 rounded"
           >
-            Add Member
+            Close
           </button>
         </div>
-
-        <div className="mb-4">
-          <h3 className="text-lg font-semibold mb-2">Current Members</h3>
-          {members.length === 0 ? (
-            <p>No members yet.</p>
-          ) : (
-            <ul className="space-y-2">
-              {members.map((member) => (
-                <li key={member.id} className="flex items-center justify-between p-2 border border-gray-200 rounded">
-                  <span>
-                    {member.fullName || member.userId} - {member.role}
-                  </span>
-                  <button
-                    onClick={() => handleRemove(member)}
-                    className="text-red-500 hover:text-red-700"
-                  >
-                    Remove
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-        <button
-          onClick={onClose}
-          className="w-full bg-gray-500 hover:bg-gray-600 text-white py-2 rounded"
-        >
-          Close
-        </button>
       </div>
-    </div>
+
+      {confirmMember && (
+        <ConfirmModal
+          show={!!confirmMember}
+          title={
+            confirmMember.userId === currentUserId ? "Leave Project" : "Remove Member"
+          }
+          message={
+            confirmMember.userId === currentUserId
+              ? "Are you sure you want to leave this project?"
+              : "Are you sure you want to remove this member from the project?"
+          }
+          onConfirm={handleConfirmRemove}
+          onCancel={handleCancelRemove}
+        />
+      )}
+    </>
   );
 };
 
