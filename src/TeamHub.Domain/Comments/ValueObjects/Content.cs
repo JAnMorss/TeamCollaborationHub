@@ -7,7 +7,7 @@ public sealed class Content : ValueObject
 {
     public string Value { get; }
 
-    public Content(string value)
+    private Content(string value)
     {
         Value = value;
     }

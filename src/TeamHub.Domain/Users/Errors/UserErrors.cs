@@ -36,4 +36,12 @@ public static class UserErrors
         "User.AlreadyUser", 
         "The user is already a regular user.");
 
+    public static readonly Error AvatarNotFound = new(
+        "User.AvatarNotFound",
+        "The user does not have an avatar set.");
+
+    public static readonly Error InvalidAvatar = new(
+        "User.InvalidAvatar",
+        "The user's avatar is invalid.");
+
 }

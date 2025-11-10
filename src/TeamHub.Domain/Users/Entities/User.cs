@@ -31,7 +31,7 @@ public sealed class User : BaseEntity
         PasswordHash passwordHash,
         bool isActive) : base(id)
     {
-        IdentityId = identityId;
+        IdentityId = identityId;  
         FirstName = firstName;
         LastName = lastName;
         Email = email;
