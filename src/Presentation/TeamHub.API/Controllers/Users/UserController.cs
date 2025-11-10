@@ -9,6 +9,7 @@ using TeamHub.Application.Users.Commands.UpdateDetails;
 using TeamHub.Application.Users.Commands.UpdateUserAvatar;
 using TeamHub.Application.Users.Queries.GetAllUsers;
 using TeamHub.Application.Users.Queries.GetMyProfile;
+using TeamHub.Application.Users.Queries.GetUserAvatar;
 using TeamHub.Application.Users.Responses;
 using TeamHub.SharedKernel;
 using TeamHub.SharedKernel.Application.Helpers;
@@ -112,8 +113,26 @@ public class UserController : ApiController
 
         return result.IsSuccess
             ? Ok(new ApiResponse<UserResponse>(
-                    result.Value, 
-                    "User details updated successfully"))
+                result.Value, 
+                "User details updated successfully"))
+            : HandleFailure(result);
+    }
+
+    [HttpGet("avatar")]
+    public async Task<IActionResult> GetUserAvatar(CancellationToken cancellationToken)
+    {
+        var userId = GetUserId();
+        if (userId is null)
+            return Unauthorized();
+
+        var query = new GetUserAvatarQuery(userId.Value);
+
+        var result = await _sender.Send(query, cancellationToken);
+
+        return result.IsSuccess
+            ? Ok(new ApiResponse<UserAvatarResponse>(
+                result.Value,
+                "User Avatar fetched successfully"))
             : HandleFailure(result);
     }
 
