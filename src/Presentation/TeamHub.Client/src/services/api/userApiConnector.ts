@@ -19,10 +19,7 @@ export async function getMyProfile(): Promise<UserProfileDTO> {
       headers: authHeaders(),
     });
 
-    console.log("✅ Profile fetched successfully:", response.data);
-
     const rawData = response.data.data;
-
     const user: UserProfileDTO = {
       id: rawData.id,
       identityId: rawData.identityId,
@@ -46,27 +43,31 @@ export async function getMyProfile(): Promise<UserProfileDTO> {
   }
 }
 
-export async function getAllUsers(params?: { search?: string; page?: number; pageSize?: number }) {
+export async function getUserAvatar(): Promise<string | null> {
   try {
-    const queryParams = new URLSearchParams();
-    if (params?.search) queryParams.append("search", params.search);
-    if (params?.page) queryParams.append("page", params.page.toString());
-    if (params?.pageSize) queryParams.append("pageSize", params.pageSize.toString());
+    const response = await axios.get<ApiResponse<any>>(`${API_BASE_URL}/avatar`, {
+      headers: authHeaders(),
+    });
 
-    const response = await axios.get<ApiResponse<any>>(
-      `${API_BASE_URL}?${queryParams.toString()}`,
-      { headers: authHeaders() }
-    );
+    const { data } = response.data;
+    if (!data) return null;
 
-    console.log("✅ Users fetched successfully:", response.data);
+    if (data.imageBytes) {
+      return `data:${data.contentType};base64,${data.imageBytes}`;
+    }
 
-    return response.data.data; 
+    return data.avatarUrl || null;
   } catch (error) {
-    console.error("❌ Error fetching users:", error);
-    throw error;
+    console.error("❌ Error fetching user avatar:", error);
+    return null;
   }
 }
 
 export async function searchUsers(keyword: string) {
   return getAllUsers({ search: keyword, page: 1, pageSize: 10 });
 }
+
+function getAllUsers(arg0: { search: string; page: number; pageSize: number; }) {
+  throw new Error("Function not implemented.");
+}
+
