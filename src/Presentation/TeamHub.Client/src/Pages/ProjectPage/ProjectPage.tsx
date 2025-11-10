@@ -18,6 +18,7 @@ import { ProjectModal } from "../../components/common/Project/ProjectModal/Proje
 import MembersModal from "../../components/common/Project/MembersModal/MembersModalProps";
 import { getMyProfile } from "../../services/api/userApiConnector";
 import ConfirmModal from "../../components/common/ConfirmModal/ConfirmModal";
+import KanbanBoard from "../KanbanBoard/KanbanBoard";
 
 const sortOptions = [
   { label: "Name (A–Z)", sortBy: "name", descending: false },
@@ -244,16 +245,12 @@ const ProjectPage: React.FC = () => {
       )}
 
       {currentView === "kanban" && selectedProject && (
-        <div>
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">{selectedProject.name} - Board</h2>
-          <button
-            onClick={() => setCurrentView("projects")}
-            className="w-full sm:w-auto text-blue-600 hover:text-blue-700 font-medium mb-4"
-          >
-            ← Back to Projects
-          </button>
-        </div>
+        <KanbanBoard
+          projectName={selectedProject.name}
+          onBack={() => setCurrentView("projects")}
+        />
       )}
+
 
       <ProjectModal
         show={showModal}

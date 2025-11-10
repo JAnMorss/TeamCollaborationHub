@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { CiCalendarDate, CiSearch } from "react-icons/ci";
 import { FaRegFolderOpen } from "react-icons/fa";
 import { FiMessageSquare, FiMenu, FiChevronLeft, FiChevronRight } from "react-icons/fi";
@@ -13,22 +13,9 @@ interface SidebarProps {
 
 export default function Sidebar({ onCollapseChange }: SidebarProps) {
   const location = useLocation();
-  const [currentView, setCurrentView] = useState(location.pathname);
   const [isOpen, setIsOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [isLargeScreen, setIsLargeScreen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-
-  useEffect(() => {
-    const checkScreen = () => setIsLargeScreen(window.innerWidth >= 1024);
-    checkScreen();
-    window.addEventListener("resize", checkScreen);
-    return () => window.removeEventListener("resize", checkScreen);
-  }, []);
-
-  useEffect(() => {
-    onCollapseChange?.(isCollapsed);
-  }, [isCollapsed, onCollapseChange]);
 
   const menuItems = [
     { name: "Dashboard", icon: IoHomeOutline, path: "/dashboard" },
@@ -42,7 +29,7 @@ export default function Sidebar({ onCollapseChange }: SidebarProps) {
   return (
     <>
       <button
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-md bg-white border border-gray-200 shadow-md"
+        className="lg:hidden absolute top-2.5 left-4 z-30 p-2 rounded-md bg-white border border-gray-200 shadow-md"
         onClick={() => setIsOpen(true)}
       >
         <FiMenu className="w-6 h-6 text-gray-900" />
@@ -70,7 +57,10 @@ export default function Sidebar({ onCollapseChange }: SidebarProps) {
             className="hidden lg:flex items-center justify-center w-6 h-6 text-gray-600 
                       bg-white border border-gray-300 rounded-full shadow-md 
                       hover:bg-gray-100 absolute right-[-12px] top-1/2 transform -translate-y-1/2"
-            onClick={() => setIsCollapsed(!isCollapsed)}
+            onClick={() => {
+              setIsCollapsed(!isCollapsed);
+              onCollapseChange?.(!isCollapsed);
+            }}
           >
             {isCollapsed ? <FiChevronRight /> : <FiChevronLeft />}
           </button>
@@ -98,19 +88,17 @@ export default function Sidebar({ onCollapseChange }: SidebarProps) {
 
         <nav className="p-4 lg:p-2 space-y-1 flex-1">
           {menuItems.map(({ name, icon: Icon, path }) => {
-            const isActive = currentView === path;
+            const isActive = location.pathname === path;
             return (
               <Link
                 key={name}
                 to={path}
-                onClick={() => {
-                  setCurrentView(path);
-                  setIsOpen(false);
-                }}
+                onClick={() => setIsOpen(false)}
                 className={`flex items-center px-4 py-2 rounded-lg transition-all duration-200
-                  ${isActive
-                    ? "bg-blue-600 text-white shadow-sm"
-                    : "text-gray-700 hover:bg-blue-100 hover:text-blue-700"
+                  ${
+                    isActive
+                      ? "bg-blue-600 text-white shadow-sm"
+                      : "text-gray-700 hover:bg-blue-100 hover:text-blue-700"
                   }`}
               >
                 <Icon className="w-5 h-5 flex-shrink-0" />

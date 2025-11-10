@@ -1,4 +1,4 @@
-import { LuUsers, LuArrowRight, LuCheck, LuLogIn } from "react-icons/lu";
+import { LuArrowRight, LuCheck } from "react-icons/lu";
 import { Link, useNavigate } from "react-router-dom";
 import DashboardPreview from "../../assets/DashboardPreview.jpeg";
 import Navbar from "../../components/common/Navbar/Navbar";

@@ -3,14 +3,18 @@ import type { UserProfileDTO } from "../../../models/users/UserProfileDTO";
 import { useNavigate } from "react-router-dom";
 import { authApiConnector } from "../../../services/api/authApiConnector";
 
-export default function UserProfile({ user }: { user: UserProfileDTO }) {
+interface UserProfileProps {
+  user: UserProfileDTO;
+  avatarSrc?: string | null;
+}
+
+export default function UserProfile({ user, avatarSrc }: UserProfileProps) {
   const [showDropdown, setShowDropdown] = useState(false);
   const navigate = useNavigate();
 
   const fullName = user.fullName;
-
-  const initials = user.fullName
-    ? user.fullName
+  const initials = fullName
+    ? fullName
         .split(" ")
         .map((word) => word[0])
         .join("")
@@ -18,10 +22,7 @@ export default function UserProfile({ user }: { user: UserProfileDTO }) {
         .toUpperCase()
     : "";
 
-const handleProfileClick = () => {
-    setShowDropdown(!showDropdown);
-  };
-
+  const handleProfileClick = () => setShowDropdown(!showDropdown);
   const handleSignOut = () => {
     authApiConnector.logout();
     navigate("/", { replace: true });
@@ -34,9 +35,17 @@ const handleProfileClick = () => {
         className="flex items-center space-x-3 hover:bg-gray-50 rounded-lg p-2 transition-colors duration-200"
         aria-label="User profile menu"
       >
-        <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium shadow-md">
-          {initials}
-        </div>
+        {avatarSrc ? (
+          <img
+            src={avatarSrc}
+            alt="User Avatar"
+            className="w-8 h-8 rounded-full object-cover shadow-md"
+          />
+        ) : (
+          <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium shadow-md">
+            {initials}
+          </div>
+        )}
 
         <div className="hidden sm:block text-left">
           <p className="text-sm font-medium text-gray-900">{fullName}</p>
