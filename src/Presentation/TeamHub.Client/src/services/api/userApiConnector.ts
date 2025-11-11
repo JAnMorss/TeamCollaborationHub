@@ -1,6 +1,7 @@
 import axios from "axios";
 import type { UserProfileDTO } from "../../models/users/UserProfileDTO";
 import type { ApiResponse } from "../../models/users/ApiResponse";
+import type { SearchUsersResponse } from "../../models/users/SearchUsersResponse";
 
 const API_BASE_URL = "http://localhost:8080/api/v1/users";
 
@@ -63,11 +64,47 @@ export async function getUserAvatar(): Promise<string | null> {
   }
 }
 
-export async function searchUsers(keyword: string) {
-  return getAllUsers({ search: keyword, page: 1, pageSize: 10 });
-}
 
-function getAllUsers(arg0: { search: string; page: number; pageSize: number; }) {
-  throw new Error("Function not implemented.");
-}
+export async function searchUsers(name: string): Promise<SearchUsersResponse> {
+  try {
+    const response = await axios.get<ApiResponse<any>>(
+      `${API_BASE_URL}/searchUsers`,
+      {
+        headers: authHeaders(),
+        params: { name },
+      }
+    );
 
+    const rawData = response.data.data;
+
+    if (!rawData || !rawData.items) {
+      console.warn("⚠️ Unexpected searchUsers API response:", response.data);
+      return { items: [] };
+    }
+
+    const users: UserProfileDTO[] = rawData.items.map((u: any) => ({
+      id: u.id,
+      identityId: u.identityId,
+      fullName: u.fullName,
+      email: u.email,
+      avatar: u.avatar,
+      role: u.role,
+      isActive: u.isActive,
+      createdAt: u.createdAt ?? "",
+      updatedAt: u.updatedAt,
+    }));
+
+    return {
+      items: users,
+      totalCount: rawData.totalCount,
+    };
+  } catch (error: any) {
+    console.error("❌ Error searching users:", error);
+    if (error.response?.status === 401) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("refreshToken");
+      window.location.href = "/login";
+    }
+    throw error;
+  }
+}
