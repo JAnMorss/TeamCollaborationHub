@@ -10,6 +10,7 @@ using TeamHub.Application.Users.Commands.UpdateUserAvatar;
 using TeamHub.Application.Users.Queries.GetAllUsers;
 using TeamHub.Application.Users.Queries.GetMyProfile;
 using TeamHub.Application.Users.Queries.GetUserAvatar;
+using TeamHub.Application.Users.Queries.SearchUsersByName;
 using TeamHub.Application.Users.Responses;
 using TeamHub.SharedKernel;
 using TeamHub.SharedKernel.Application.Helpers;
@@ -52,6 +53,23 @@ public class UserController : ApiController
         CancellationToken cancellationToken)
     {
         var query = new GetAllUsersQuery(queryObject);
+
+        var result = await _sender.Send(query, cancellationToken);
+
+        return result.IsSuccess
+            ? Ok(new ApiResponse<PaginatedResult<UserResponse>>(
+                result.Value,
+                "Users fetched successfully"))
+            : HandleFailure(result);
+    }
+
+    [HttpGet("searchUsers")]
+    public async Task<IActionResult> SearchUsersByName(
+        [FromQuery] string name,
+        [FromQuery] QueryObject queryObject,
+        CancellationToken cancellationToken)
+    {
+        var query = new SearchUsersByNameQuery(name, queryObject);
 
         var result = await _sender.Send(query, cancellationToken);
 
