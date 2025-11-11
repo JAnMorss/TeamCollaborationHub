@@ -19,6 +19,7 @@ import MembersModal from "../../components/common/Project/MembersModal/MembersMo
 import { getMyProfile } from "../../services/api/userApiConnector";
 import ConfirmModal from "../../components/common/ConfirmModal/ConfirmModal";
 import KanbanBoard from "../KanbanBoard/KanbanBoard";
+import SearchBar from "../../components/common/SearchBar/SearchBar";
 
 const sortOptions = [
   { label: "Name (A–Z)", sortBy: "name", descending: false },
@@ -38,6 +39,7 @@ const ProjectPage: React.FC = () => {
 
   const [filterOpen, setFilterOpen] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState(sortOptions[0]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const [confirmModal, setConfirmModal] = useState({
     show: false,
@@ -156,7 +158,6 @@ const ProjectPage: React.FC = () => {
           await removeProjectMember(selectedProjectForMembers.id, request);
 
           const data = await getAllMembersOfProject(selectedProjectForMembers.id);
-
           setMembers(data.items);
         } catch (error) {
           console.error("Error removing member:", error);
@@ -167,15 +168,23 @@ const ProjectPage: React.FC = () => {
     });
   };
 
+  const filteredProjects = projects.filter((p) =>
+    p.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-6">
       {currentView === "projects" && (
         <div>
-
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 space-y-4 sm:space-y-0">
             <h2 className="text-3xl font-bold text-gray-900">Projects</h2>
 
-            <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0 w-full sm:w-auto">
+              <SearchBar
+                onSearch={(query) => {
+                  setSearchQuery(query);
+                }}
+              />
 
               <div className="relative w-full sm:w-auto">
                 <button
@@ -224,7 +233,7 @@ const ProjectPage: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {projects.map((project) => (
+            {filteredProjects.map((project) => (
               <ProjectCard
                 key={project.id}
                 project={{ ...project, completed: 0, tasks: 0 }}
@@ -244,9 +253,11 @@ const ProjectPage: React.FC = () => {
         </div>
       )}
 
-      {currentView === "kanban" && selectedProject && (
+      {currentView === "kanban" && selectedProject && currentUserId && (
         <KanbanBoard
+          projectId={selectedProject.id}  
           projectName={selectedProject.name}
+          currentUserId={currentUserId} 
           onBack={() => setCurrentView("projects")}
         />
       )}

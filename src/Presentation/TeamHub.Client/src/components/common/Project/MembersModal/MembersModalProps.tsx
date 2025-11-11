@@ -24,29 +24,42 @@ const MembersModal: React.FC<MembersModalProps> = ({
   onRemoveMember,
   projectName,
   currentUserId,
-}) => {
-  const [selectedUser, setSelectedUser] = useState<{ label: string; value: string } | null>(null);
-  const [confirmMember, setConfirmMember] = useState<ProjectMemberResponse | null>(null);
+  }) => {
+    const [selectedUser, setSelectedUser] = useState<{ label: string; value: string } | null>(null);
+    const [confirmMember, setConfirmMember] = useState<ProjectMemberResponse | null>(null);
 
-  const loadUserOptions = async (inputValue: string) => {
-    if (!inputValue.trim()) return [];
-    const data = await searchUsers(inputValue);
-    return data.items.map((user: UserProfileDTO) => ({
-      label: user.fullName || user.email,
-      value: user.id,
-    }));
-  };
+    const loadUserOptions = async (inputValue: string) => {
+      if (!inputValue.trim()) return [];
+      try {
+        const data = await searchUsers(inputValue);
+        if (!data.items || data.items.length === 0) return [];
+
+        return data.items.map((user: UserProfileDTO) => ({
+          label: user.fullName || user.email,
+          value: user.id,
+        }));
+      } catch (error) {
+        console.error("Error loading users:", error);
+        return [];
+      }
+    };
 
   const handleAdd = () => {
-    if (selectedUser) {
-      const request: ProjectMemberRequest = { userId: selectedUser.value };
-      onAddMember(request);
-      setSelectedUser(null);
+    if (!selectedUser) return;
+
+    const alreadyMember = members.some((m) => m.userId === selectedUser.value);
+    if (alreadyMember) {
+      alert("This user is already a member of the project.");
+      return;
     }
+
+    const request: ProjectMemberRequest = { userId: selectedUser.value };
+    onAddMember(request);
+    setSelectedUser(null);
   };
 
   const handleRemoveClick = (member: ProjectMemberResponse) => {
-    setConfirmMember(member); 
+    setConfirmMember(member);
   };
 
   const handleConfirmRemove = () => {
@@ -56,9 +69,7 @@ const MembersModal: React.FC<MembersModalProps> = ({
     setConfirmMember(null);
   };
 
-  const handleCancelRemove = () => {
-    setConfirmMember(null);
-  };
+  const handleCancelRemove = () => setConfirmMember(null);
 
   if (!show) return null;
 
@@ -80,6 +91,7 @@ const MembersModal: React.FC<MembersModalProps> = ({
               placeholder="Search for a user..."
               value={selectedUser}
               onChange={(option) => setSelectedUser(option)}
+              className="text-sm"
             />
 
             <button
@@ -108,7 +120,6 @@ const MembersModal: React.FC<MembersModalProps> = ({
                       <span>
                         {member.fullName || member.userId} - {member.role}
                       </span>
-
                       <button
                         onClick={() => handleRemoveClick(member)}
                         className={`${
@@ -139,7 +150,9 @@ const MembersModal: React.FC<MembersModalProps> = ({
         <ConfirmModal
           show={!!confirmMember}
           title={
-            confirmMember.userId === currentUserId ? "Leave Project" : "Remove Member"
+            confirmMember.userId === currentUserId
+              ? "Leave Project"
+              : "Remove Member"
           }
           message={
             confirmMember.userId === currentUserId

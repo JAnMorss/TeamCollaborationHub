@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CiCalendarDate, CiSearch } from "react-icons/ci";
+import { CiCalendarDate } from "react-icons/ci";
 import { FaRegFolderOpen } from "react-icons/fa";
 import { FiMessageSquare, FiMenu, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { IoHomeOutline, IoSettingsOutline } from "react-icons/io5";
@@ -15,7 +15,6 @@ export default function Sidebar({ onCollapseChange }: SidebarProps) {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
 
   const menuItems = [
     { name: "Dashboard", icon: IoHomeOutline, path: "/dashboard" },
@@ -64,26 +63,6 @@ export default function Sidebar({ onCollapseChange }: SidebarProps) {
           >
             {isCollapsed ? <FiChevronRight /> : <FiChevronLeft />}
           </button>
-        </div>
-
-        <div className="px-4 py-2">
-          <div
-            className={`flex items-center rounded-lg border border-gray-300 overflow-hidden transition-all duration-300 ease-in-out
-              ${isCollapsed ? "justify-center" : ""}`}
-          >
-            <div className="flex-shrink-0 w-10 flex items-center justify-center">
-              <CiSearch className="w-5 h-5 text-gray-400" />
-            </div>
-
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search projects..."
-              className={`transition-all duration-300 ease-in-out border-none focus:ring-0 focus:outline-none
-                ${isCollapsed ? "w-0 opacity-0 p-0 ml-0" : "w-full opacity-100 ml-2 p-1"}`}
-            />
-          </div>
         </div>
 
         <nav className="p-4 lg:p-2 space-y-1 flex-1">

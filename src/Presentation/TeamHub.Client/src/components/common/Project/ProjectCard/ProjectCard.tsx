@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FiMoreHorizontal, FiUsers, FiEdit, FiTrash, FiUserPlus } from "react-icons/fi";
 import type { ProjectResponse } from "../../../../models/projects/ProjectResponse";
+import type { TaskResponse } from "../../../../models/tasks/TaskResponse";
+import { getTasksByProjectId } from "../../../../services/api/taskApiConnector";
 
 interface ProjectCardProps {
   project: ProjectResponse & { completed?: number; tasks?: number };
@@ -17,17 +19,38 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
   onDelete, 
   onManageMembers 
 }) => {
-  const completed = project.completed ?? project.completedTasks ?? 0;
-  const tasks = project.tasks ?? project.taskCount ?? 0;
+  const [tasks, setTasks] = useState<TaskResponse[]>([]);
+  const [loadingTasks, setLoadingTasks] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const fetchTasks = async () => {
+      try {
+        const taskList = await getTasksByProjectId(project.id);
+        if (mounted) setTasks(taskList);
+      } catch (error) {
+        console.error("Failed to load tasks for project", project.id, error);
+      } finally {
+        if (mounted) setLoadingTasks(false);
+      }
+    };
+
+    fetchTasks();
+
+    return () => { mounted = false };
+  }, [project.id]);
+
+  const completed = tasks.filter(task => task.status === "COMPLETED").length;
+  const totalTasks = tasks.length;
   const membersCount = Array.isArray(project.members) ? project.members.length : 0;
 
-  const progress = tasks > 0 ? (completed / tasks) * 100 : 0;
+  const progress = totalTasks > 0 ? (completed / totalTasks) * 100 : 0;
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
       <div className={`h-2`} style={{ backgroundColor: project.color }}></div>
       <div className="p-6">
-        
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-gray-900">{project.name}</h3>
           <FiMoreHorizontal className="w-5 h-5 text-gray-400 cursor-pointer hover:text-gray-600" />
@@ -45,9 +68,13 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
             <span className="text-sm text-gray-600">{membersCount} members</span>
           </div>
           <div className="flex items-center space-x-2">
-            <span className="text-sm text-gray-600">
-              {completed}/{tasks} tasks
-            </span>
+            {loadingTasks ? (
+              <span className="text-sm text-gray-400">Loading tasks...</span>
+            ) : (
+              <span className="text-sm text-gray-600">
+                {completed}/{totalTasks} tasks
+              </span>
+            )}
           </div>
         </div>
 
@@ -55,7 +82,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm text-gray-600">Progress</span>
             <span className="text-sm font-medium text-gray-900">
-              {Math.round(progress)}%
+              {loadingTasks ? "0%" : `${Math.round(progress)}%`}
             </span>
           </div>
           <div className="bg-gray-200 rounded-full h-2">
