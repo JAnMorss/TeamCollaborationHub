@@ -15,6 +15,6 @@ export interface TaskResponse {
   dueDate: string;
   createdAt: string;
   comments: string;
-  attachments: TaskAttachmentResponse[] | string;
+  attachments: TaskAttachmentResponse[];
   message?: string; 
 }

@@ -14,11 +14,11 @@ function getAuthHeaders() {
 }
 
 export async function getAllTasks(queryParams?: Record<string, any>): Promise<TaskResponse[]> {
-  const response = await axios.get<ApiResponse<TaskResponse[]>>(BASE_URL, {
+  const response = await axios.get<ApiResponse<{ items: TaskResponse[] }>>(BASE_URL, {
     headers: getAuthHeaders(),
     params: queryParams,
   });
-  return response.data.data;
+  return response.data.data.items;
 }
 
 export async function getTaskById(id: string): Promise<TaskResponse> {
