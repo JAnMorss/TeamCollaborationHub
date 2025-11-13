@@ -1,87 +1,138 @@
-import React, { useEffect, useState } from "react";
-import { FiPlus } from "react-icons/fi";
-import { BsPersonCheck, BsPersonX } from "react-icons/bs";
-import type { TaskResponse } from "../../models/tasks/TaskResponse";
-import type { TaskRequest } from "../../models/tasks/TaskRequest";
+"use client"
+
+import type React from "react"
+import { useEffect, useState } from "react"
+import { FiPlus, FiEdit2, FiTrash2 } from "react-icons/fi"
+import { BsPersonCheck, BsPersonX } from "react-icons/bs"
+import type { TaskResponse } from "../../models/tasks/TaskResponse"
+import type { TaskRequest } from "../../models/tasks/TaskRequest"
 import {
   getTasksByProjectId,
   createTask,
+  updateTask,
   assignTask,
   unassignTask,
-} from "../../services/api/taskApiConnector";
-import TaskModal from "../../components/common/Task/TaskModal/TaskModal";
-import TaskAssigneeModal from "../../components/common/Task/TaskAssigneeModal/TaskAssigneeModal";
+  deleteTask,
+} from "../../services/api/taskApiConnector"
+import TaskModal from "../../components/common/Task/TaskModal/TaskModal"
+import TaskAssigneeModal from "../../components/common/Task/TaskAssigneeModal/TaskAssigneeModal"
+import TaskFormModal from "../../components/common/Task/TaskFormModal/TaskFormModal"
+import UpdateTaskModal from "../../components/common/Task/UpdateTaskModal/UpdateTaskModal"
+import ConfirmModal from "../../components/common/ConfirmModal/ConfirmModal"
 
 type KanbanBoardProps = {
-  projectId: string;
-  projectName: string;
-  currentUserId: string;
-  onBack: () => void;
+  projectId: string
+  projectName: string
+  currentUserId: string
+  onBack: () => void
+}
+
+type TaskStatus = "Todo" | "InProgress" | "Review" | "Completed"
+
+const statusConfig: Record<TaskStatus, { color: string; badge: string; header: string }> = {
+  Todo: {
+    color: "from-slate-500 to-slate-600",
+    badge: "badge-secondary",
+    header: "bg-secondary/10",
+  },
+  InProgress: {
+    color: "from-blue-500 to-blue-600",
+    badge: "badge-info",
+    header: "bg-info/10",
+  },
+  Review: {
+    color: "from-amber-500 to-amber-600",
+    badge: "badge-warning",
+    header: "bg-warning/10",
+  },
+  Completed: {
+    color: "from-emerald-500 to-emerald-600",
+    badge: "badge-success",
+    header: "bg-success/10",
+  },
+}
+
+const priorityConfig: Record<string, { label: string; color: string }> = {
+  Low: { label: "Low", color: "bg-green-200 text-green-800" },
+  Medium: { label: "Medium", color: "bg-yellow-200 text-yellow-800" },
+  High: { label: "High", color: "bg-red-200 text-red-800" },
 };
 
-const statusConfig = {
-  Todo: { color: "from-slate-500 to-slate-600", badge: "badge-secondary", header: "bg-secondary/10" },
-  InProgress: { color: "from-blue-500 to-blue-600", badge: "badge-info", header: "bg-info/10" },
-  Review: { color: "from-amber-500 to-amber-600", badge: "badge-warning", header: "bg-warning/10" },
-  Completed: { color: "from-emerald-500 to-emerald-600", badge: "badge-success", header: "bg-success/10" },
-};
 
-const KanbanBoard: React.FC<KanbanBoardProps> = ({
-  projectId,
-  projectName,
-  currentUserId,
-  onBack,
-}) => {
-  const [tasks, setTasks] = useState<TaskResponse[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedTask, setSelectedTask] = useState<TaskResponse | null>(null);
-  const [assigneeTask, setAssigneeTask] = useState<TaskResponse | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined); 
-  const [successMessage, setSuccessMessage] = useState<string | undefined>(undefined); 
+const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, projectName, onBack }) => {
+  const [tasks, setTasks] = useState<TaskResponse[]>([])
+  const [loading, setLoading] = useState(true)
+  const [selectedTask, setSelectedTask] = useState<TaskResponse | null>(null)
+  const [assigneeTask, setAssigneeTask] = useState<TaskResponse | null>(null)
+  const [taskToDelete, setTaskToDelete] = useState<TaskResponse | null>(null)
+  const [showConfirmModal, setShowConfirmModal] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined)
+  const [successMessage, setSuccessMessage] = useState<string | undefined>(undefined)
+  const [showCreateModal, setShowCreateModal] = useState(false)
+  const [editingTask, setEditingTask] = useState<TaskResponse | null>(null) 
+  const [showEditModal, setShowEditModal] = useState(false) 
 
-  const statuses: TaskResponse["status"][] = [
-    "Todo",
-    "InProgress",
-    "Review",
-    "Completed",
-  ];
+  const statuses: TaskStatus[] = ["Todo", "InProgress", "Review", "Completed"]
 
   const fetchTasks = async () => {
-    setLoading(true);
+    setLoading(true)
     try {
-      const data = await getTasksByProjectId(projectId);
-      setTasks(data);
+      const data = await getTasksByProjectId(projectId)
+      setTasks(data)
     } catch (err) {
-      console.error("Failed to fetch tasks:", err);
+      console.error("Failed to fetch tasks:", err)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   useEffect(() => {
-    fetchTasks();
-  }, [projectId]);
+    fetchTasks()
+  }, [projectId])
 
-  const handleAddTask = async (status: TaskResponse["status"]) => {
-    const title = prompt("Enter task title:");
-    if (!title) return;
-
-    const newTask: TaskRequest = {
-      title,
-      status,
-      projectId,
-      description: "",
-      priority: "Medium",
-      dueDate: "",
-    };
-
+  const handleCreateTask = async (task: TaskRequest) => {
     try {
-      const created = await createTask(newTask);
-      setTasks((prev) => [...prev, created]);
+      const created = await createTask(task)
+      setTasks((prev) => [...prev, created])
+      setSuccessMessage("Task created successfully!")
     } catch (err) {
-      console.error("Failed to create task:", err);
+      console.error("Failed to create task:", err)
+      setErrorMessage("Failed to create task. Check required fields.")
     }
-  };
+  }
+
+  const handleUpdateTask = async (id: string, task: TaskRequest) => {
+    try {
+      const updated = await updateTask(id, task)
+      setTasks((prev) => prev.map((t) => (t.id === id ? updated : t)))
+      setSuccessMessage("Task updated successfully!")
+      setShowEditModal(false)
+      setEditingTask(null)
+    } catch (err) {
+      console.error("Failed to update task:", err)
+      setErrorMessage("Failed to update task. Check required fields.")
+    }
+  }
+
+  const requestDeleteTask = (task: TaskResponse) => {
+    setTaskToDelete(task)
+    setShowConfirmModal(true)
+  }
+
+  const confirmDeleteTask = async () => {
+    if (!taskToDelete) return
+    try {
+      await deleteTask(taskToDelete.id)
+      setTasks((prev) => prev.filter((t) => t.id !== taskToDelete.id))
+      setSuccessMessage("Task deleted successfully!")
+    } catch (err) {
+      console.error("Failed to delete task:", err)
+      setErrorMessage("Failed to delete task.")
+    } finally {
+      setShowConfirmModal(false)
+      setTaskToDelete(null)
+    }
+  }
 
   const handleAssign = async (task: TaskResponse, userId: string) => {
     if (task.assignedToId === userId) {
@@ -163,6 +214,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-slate-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 p-6">
+
       <div className="mb-8 animate-fade-in">
         <div className="flex justify-between items-start gap-4">
           <div className="flex-1">
@@ -171,96 +223,101 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
             </h1>
             <p className="text-slate-600 dark:text-slate-400 text-lg">Manage tasks visually on your board</p>
           </div>
-          <button
-            onClick={onBack}
-            className="btn btn-ghost gap-2 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all duration-200"
-          >
-            ← Back
-          </button>
+          <div className="flex gap-3">
+            <button onClick={() => setShowCreateModal(true)} className="btn btn-primary gap-2">
+              <FiPlus /> New Task
+            </button>
+            <button
+              onClick={onBack}
+              className="btn btn-ghost gap-2 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all duration-200"
+            >
+              ← Back
+            </button>
+          </div>
         </div>
       </div>
 
-      {loading ? (
-        <div className="flex justify-center items-center h-96">
-          <div className="flex flex-col items-center gap-4">
-            <span className="loading loading-spinner loading-lg text-primary"></span>
-            <p className="text-slate-600 dark:text-slate-400">Loading tasks...</p>
-          </div>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 overflow-x-auto pb-4">
-          {statuses.map((status, index) => (
-            <div key={status} className="animate-fade-in-up" style={{ animationDelay: `${index * 100}ms` }}>
-              <div
-                className={`${statusConfig[status as keyof typeof statusConfig].header} rounded-t-xl p-4 border-b-4 border-gradient`}
-                style={{
-                  borderImageSource: `linear-gradient(to right, var(--color-${status}), transparent)`,
-                  borderImageSlice: 1,
-                }}
-              >
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-3">
-                    <h3 className="font-bold text-base text-slate-900 dark:text-white">{status}</h3>
-                    <span className={`badge ${statusConfig[status as keyof typeof statusConfig].badge} badge-sm`}>
-                      {tasks.filter((t) => t.status === status).length}
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => handleAddTask(status)}
-                    className="btn btn-sm btn-circle hover:scale-110 transition-transform duration-200"
-                    title="Add new task"
-                  >
-                    <FiPlus size={18} />
-                  </button>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 overflow-x-auto pb-4">
+        {statuses.map((status, index) => (
+          <div key={status} className="animate-fade-in-up" style={{ animationDelay: `${index * 100}ms` }}>
+            <div className={`${statusConfig[status].header} rounded-t-xl p-4 border-b-4`}>
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-3">
+                  <h3 className="font-bold text-base text-slate-900 dark:text-white">{status}</h3>
+                  <span className={`badge ${statusConfig[status].badge} badge-sm`}>
+                    {tasks.filter((t) => t.status === status).length}
+                  </span>
                 </div>
               </div>
+            </div>
 
-              <div className="card bg-base-100 shadow-lg rounded-b-xl h-[65vh] flex flex-col border border-t-0">
-                <div className="flex-1 overflow-y-auto space-y-3 p-4">
-                  {tasks
-                    .filter((t) => t.status === status)
-                    .map((task, taskIndex) => (
-                      <div
-                        key={task.id}
-                        className="card bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700 shadow-sm hover:shadow-xl hover:scale-102 cursor-pointer flex justify-between items-start gap-3 p-4 transition-all duration-300 border border-slate-200 dark:border-slate-600 animate-slide-up"
-                        style={{ animationDelay: `${taskIndex * 50}ms` }}
-                      >
-                        <div onClick={() => setSelectedTask(task)} className="flex-1 min-w-0">
-                          <p className="font-semibold text-slate-900 dark:text-white break-words line-clamp-2">
-                            {task.title}
-                          </p>
+            <div className="card bg-base-100 shadow-lg rounded-b-xl h-[65vh] flex flex-col border border-t-0">
+              <div className="flex-1 overflow-y-auto space-y-3 p-4">
+                {tasks
+                  .filter((t) => t.status === status)
+                  .map((task, taskIndex) => (
+                    <div
+                      key={task.id}
+                      className="card bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700 shadow-sm hover:shadow-xl hover:scale-102 cursor-pointer flex justify-between items-start gap-3 p-4 transition-all duration-300 border border-slate-200 dark:border-slate-600 animate-slide-up"
+                      style={{ animationDelay: `${taskIndex * 50}ms` }}
+                    >
+                      <div onClick={() => setSelectedTask(task)} className="flex-1 min-w-0">
+                        <p className="font-semibold text-slate-900 dark:text-white break-words line-clamp-2">
+                          {task.title}
+                        </p>
 
-                          <div className="mt-3 space-y-2">
-                            {task.dueDate && (
-                              <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400">
-                                <span>📅</span>
-                                <span>
-                                  {new Date(task.dueDate).toLocaleDateString("en-US", {
-                                    month: "short",
-                                    day: "numeric",
-                                  })}
-                                </span>
-                              </div>
-                            )}
-                            <div className="flex items-center gap-2 text-xs">
-                              {task.assignedTo ? (
-                                <>
-                                  <span>👤</span>
-                                  <span className="font-medium text-slate-700 dark:text-slate-300">
-                                    {task.assignedTo}
-                                  </span>
-                                </>
-                              ) : (
-                                <span className="text-slate-500 dark:text-slate-400 italic">Unassigned</span>
-                              )}
+                        <div className="mt-1">
+                          {task.priority && (
+                            <span
+                              className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                                priorityConfig[task.priority]?.color || "bg-gray-200 text-gray-800"
+                              }`}
+                            >
+                              {priorityConfig[task.priority]?.label || task.priority}
+                            </span>
+                          )}
+                        </div>
+                      
+                        <div className="mt-3 space-y-2">
+                          {task.dueDate && (
+                            <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400">
+                              <span>📅</span>
+                              <span>
+                                {new Date(task.dueDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                              </span>
                             </div>
+                          )}
+                          <div className="flex items-center gap-2 text-xs">
+                            {task.assignedTo ? (
+                              <>
+                                <span>👤</span>
+                                <span className="font-medium text-slate-700 dark:text-slate-300">
+                                  {task.assignedTo}
+                                </span>
+                              </>
+                            ) : (
+                              <span className="text-slate-500 dark:text-slate-400 italic">Unassigned</span>
+                            )}
                           </div>
                         </div>
+                      </div>
+
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => {
+                            setEditingTask(task)
+                            setShowEditModal(true)
+                          }}
+                          className="p-2 rounded-lg hover:bg-blue-500/10 text-blue-500 hover:text-blue-700 transition-colors duration-200"
+                          title="Edit Task"
+                        >
+                          <FiEdit2 size={18} />
+                        </button>
 
                         <button
                           onClick={() => setAssigneeTask(task)}
-                          className="flex-shrink-0 p-2 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors duration-200 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-                          title={task.assignedToId === currentUserId ? "Unassign or change" : "Assign task"}
+                          className="p-2 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors duration-200"
+                          title="Assign / Unassign Task"
                         >
                           {task.assignedToId ? (
                             <BsPersonCheck size={18} className="text-emerald-500" />
@@ -268,52 +325,73 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                             <BsPersonX size={18} />
                           )}
                         </button>
+
+                        <button
+                          onClick={() => requestDeleteTask(task)}
+                          className="p-2 rounded-lg hover:bg-red-500/10 text-red-500 hover:text-red-700 transition-colors duration-200"
+                          title="Delete Task"
+                        >
+                          <FiTrash2 size={18} />
+                        </button>
                       </div>
-                    ))}
-                </div>
+                    </div>
+                  ))}
               </div>
             </div>
-          ))}
-        </div>
-      )}
-
-      {successMessage && (
-        <div className="toast toast-top toast-end animate-slide-in">
-          <div className="alert alert-success">
-            <span>{successMessage}</span>
           </div>
-        </div>
-      )}
+        ))}
+      </div>
 
-      {errorMessage && (
-        <div className="toast toast-top toast-end animate-slide-in">
-          <div className="alert alert-error">
-            <span>{errorMessage}</span>
-          </div>
-        </div>
-      )}
+      <ConfirmModal
+        show={showConfirmModal}
+        title="Delete Task"
+        message={`Are you sure you want to delete "${taskToDelete?.title || "this task"}"?`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        onConfirm={confirmDeleteTask}
+        onCancel={() => {
+          setShowConfirmModal(false)
+          setTaskToDelete(null)
+        }}
+      />
 
-      {selectedTask && (
-        <TaskModal task={selectedTask} onClose={() => setSelectedTask(null)} />
-      )}
+      {selectedTask && <TaskModal show={true} task={selectedTask} onClose={() => setSelectedTask(null)} />}
+
       {assigneeTask && (
         <TaskAssigneeModal
           show={!!assigneeTask}
           task={assigneeTask}
           onClose={() => {
-            setAssigneeTask(null);
-            setSuccessMessage(undefined);
-            setErrorMessage(undefined);
+            setAssigneeTask(null)
+            setSuccessMessage(undefined)
+            setErrorMessage(undefined)
           }}
           onAssign={(userId) => assigneeTask && handleAssign(assigneeTask, userId)}
           onUnassign={() => assigneeTask && handleUnassign(assigneeTask)}
           errorMessage={errorMessage}
           successMessage={successMessage}
         />
-
       )}
-    </div>
-  );
-};
 
-export default KanbanBoard;
+      <TaskFormModal
+        show={showCreateModal}
+        projectId={projectId}
+        onClose={() => setShowCreateModal(false)}
+        onCreate={handleCreateTask}
+      />
+
+      <UpdateTaskModal
+        show={showEditModal}
+        task={editingTask}
+        projectId={projectId}
+        onClose={() => {
+          setShowEditModal(false)
+          setEditingTask(null)
+        }}
+        onUpdate={handleUpdateTask}
+      />
+    </div>
+  )
+}
+
+export default KanbanBoard

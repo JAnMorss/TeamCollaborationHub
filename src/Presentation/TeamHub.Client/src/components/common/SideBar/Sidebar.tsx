@@ -19,7 +19,7 @@ export default function Sidebar({ onCollapseChange }: SidebarProps) {
   const menuItems = [
     { name: "Dashboard", icon: IoHomeOutline, path: "/dashboard" },
     { name: "Projects", icon: FaRegFolderOpen, path: "/dashboard/projects" },
-    { name: "Kanban Board", icon: MdOutlineViewKanban, path: "/dashboard/kanban" },
+    { name: "Tasks", icon: MdOutlineViewKanban, path: "/dashboard/tasks" },
     { name: "Calendar", icon: CiCalendarDate, path: "/dashboard/calendar" },
     { name: "Messages", icon: FiMessageSquare, path: "/dashboard/messages" },
     { name: "Settings", icon: IoSettingsOutline, path: "/dashboard/settings" },

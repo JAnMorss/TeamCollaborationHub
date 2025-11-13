@@ -6,6 +6,7 @@ import ProjectPage from "../Pages/ProjectPage/ProjectPage";
 import LoginPage from "../Pages/Auth/LoginPage";
 import ProtectedRoute from "./ProtectedRoute";
 import PublicRoute from "./PublicRoute"; 
+import TaskPage from "../Pages/TaskPage/TaskPage";
 
 export const routes: RouteObject[] = [
   {
@@ -32,6 +33,11 @@ export const routes: RouteObject[] = [
         children: [
           { path: "", element: <DashboardHome /> },
           { path: "projects", element: <ProjectPage /> },
+          { 
+            path: "tasks", 
+            element: <TaskPage /> 
+          }
+, 
           { path: "settings", element: <div>Settings Page</div> },
         ],
       },

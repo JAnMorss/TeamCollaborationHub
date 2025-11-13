@@ -13,7 +13,7 @@ interface ProjectModalProps {
 const colorOptions = [
   '#3B82F6', '#10B981', '#8B5CF6', '#F59E0B', '#EF4444', 
   '#06B6D4', '#84CC16', '#F97316', '#EC4899', '#6366F1'
-]; // Updated color options
+]; 
 
 export const ProjectModal: React.FC<ProjectModalProps> = ({
   show,
