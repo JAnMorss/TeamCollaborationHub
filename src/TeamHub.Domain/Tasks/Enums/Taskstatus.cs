@@ -5,6 +5,5 @@ public enum Taskstatus
     Todo = 0,
     InProgress = 1,
     Review = 2,
-    Completed = 3,
-    Archived = 4
+    Completed = 3
 }

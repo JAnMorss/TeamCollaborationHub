@@ -9,4 +9,5 @@ public sealed record UpdateTaskCommand(
     string Title,
     string Description,
     TaskPriority Priority,
+    Taskstatus Status,
     DateTime? DueDate) : ICommand<TaskResponse>;

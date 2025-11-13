@@ -144,6 +144,7 @@ public class TaskController : ApiController
             request.Title,
             request.Description,
             request.Priority,
+            request.Status,
             request.DueDate);
 
         var result = await _sender.Send(command, cancellationToken);

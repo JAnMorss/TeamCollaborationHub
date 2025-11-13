@@ -33,7 +33,8 @@ public sealed class UpdateTaskCommandHandler : ICommandHandler<UpdateTaskCommand
             request.Title,
             request.Description,
             request.Priority,
-            request.DueDate);
+            request.DueDate,
+            request.Status);
 
         if (updateResult.IsFailure)
             return Result.Failure<TaskResponse>(updateResult.Error);

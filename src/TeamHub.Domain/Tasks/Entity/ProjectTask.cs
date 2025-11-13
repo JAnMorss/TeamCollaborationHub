@@ -1,4 +1,5 @@
-﻿using TeamHub.Domain.Comments.Entity;
+﻿using System.Net.NetworkInformation;
+using TeamHub.Domain.Comments.Entity;
 using TeamHub.Domain.ProjectMembers.Entity;
 using TeamHub.Domain.Projects.Entity;
 using TeamHub.Domain.TaskAttachments.Entity;
@@ -93,10 +94,11 @@ public sealed class ProjectTask : BaseEntity
     }
 
     public Result UpdateDetails(
-        string title, 
-        string description, 
-        TaskPriority priority, 
-        DateTime? dueDate)
+    string title,
+    string description,
+    TaskPriority priority,
+    DateTime? dueDate,
+    Taskstatus status)  
     {
         bool changed = false;
 
@@ -132,6 +134,13 @@ public sealed class ProjectTask : BaseEntity
             changed = true;
         }
 
+        if (status != Status)
+        {
+            Status = status;
+            changed = true;
+            RaiseDomainEvent(new TaskStatusChangedDomainEvent(Id, status));
+        }
+
         if (!changed)
             return Result.Failure(TaskErrors.NoChanges);
 
@@ -140,6 +149,7 @@ public sealed class ProjectTask : BaseEntity
 
         return Result.Success(this);
     }
+
 
     public Result ChangeStatus(Taskstatus newStatus)
     {
