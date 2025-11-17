@@ -1,5 +1,4 @@
-﻿using TeamHub.Domain.Comments.Entity;
-using TeamHub.Domain.Notifications.Entity;
+﻿using TeamHub.Domain.Notifications.Entity;
 using TeamHub.Domain.ProjectMembers.Entity;
 using TeamHub.Domain.Tasks.Entity;
 using TeamHub.Domain.Users.Enums;
@@ -16,7 +15,6 @@ public sealed class User : BaseEntity
     private readonly List<ProjectMember> _projectMemberships = new();
     private readonly List<ProjectTask> _assignedTasks = new();
     private readonly List<Notification> _notifications = new();
-    private readonly List<Comment> _comments = new();
     private readonly List<RefreshToken> _refreshTokens = new();
 
     private User() { }
@@ -60,8 +58,6 @@ public sealed class User : BaseEntity
         => _assignedTasks.AsReadOnly();
     public IReadOnlyCollection<Notification> Notifications 
         => _notifications.AsReadOnly();
-    public IReadOnlyCollection<Comment> Comments 
-        => _comments.AsReadOnly();
     public IReadOnlyCollection<RefreshToken> RefreshTokens
         => _refreshTokens.AsReadOnly();
 

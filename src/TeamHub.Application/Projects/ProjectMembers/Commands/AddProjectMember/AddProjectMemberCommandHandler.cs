@@ -6,7 +6,7 @@ using TeamHub.Domain.Users.Interface;
 using TeamHub.SharedKernel;
 using TeamHub.SharedKernel.Application.Mediator.Command;
 using TeamHub.SharedKernel.ErrorHandling;
-using TeamHub.SignalR.Abstractions;
+using TeamHub.SignalR.Interface;
 
 namespace TeamHub.Application.Projects.ProjectMembers.Commands.AddProjectMember;
 
@@ -52,7 +52,7 @@ public sealed class AddProjectMemberCommandHandler : ICommandHandler<AddProjectM
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        await _notificationService.SendNotificationToUser(
+        await _notificationService.SendToUser(
             user.Id,
             "Added to Project",
             $"You have been added to the project: {project.Name}"

@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using TeamHub.Domain.Projects.Entity;
 
 namespace TeamHub.Infrastructure.Configurations;
@@ -68,8 +67,5 @@ internal sealed class ProjectConfiguration : IEntityTypeConfiguration<Project>
         builder.Navigation(p => p.Tasks)
             .UsePropertyAccessMode(PropertyAccessMode.Field);
 
-        builder.Metadata
-            .FindNavigation(nameof(Project.Members))!
-            .SetPropertyAccessMode(PropertyAccessMode.Field);
     }
 }

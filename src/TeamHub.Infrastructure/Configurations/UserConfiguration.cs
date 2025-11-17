@@ -85,11 +85,6 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
             .HasForeignKey(n => n.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasMany(u => u.Comments)
-            .WithOne(c => c.Author)
-            .HasForeignKey(c => c.AuthorId)
-            .OnDelete(DeleteBehavior.Restrict);
-
 
         builder.Navigation(u => u.ProjectMemberships)
             .UsePropertyAccessMode(PropertyAccessMode.Field);
@@ -100,7 +95,5 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Navigation(u => u.Notifications)
             .UsePropertyAccessMode(PropertyAccessMode.Field);
 
-        builder.Navigation(u => u.Comments)
-            .UsePropertyAccessMode(PropertyAccessMode.Field);
     }
 }

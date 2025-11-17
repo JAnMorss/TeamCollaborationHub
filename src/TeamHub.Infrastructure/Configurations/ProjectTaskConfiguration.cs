@@ -9,7 +9,6 @@ internal sealed class ProjectTaskConfiguration : IEntityTypeConfiguration<Projec
     public void Configure(EntityTypeBuilder<ProjectTask> builder)
     {
         builder.ToTable("ProjectTasks");
-
         builder.HasKey(t => t.Id);
 
         // Value Objects
@@ -41,9 +40,7 @@ internal sealed class ProjectTaskConfiguration : IEntityTypeConfiguration<Projec
             .IsRequired()
             .HasDefaultValueSql("GETUTCDATE()");
 
-        builder.Property(t => t.UpdatedAt)
-            .IsRequired()
-            .HasDefaultValueSql("GETUTCDATE()");
+        builder.Property(t => t.UpdatedAt); 
 
         // Relationships
         builder.HasOne(t => t.Project)
@@ -61,19 +58,10 @@ internal sealed class ProjectTaskConfiguration : IEntityTypeConfiguration<Projec
             .HasForeignKey(t => t.CreatedById)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasMany(t => t.Comments)
-            .WithOne(c => c.Task)
-            .HasForeignKey(c => c.TaskId)
-            .OnDelete(DeleteBehavior.Cascade);
-
         builder.HasMany(t => t.Attachments)
             .WithOne(a => a.Task)
             .HasForeignKey(a => a.TaskId)
             .OnDelete(DeleteBehavior.Cascade);
-
-        // Navigation access mode for backing fields
-        builder.Navigation(t => t.Comments)
-            .UsePropertyAccessMode(PropertyAccessMode.Field);
 
         builder.Navigation(t => t.Attachments)
             .UsePropertyAccessMode(PropertyAccessMode.Field);

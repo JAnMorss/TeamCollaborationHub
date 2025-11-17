@@ -1,14 +1,14 @@
 ﻿using MediatR;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using TeamHub.Domain.Messages.Entity;
+using TeamHub.Domain.Notifications.Entity;
+using TeamHub.Domain.ProjectMembers.Entity;
 using TeamHub.Domain.Projects.Entity;
+using TeamHub.Domain.TaskAttachments.Entity;
 using TeamHub.Domain.Tasks.Entity;
 using TeamHub.Domain.Users.Entities;
 using TeamHub.SharedKernel;
-using TeamHub.Domain.ProjectMembers.Entity;
-using TeamHub.Domain.Comments.Entity;
-using TeamHub.Domain.TaskAttachments.Entity;
-using TeamHub.Domain.Notifications.Entity;
 using TeamHub.SharedKernel.Domain.Entities;
 
 namespace TeamHub.Infrastructure;
@@ -28,7 +28,7 @@ public sealed class ApplicationDbContext : DbContext, IUnitOfWork
     public DbSet<ProjectMember> ProjectMembers { get; set; }
     public DbSet<ProjectTask> Tasks { get; set; }
     public DbSet<TaskAttachment> TaskAttachments { get; set; }
-    public DbSet<Comment> Comments { get; set; }
+    public DbSet<ChatMessage> ChatMessages { get; set; }
     public DbSet<Notification> Notifications { get; set; }
     public DbSet<RefreshToken> RefreshTokens { get; set; }
 

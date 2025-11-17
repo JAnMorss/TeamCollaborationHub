@@ -23,8 +23,6 @@ internal class TaskRepository : Repository<ProjectTask>, ITaskRepository
             .Include(t => t.Project)
                 .ThenInclude(p => p.Members)
             .Include(t => t.CreatedBy)
-            .Include(t => t.Comments)
-                .ThenInclude(c => c.Author)
             .Include(t => t.AssignedTo)
             .Include(t => t.Attachments)
             .AsQueryable();
@@ -62,8 +60,6 @@ internal class TaskRepository : Repository<ProjectTask>, ITaskRepository
             .Include(t => t.Project)
             .Include(t => t.CreatedBy)
             .Include(t => t.AssignedTo)
-            .Include(t => t.Comments)
-                .ThenInclude(c => c.Author)
             .Include(t => t.Attachments)
             .FirstOrDefaultAsync(t => t.Id == id, cancellationToken);
     }
@@ -99,7 +95,6 @@ internal class TaskRepository : Repository<ProjectTask>, ITaskRepository
     {
         return await _context.Tasks
             .Include(t => t.Project)
-            .Include(t => t.Comments)
             .Include(t => t.Attachments)
             .Include(t => t.CreatedBy)
             .Include(t => t.AssignedTo)

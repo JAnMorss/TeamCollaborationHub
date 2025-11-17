@@ -1,6 +1,5 @@
 ﻿using TeamHub.Domain.ProjectMembers.Entity;
 using TeamHub.Domain.ProjectMembers.Enums;
-using TeamHub.Domain.ProjectMembers.Events;
 using TeamHub.Domain.Projects.Errors;
 using TeamHub.Domain.Projects.Events;
 using TeamHub.Domain.Projects.ValueObjects;

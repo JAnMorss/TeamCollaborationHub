@@ -4,7 +4,7 @@ using TeamHub.Domain.Tasks.Interface;
 using TeamHub.SharedKernel;
 using TeamHub.SharedKernel.Application.Mediator.Command;
 using TeamHub.SharedKernel.ErrorHandling;
-using TeamHub.SignalR.Abstractions;
+using TeamHub.SignalR.Interface;
 
 namespace TeamHub.Application.Tasks.Commands.AssignTask;
 
@@ -52,7 +52,7 @@ public sealed class AssignTaskCommandHandler : ICommandHandler<AssignTaskCommand
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        await _notificationService.SendNotificationToUser(
+        await _notificationService.SendToUser(
             request.UserId,
             "Task Assigned",
             $"You've been assigned to task: {task.Title}"

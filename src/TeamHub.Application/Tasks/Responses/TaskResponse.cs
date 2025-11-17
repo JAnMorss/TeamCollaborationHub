@@ -44,21 +44,6 @@ public sealed class TaskResponse
             CreatedAt = task.CreatedAt,
         };
 
-        response.Comments = task.Comments is null || !task.Comments.Any()
-            ? "No comments yet."
-            : task.Comments
-                .Select(c => new
-                {
-                    c.Id,
-                    Content = c.Content.Value,
-                    Author = c.Author is not null
-                             ? $"{c.Author.FirstName.Value} {c.Author.LastName.Value}"
-                             : null,
-                    c.CreatedAt,
-                    c.IsEdited
-                })
-                .ToList();
-
         response.Attachments = task.Attachments is null || !task.Attachments.Any()
             ? "No attachments yet."
             : task.Attachments

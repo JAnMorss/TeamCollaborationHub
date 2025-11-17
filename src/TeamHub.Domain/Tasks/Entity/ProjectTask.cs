@@ -1,6 +1,4 @@
-﻿using System.Net.NetworkInformation;
-using TeamHub.Domain.Comments.Entity;
-using TeamHub.Domain.ProjectMembers.Entity;
+﻿using TeamHub.Domain.ProjectMembers.Entity;
 using TeamHub.Domain.Projects.Entity;
 using TeamHub.Domain.TaskAttachments.Entity;
 using TeamHub.Domain.Tasks.Enums;
@@ -15,7 +13,6 @@ namespace TeamHub.Domain.Tasks.Entity;
 
 public sealed class ProjectTask : BaseEntity
 {
-    private readonly List<Comment> _comments = new();
     private readonly List<TaskAttachment> _attachments = new();
 
     private ProjectTask() { }
@@ -48,7 +45,7 @@ public sealed class ProjectTask : BaseEntity
     public Taskstatus Status { get; private set; }
     public DateTime? DueDate { get; private set; }
     public DateTime CreatedAt { get; private set; }
-    public DateTime? UpdatedAt { get; private set; }
+    public DateTime? UpdatedAt { get; private set; } = DateTime.UtcNow;
 
     public Guid ProjectId { get; private set; }
     public Guid? AssignedToId { get; private set; }
@@ -57,7 +54,6 @@ public sealed class ProjectTask : BaseEntity
     public Project? Project { get; private set; }
     public User? AssignedTo { get; private set; }
     public User? CreatedBy { get; private set; }
-    public IReadOnlyCollection<Comment> Comments => _comments.AsReadOnly();
     public IReadOnlyCollection<TaskAttachment> Attachments => _attachments.AsReadOnly();
 
     public static Result<ProjectTask> Create(
