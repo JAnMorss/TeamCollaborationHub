@@ -1,36 +1,44 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using System.Collections.Concurrent;
+using TeamHub.SignalR.Interface;
 
 namespace TeamHub.SignalR.Hubs;
 
 public class NotificationsHub : Hub<INotificationClient>
 {
+    private static readonly ConcurrentDictionary<Guid, string> _onlineUsers = new();
     public override async Task OnConnectedAsync()
     {
-        var userName = Context.User?.Identity?.Name ?? "Guest";
-
-        await Clients.Caller.ReceiveNotification(new
+        var userIdString = Context.User?.FindFirst("sub")?.Value;
+        if (Guid.TryParse(userIdString, out var userId))
         {
-            Id = Guid.NewGuid(),
-            Title = "Welcome!",
-            Message = $"You’re now connected to TeamHub, {userName} 🎉",
-            Time = DateTime.Now.ToString("HH:mm:ss"),
-            IsRead = false
-        });
+            _onlineUsers[userId] = Context.ConnectionId;
 
-        await Clients.All.ReceiveNotification(new
-        {
-            Id = Guid.NewGuid(),
-            Title = "New Connection",
-            Message = $"{userName} just joined TeamHub!",
-            Time = DateTime.Now.ToString("HH:mm:ss"),
-            IsRead = false
-        });
+            await Clients.Caller.ReceiveNotification(new
+            {
+                Title = "Connected",
+                Message = "You're now connected to TeamHub 🎉",
+                Time = DateTime.Now,
+                IsRead = false
+            });
+        }
 
         await base.OnConnectedAsync();
     }
-}
 
-public interface INotificationClient
-{
-    Task ReceiveNotification(object message);
+    public override async Task OnDisconnectedAsync(Exception? exception)
+    {
+        var userIdString = Context.User?.FindFirst("sub")?.Value;
+        if (Guid.TryParse(userIdString, out var userId))
+        {
+            _onlineUsers.TryRemove(userId, out _);
+        }
+
+        await base.OnDisconnectedAsync(exception);
+    }
+
+    public static string? GetConnectionId(Guid userId)
+        => _onlineUsers.TryGetValue(userId, out var connectionId)
+            ? connectionId
+            : null;
 }
