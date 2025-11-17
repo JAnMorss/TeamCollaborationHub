@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TeamHub.Application.Abstractions;
+using TeamHub.Domain.Messages.Interface;
 using TeamHub.Domain.Notifications.Interface;
 using TeamHub.Domain.ProjectMembers.Interface;
 using TeamHub.Domain.Projects.Interface;
@@ -16,8 +17,8 @@ using TeamHub.Infrastructure.Repositories;
 using TeamHub.Infrastructure.Storage;
 using TeamHub.SharedKernel;
 using TeamHub.SharedKernel.Storage;
-using TeamHub.SignalR.Abstractions;
-using TeamHub.SignalR.Hubs;
+using TeamHub.SignalR.Interface;
+using TeamHub.SignalR.Services;
 
 namespace TeamHub.Infrastructure;
 
@@ -60,12 +61,13 @@ public static class DependencyInjection
         services.AddScoped<ITaskRepository, TaskRepository>();
         services.AddScoped<ITaskAttachmentRepository, TaskAttachmentRepository>();
         services.AddScoped<INotificationRepository, NotificationRepository>();
+        services.AddScoped<IChatMessageRepository, ChatMessageRepository>();
 
         services.AddScoped<IBlobService, BlobService>();
         services.AddScoped<IAvatarBlobService, AvatarBlobService>();
         services.AddScoped(_ => new BlobServiceClient(configuration.GetConnectionString("BlobStorage")));
         services.AddScoped<INotificationService, NotificationService>();
-
+        services.AddScoped<IChatHubService, ChatHubService>();
 
     }
 

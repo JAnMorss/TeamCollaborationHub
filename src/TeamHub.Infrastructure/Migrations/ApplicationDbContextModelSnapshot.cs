@@ -22,38 +22,35 @@ namespace TeamHub.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("TeamHub.Domain.Comments.Entity.Comment", b =>
+            modelBuilder.Entity("TeamHub.Domain.Messages.Entity.ChatMessage", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("AuthorId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<DateTime>("CreateAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<bool>("IsEdited")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
+                    b.Property<Guid>("SenderId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("TaskId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("AuthorId");
+                    b.HasIndex("SenderId");
 
                     b.HasIndex("TaskId");
 
-                    b.ToTable("Comments", (string)null);
+                    b.ToTable("ChatMessages", (string)null);
                 });
 
             modelBuilder.Entity("TeamHub.Domain.Notifications.Entity.Notification", b =>
@@ -217,10 +214,8 @@ namespace TeamHub.Infrastructure.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("UpdatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETUTCDATE()");
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -256,7 +251,7 @@ namespace TeamHub.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RefreshTokens", (string)null);
+                    b.ToTable("RefreshTokens");
                 });
 
             modelBuilder.Entity("TeamHub.Domain.Users.Entities.User", b =>
@@ -290,45 +285,19 @@ namespace TeamHub.Infrastructure.Migrations
                     b.ToTable("Users", (string)null);
                 });
 
-            modelBuilder.Entity("TeamHub.Domain.Comments.Entity.Comment", b =>
+            modelBuilder.Entity("TeamHub.Domain.Messages.Entity.ChatMessage", b =>
                 {
-                    b.HasOne("TeamHub.Domain.Users.Entities.User", "Author")
-                        .WithMany("Comments")
-                        .HasForeignKey("AuthorId")
+                    b.HasOne("TeamHub.Domain.Users.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("SenderId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("TeamHub.Domain.Tasks.Entity.ProjectTask", "Task")
-                        .WithMany("Comments")
+                    b.HasOne("TeamHub.Domain.Tasks.Entity.ProjectTask", null)
+                        .WithMany()
                         .HasForeignKey("TaskId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.OwnsOne("TeamHub.Domain.Comments.ValueObjects.Content", "Content", b1 =>
-                        {
-                            b1.Property<Guid>("CommentId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<string>("Value")
-                                .IsRequired()
-                                .HasMaxLength(1000)
-                                .HasColumnType("nvarchar(1000)")
-                                .HasColumnName("Content");
-
-                            b1.HasKey("CommentId");
-
-                            b1.ToTable("Comments", (string)null);
-
-                            b1.WithOwner()
-                                .HasForeignKey("CommentId");
-                        });
-
-                    b.Navigation("Author");
-
-                    b.Navigation("Content")
-                        .IsRequired();
-
-                    b.Navigation("Task");
                 });
 
             modelBuilder.Entity("TeamHub.Domain.Notifications.Entity.Notification", b =>
@@ -367,7 +336,7 @@ namespace TeamHub.Infrastructure.Migrations
 
                             b1.HasKey("NotificationId");
 
-                            b1.ToTable("Notifications", (string)null);
+                            b1.ToTable("Notifications");
 
                             b1.WithOwner()
                                 .HasForeignKey("NotificationId");
@@ -386,7 +355,7 @@ namespace TeamHub.Infrastructure.Migrations
 
                             b1.HasKey("NotificationId");
 
-                            b1.ToTable("Notifications", (string)null);
+                            b1.ToTable("Notifications");
 
                             b1.WithOwner()
                                 .HasForeignKey("NotificationId");
@@ -405,7 +374,7 @@ namespace TeamHub.Infrastructure.Migrations
 
                             b1.HasKey("NotificationId");
 
-                            b1.ToTable("Notifications", (string)null);
+                            b1.ToTable("Notifications");
 
                             b1.WithOwner()
                                 .HasForeignKey("NotificationId");
@@ -469,7 +438,7 @@ namespace TeamHub.Infrastructure.Migrations
 
                             b1.HasKey("ProjectId");
 
-                            b1.ToTable("Projects", (string)null);
+                            b1.ToTable("Projects");
 
                             b1.WithOwner()
                                 .HasForeignKey("ProjectId");
@@ -488,7 +457,7 @@ namespace TeamHub.Infrastructure.Migrations
 
                             b1.HasKey("ProjectId");
 
-                            b1.ToTable("Projects", (string)null);
+                            b1.ToTable("Projects");
 
                             b1.WithOwner()
                                 .HasForeignKey("ProjectId");
@@ -507,7 +476,7 @@ namespace TeamHub.Infrastructure.Migrations
 
                             b1.HasKey("ProjectId");
 
-                            b1.ToTable("Projects", (string)null);
+                            b1.ToTable("Projects");
 
                             b1.WithOwner()
                                 .HasForeignKey("ProjectId");
@@ -552,7 +521,7 @@ namespace TeamHub.Infrastructure.Migrations
 
                             b1.HasKey("TaskAttachmentId");
 
-                            b1.ToTable("TaskAttachments", (string)null);
+                            b1.ToTable("TaskAttachments");
 
                             b1.WithOwner()
                                 .HasForeignKey("TaskAttachmentId");
@@ -571,7 +540,7 @@ namespace TeamHub.Infrastructure.Migrations
 
                             b1.HasKey("TaskAttachmentId");
 
-                            b1.ToTable("TaskAttachments", (string)null);
+                            b1.ToTable("TaskAttachments");
 
                             b1.WithOwner()
                                 .HasForeignKey("TaskAttachmentId");
@@ -588,7 +557,7 @@ namespace TeamHub.Infrastructure.Migrations
 
                             b1.HasKey("TaskAttachmentId");
 
-                            b1.ToTable("TaskAttachments", (string)null);
+                            b1.ToTable("TaskAttachments");
 
                             b1.WithOwner()
                                 .HasForeignKey("TaskAttachmentId");
@@ -607,7 +576,7 @@ namespace TeamHub.Infrastructure.Migrations
 
                             b1.HasKey("TaskAttachmentId");
 
-                            b1.ToTable("TaskAttachments", (string)null);
+                            b1.ToTable("TaskAttachments");
 
                             b1.WithOwner()
                                 .HasForeignKey("TaskAttachmentId");
@@ -662,7 +631,7 @@ namespace TeamHub.Infrastructure.Migrations
 
                             b1.HasKey("ProjectTaskId");
 
-                            b1.ToTable("ProjectTasks", (string)null);
+                            b1.ToTable("ProjectTasks");
 
                             b1.WithOwner()
                                 .HasForeignKey("ProjectTaskId");
@@ -681,7 +650,7 @@ namespace TeamHub.Infrastructure.Migrations
 
                             b1.HasKey("ProjectTaskId");
 
-                            b1.ToTable("ProjectTasks", (string)null);
+                            b1.ToTable("ProjectTasks");
 
                             b1.WithOwner()
                                 .HasForeignKey("ProjectTaskId");
@@ -726,7 +695,7 @@ namespace TeamHub.Infrastructure.Migrations
 
                             b1.HasKey("UserId");
 
-                            b1.ToTable("Users", (string)null);
+                            b1.ToTable("Users");
 
                             b1.WithOwner()
                                 .HasForeignKey("UserId");
@@ -748,7 +717,7 @@ namespace TeamHub.Infrastructure.Migrations
                             b1.HasIndex("Value")
                                 .IsUnique();
 
-                            b1.ToTable("Users", (string)null);
+                            b1.ToTable("Users");
 
                             b1.WithOwner()
                                 .HasForeignKey("UserId");
@@ -767,7 +736,7 @@ namespace TeamHub.Infrastructure.Migrations
 
                             b1.HasKey("UserId");
 
-                            b1.ToTable("Users", (string)null);
+                            b1.ToTable("Users");
 
                             b1.WithOwner()
                                 .HasForeignKey("UserId");
@@ -786,7 +755,7 @@ namespace TeamHub.Infrastructure.Migrations
 
                             b1.HasKey("UserId");
 
-                            b1.ToTable("Users", (string)null);
+                            b1.ToTable("Users");
 
                             b1.WithOwner()
                                 .HasForeignKey("UserId");
@@ -805,7 +774,7 @@ namespace TeamHub.Infrastructure.Migrations
 
                             b1.HasKey("UserId");
 
-                            b1.ToTable("Users", (string)null);
+                            b1.ToTable("Users");
 
                             b1.WithOwner()
                                 .HasForeignKey("UserId");
@@ -836,15 +805,11 @@ namespace TeamHub.Infrastructure.Migrations
             modelBuilder.Entity("TeamHub.Domain.Tasks.Entity.ProjectTask", b =>
                 {
                     b.Navigation("Attachments");
-
-                    b.Navigation("Comments");
                 });
 
             modelBuilder.Entity("TeamHub.Domain.Users.Entities.User", b =>
                 {
                     b.Navigation("AssignedTasks");
-
-                    b.Navigation("Comments");
 
                     b.Navigation("Notifications");
 
