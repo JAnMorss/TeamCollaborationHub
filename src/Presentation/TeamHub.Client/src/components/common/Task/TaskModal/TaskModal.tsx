@@ -1,103 +1,159 @@
-"use client"
+"use client";
 
-import type React from "react"
-
-import { useState, useRef, useEffect } from "react"
-import type { TaskResponse } from "../../../../models/tasks/TaskResponse"
-import type { TaskAttachmentResponse } from "../../../../models/tasks/TaskAttachmentResponse"
-import { uploadAttachment, downloadAttachment, removeAttachment } from "../../../../services/api/taskApiConnector"
-
-import { FiX, FiSend, FiUpload, FiDownload, FiTrash2 } from "react-icons/fi"
+import type React from "react";
+import { useState, useRef, useEffect } from "react";
+import type { TaskResponse } from "../../../../models/tasks/TaskResponse";
+import type { TaskAttachmentResponse } from "../../../../models/tasks/TaskAttachmentResponse";
+import { uploadAttachment, downloadAttachment, removeAttachment } from "../../../../services/api/taskApiConnector";
+import { FiX, FiSend, FiUpload, FiDownload, FiTrash2 } from "react-icons/fi";
+import type { ChatMessage } from "../../../../models/chat/ChatMessage";
+import { createTaskChatHub } from "../../../../services/signalR/chatHub";
 
 interface TaskModalProps {
-  show: boolean
-  task?: TaskResponse
-  editingTask?: TaskResponse | null
-  onClose: () => void
-  onSave?: () => Promise<void>
+  show: boolean;
+  task?: TaskResponse;
+  editingTask?: TaskResponse | null;
+  onClose: () => void;
+  onSave?: () => Promise<void>;
 }
 
 const TaskModal: React.FC<TaskModalProps> = ({ show, task, editingTask, onClose, onSave }) => {
-  const activeTask = editingTask || task
+  const activeTask = editingTask || task;
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [newMessage, setNewMessage] = useState("");
+  const [attachments, setAttachments] = useState<TaskAttachmentResponse[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const hubRef = useRef<{
+    connection: any;
+    sendMessage: (msg: ChatMessage) => Promise<void>;
+    stop: () => void;
+  } | null>(null);
 
-  const [messages, setMessages] = useState<{ sender: string; message: string }[]>([])
-  const [newMessage, setNewMessage] = useState("")
-  const [attachments, setAttachments] = useState<TaskAttachmentResponse[]>([])
-  const [uploading, setUploading] = useState(false)
-  const messagesEndRef = useRef<HTMLDivElement | null>(null)
-
+  // Initialize attachments safely
   useEffect(() => {
-    if (activeTask && Array.isArray(activeTask.attachments)) {
-      setAttachments(activeTask.attachments)
+    if (activeTask?.attachments) {
+      setAttachments(Array.isArray(activeTask.attachments) ? activeTask.attachments : [activeTask.attachments]);
     } else {
-      setAttachments([])
+      setAttachments([]);
     }
-  }, [activeTask])
+  }, [activeTask]);
 
+  // Scroll to bottom on new messages
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [messages])
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
-  if (!show || !activeTask) return null
+  // Initialize SignalR
+  // Initialize SignalR
+useEffect(() => {
+  if (!activeTask) return;
 
-  const handleSend = () => {
-    if (!newMessage.trim()) return
-    setMessages([...messages, { sender: "You", message: newMessage }])
-    setNewMessage("")
-  }
+  let isMounted = true;
 
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files || e.target.files.length === 0) return
+  (async () => {
+    try {
+      // Await the hub creation
+      const hub = await createTaskChatHub(activeTask.id, (msg: ChatMessage) => {
+        if (isMounted) setMessages((prev) => [...prev, msg]);
+      });
+      if (isMounted) hubRef.current = hub;
+    } catch (err) {
+      console.error("Failed to initialize hub:", err);
+    }
+  })();
 
-    setUploading(true)
-    const formData = new FormData()
-    Array.from(e.target.files).forEach((file) => formData.append("files", file))
+  return () => {
+    isMounted = false;
+    hubRef.current?.stop?.(); // now stop() exists
+  };
+}, [activeTask]);
+
+
+  if (!show || !activeTask) return null;
+
+  const handleSend = async () => {
+    if (!newMessage.trim() || !hubRef.current) return;
+
+    const msg: ChatMessage = {
+      sender: "You",
+      message: newMessage,
+      createdAt: new Date().toISOString(),
+    };
+
+    // Optimistic UI
+    setMessages((prev) => [...prev, msg]);
+    setNewMessage("");
 
     try {
-      const uploadedFiles = await uploadAttachment(activeTask.id, formData)
-      setAttachments((prev) => [...prev, uploadedFiles])
+      // Save to backend (persist to table)
+      await fetch(`/api/tasks/${activeTask.id}/messages`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: msg.message }),
+      });
+
+      // Send via SignalR to other connected clients
+      await hubRef.current.sendMessage(msg);
     } catch (err) {
-      console.error("Failed to upload attachment:", err)
-      alert("Failed to upload file.")
-    } finally {
-      setUploading(false)
-      e.target.value = ""
+      console.error("Failed to send message:", err);
+      alert("Failed to send message.");
     }
-  }
+  };
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+
+    setUploading(true);
+    const formData = new FormData();
+    Array.from(e.target.files).forEach((file) => formData.append("files", file));
+
+    try {
+      const uploadedFiles = await uploadAttachment(activeTask.id, formData);
+      setAttachments((prev) => [
+        ...prev,
+        ...(Array.isArray(uploadedFiles) ? uploadedFiles : [uploadedFiles]),
+      ]);
+    } catch (err) {
+      console.error("Failed to upload attachment:", err);
+      alert("Failed to upload file.");
+    } finally {
+      setUploading(false);
+      e.target.value = "";
+    }
+  };
 
   const handleDownload = async (attachment: TaskAttachmentResponse) => {
     try {
-      const blob = await downloadAttachment(attachment.id)
-      const url = window.URL.createObjectURL(blob)
-      const link = document.createElement("a")
-      link.href = url
-      link.download = attachment.fileName
-      link.click()
-      window.URL.revokeObjectURL(url)
+      const blob = await downloadAttachment(attachment.id);
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = attachment.fileName;
+      link.click();
+      window.URL.revokeObjectURL(url);
     } catch (err) {
-      console.error("Failed to download attachment:", err)
-      alert("Failed to download file.")
+      console.error("Failed to download attachment:", err);
+      alert("Failed to download file.");
     }
-  }
+  };
 
   const handleRemove = async (attachment: TaskAttachmentResponse) => {
-    if (!confirm(`Are you sure you want to remove "${attachment.fileName}"?`)) return
+    if (!confirm(`Are you sure you want to remove "${attachment.fileName}"?`)) return;
 
     try {
-      await removeAttachment(attachment.id)
-      setAttachments((prev) => prev.filter((att) => att.id !== attachment.id))
+      await removeAttachment(attachment.id);
+      setAttachments((prev) => prev.filter((att) => att.id !== attachment.id));
     } catch (err) {
-      console.error("Failed to remove attachment:", err)
-      alert("Failed to remove file.")
+      console.error("Failed to remove attachment:", err);
+      alert("Failed to remove file.");
     }
-  }
+  };
 
   const handleClose = async () => {
-    if (onSave) {
-      await onSave()
-    }
-    onClose()
-  }
+    if (onSave) await onSave();
+    onClose();
+  };
 
   return (
     <div className="modal modal-open">
@@ -117,14 +173,15 @@ const TaskModal: React.FC<TaskModalProps> = ({ show, task, editingTask, onClose,
         </div>
 
         <div className="flex-1 overflow-y-auto flex flex-col">
+          {/* Messages */}
           <div className="mb-4 flex-1 flex flex-col">
             <h4 className="font-semibold text-gray-700 mb-2">Messages</h4>
             <div className="bg-base-200 rounded-lg p-4 flex-1 overflow-y-auto space-y-3">
               {messages.length === 0 ? (
                 <p className="text-center text-gray-500 py-8">No messages yet...</p>
               ) : (
-                messages.map((msg, idx) => (
-                  <div key={idx} className="chat chat-start">
+                messages.map((msg) => (
+                  <div key={msg.createdAt + msg.sender} className="chat chat-start">
                     <div className="chat-header text-xs font-semibold text-gray-700">{msg.sender}</div>
                     <div className="chat-bubble chat-bubble-primary text-sm">{msg.message}</div>
                   </div>
@@ -134,6 +191,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ show, task, editingTask, onClose,
             </div>
           </div>
 
+          {/* Send Input */}
           <div className="mb-4 flex items-center gap-2">
             <input
               type="text"
@@ -149,6 +207,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ show, task, editingTask, onClose,
             </button>
           </div>
 
+          {/* Attachments */}
           <div className="flex-1 flex flex-col">
             <h4 className="font-semibold text-gray-700 mb-2">Attachments</h4>
             <label className="btn btn-outline btn-sm mb-4 flex items-center gap-1">
@@ -192,7 +251,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ show, task, editingTask, onClose,
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default TaskModal
+export default TaskModal;
