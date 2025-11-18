@@ -8,6 +8,11 @@ public class NotificationService : INotificationService
 {
     private readonly IHubContext<NotificationsHub, INotificationClient> _hubContext;
 
+    public NotificationService(IHubContext<NotificationsHub, INotificationClient> hubContext)
+    {
+        _hubContext = hubContext;
+    }
+
     public async Task SendToUser(Guid userId, string title, string message)
     {
         var conn = NotificationsHub.GetConnectionId(userId);
@@ -17,7 +22,7 @@ public class NotificationService : INotificationService
         {
             Title = title,
             Message = message,
-            Time = DateTime.Now,
+            Time = DateTime.UtcNow,
             IsRead = false
         });
     }
@@ -27,7 +32,7 @@ public class NotificationService : INotificationService
         {
             Title = title,
             Message = message,
-            Time = DateTime.Now,
+            Time = DateTime.UtcNow,
             IsRead = false
         });
     }
@@ -43,7 +48,7 @@ public class NotificationService : INotificationService
                 {
                     Title = title,
                     Message = message,
-                    Time = DateTime.Now,
+                    Time = DateTime.UtcNow,
                     IsRead = false
                 });
             }

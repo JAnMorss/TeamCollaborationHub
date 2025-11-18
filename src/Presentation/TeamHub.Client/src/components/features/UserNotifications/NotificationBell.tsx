@@ -10,6 +10,7 @@ export default function NotificationBell() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
+  // SignalR connection
   useEffect(() => {
     createNotificationHub((notif: NotificationDTO) => {
       setNotifications((prev) => [notif, ...prev]);
@@ -18,6 +19,7 @@ export default function NotificationBell() {
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
+  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -57,6 +59,11 @@ export default function NotificationBell() {
           ref={dropdownRef}
           notifications={notifications}
           onClose={() => setShowNotifications(false)}
+          onMarkAsRead={(id) => {
+            setNotifications(prev =>
+              prev.map(n => n.id === id ? { ...n, isRead: true } : n)
+            );
+          }}
         />
       )}
     </div>

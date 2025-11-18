@@ -5,4 +5,6 @@ export interface NotificationDTO {
   type: string;      
   isRead: boolean;
   createdAt: string; 
+  projectId?: string;
+  taskId?: string;
 }

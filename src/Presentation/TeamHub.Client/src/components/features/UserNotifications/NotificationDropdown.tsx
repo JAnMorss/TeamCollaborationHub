@@ -1,19 +1,15 @@
-import { forwardRef } from "react";
+import { forwardRef } from "react"; 
 import type { NotificationDTO } from "../../../models/notifications/NotificationDTO";
 import { FaRegBell } from "react-icons/fa";
 
 interface NotificationDropdownProps {
   notifications: NotificationDTO[];
   onClose: () => void;
+  onMarkAsRead: (notificationId: string) => void;
 }
 
 const NotificationDropdown = forwardRef<HTMLDivElement, NotificationDropdownProps>(
-  ({ notifications, onClose }, ref) => {
-    const handleNotificationClick = (notificationId: string) => {
-      notifications.forEach((n) => {
-        if (n.id === notificationId) n.isRead = true;
-      });
-    };
+  ({ notifications, onClose, onMarkAsRead }, ref) => {
 
     const formatTime = (time: string) =>
       new Date(time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -43,7 +39,7 @@ const NotificationDropdown = forwardRef<HTMLDivElement, NotificationDropdownProp
               {notifications.map((notif) => (
                 <div
                   key={notif.id}
-                  onClick={() => handleNotificationClick(notif.id)}
+                  onClick={() => onMarkAsRead(notif.id)}
                   className={`p-4 cursor-pointer hover:bg-gray-50 transition-colors duration-150 ${
                     !notif.isRead ? "bg-blue-50 border-l-4 border-l-blue-500" : ""
                   }`}
