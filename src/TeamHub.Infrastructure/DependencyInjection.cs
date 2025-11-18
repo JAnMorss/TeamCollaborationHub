@@ -12,7 +12,7 @@ using TeamHub.Domain.TaskAttachments.Interface;
 using TeamHub.Domain.Tasks.Interface;
 using TeamHub.Domain.Users.Interface;
 using TeamHub.Infrastructure.Authentication;
-using TeamHub.Infrastructure.Extensions;
+using TeamHub.Infrastructure.Authentication.Extensions;
 using TeamHub.Infrastructure.Repositories;
 using TeamHub.Infrastructure.Storage;
 using TeamHub.SharedKernel;
