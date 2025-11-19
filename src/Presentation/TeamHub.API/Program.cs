@@ -86,6 +86,6 @@ app.MapControllers();
 
 app.MapHub<NotificationsHub>("/hubs/notifications");
 
-app.MapHub<ChatHub>("/chat");
+app.MapHub<ChatHub>("/Chat");
 
 app.Run();

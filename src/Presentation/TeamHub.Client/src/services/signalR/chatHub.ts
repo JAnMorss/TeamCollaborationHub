@@ -12,7 +12,7 @@ export function createTaskChatHub(
 ) {
   if (!connection) {
     connection = new signalR.HubConnectionBuilder()
-      .withUrl("http://localhost:8080/chat", {
+      .withUrl("http://localhost:8080/", {
         accessTokenFactory: () => localStorage.getItem("token") || "",
       })
       .withAutomaticReconnect()
@@ -47,9 +47,7 @@ export function createTaskChatHub(
       }
 
       try {
-        // Send via SignalR
         await connection.invoke("SendMessageToTask", taskId, msg);
-        // Persist to backend
         await axios.post(`${API_URL}/send`, msg, {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });

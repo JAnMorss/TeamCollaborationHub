@@ -14,17 +14,14 @@ public sealed class RemoveProjectMemberCommandHandler : ICommandHandler<RemovePr
 {
     private readonly IProjectRepository _projectRepository;
     private readonly IProjectMemberRepository _projectMemberRepository;
-    private readonly IUserRepository _userRepository;
     private readonly IUnitOfWork _unitOfWork;
 
     public RemoveProjectMemberCommandHandler(
         IProjectRepository projectRepository,
-        IUserRepository userRepository,
         IUnitOfWork unitOfWork,
         IProjectMemberRepository projectMemberRepository)
     {
         _projectRepository = projectRepository;
-        _userRepository = userRepository;
         _unitOfWork = unitOfWork;
         _projectMemberRepository = projectMemberRepository;
     }
