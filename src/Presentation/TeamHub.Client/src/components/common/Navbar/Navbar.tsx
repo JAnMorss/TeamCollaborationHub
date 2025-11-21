@@ -9,7 +9,7 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <nav className="fixed top-0 left-0 w-full flex justify-between items-center px-4 sm:px-6 lg:px-8 py-3 bg-white/80 backdrop-blur-md z-50 shadow-sm">
+    <nav className="fixed top-0 left-0 w-full flex justify-between items-center px-4 sm:px-6 lg:px-8 py-3 bg-base-100 backdrop-blur-md z-50 shadow-sm">
 
       <div
         onClick={() => navigate("/")}
@@ -18,7 +18,7 @@ export default function Navbar() {
         <div className="w-10 h-10 sm:w-14 sm:h-14 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl sm:rounded-3xl flex items-center justify-center shadow-lg transform transition-transform hover:scale-110">
           <LuUsers className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
         </div>
-        <h1 className="text-xl sm:text-3xl font-extrabold text-gray-800 tracking-tight truncate">
+        <h1 className="text-xl sm:text-3xl font-extrabold text-theme tracking-tight truncate">
           Team<span className="text-blue-600">Hub</span>
         </h1>
       </div>
@@ -52,7 +52,7 @@ export default function Navbar() {
       </div>
 
       {menuOpen && (
-        <div className="absolute top-full left-0 w-full bg-white shadow-md flex flex-col items-center sm:hidden py-4 space-y-3 z-40">
+        <div className="absolute top-full left-0 w-full bg-base-100 shadow-md flex flex-col items-center sm:hidden py-4 space-y-3 z-40">
           {!token ? (
             <button
               onClick={() => {

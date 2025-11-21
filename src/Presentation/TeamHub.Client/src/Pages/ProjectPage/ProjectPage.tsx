@@ -190,7 +190,7 @@ const ProjectPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setFilterOpen((prev) => !prev)}
-                  className="flex items-center justify-between w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                  className="flex items-center justify-between w-full sm:w-auto px-4 py-2 border border-base-300 rounded-lg text-muted hover:bg-gray-50"
                 >
                   <FiFilter className="w-4 h-4 mr-2" />
                   <span>{selectedFilter.label}</span>
@@ -198,7 +198,7 @@ const ProjectPage: React.FC = () => {
                 </button>
 
                 {filterOpen && (
-                  <div className="absolute right-0 mt-2 w-full sm:w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+                  <div className="absolute right-0 mt-2 w-full sm:w-56 bg-base-100 border border-base-300 rounded-lg shadow-lg z-10">
                     {sortOptions.map((option) => (
                       <button
                         key={option.label}
@@ -208,7 +208,7 @@ const ProjectPage: React.FC = () => {
                           fetchProjects(option.sortBy, option.descending);
                         }}
                         className={`block w-full text-left px-4 py-2 hover:bg-gray-100 ${
-                          selectedFilter.label === option.label ? "bg-gray-50 font-medium" : ""
+                          selectedFilter.label === option.label ? "bg-base-100 font-medium" : ""
                         }`}
                       >
                         {option.label}

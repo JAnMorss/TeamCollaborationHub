@@ -48,30 +48,30 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
   const progress = totalTasks > 0 ? (completed / totalTasks) * 100 : 0;
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <div className="card project-card rounded-xl border border-gray-200 overflow-hidden">
       <div className={`h-2`} style={{ backgroundColor: project.color }}></div>
       <div className="p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900">{project.name}</h3>
-          <FiMoreHorizontal className="w-5 h-5 text-gray-400 cursor-pointer hover:text-gray-600" />
+          <h3 className="text-lg font-semibold text-theme">{project.name}</h3>
+          <FiMoreHorizontal className="w-5 h-5 icon-muted cursor-pointer" />
         </div>
 
-        <p className="text-sm text-gray-500 mb-2">
-          Created by <span className="font-medium text-gray-700">{project.createdBy}</span>
+        <p className="text-sm text-muted mb-2">
+          Created by <span className="font-medium text-theme">{project.createdBy}</span>
         </p>
 
-        <p className="text-gray-600 mb-4">{project.description}</p>
+        <p className="text-muted mb-4">{project.description}</p>
 
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-2">
-            <FiUsers className="w-4 h-4 text-gray-400" />
-            <span className="text-sm text-gray-600">{membersCount} members</span>
+            <FiUsers className="w-4 h-4 icon-muted" />
+            <span className="text-sm text-muted">{membersCount} members</span>
           </div>
           <div className="flex items-center space-x-2">
             {loadingTasks ? (
-              <span className="text-sm text-gray-400">Loading tasks...</span>
+              <span className="text-sm text-muted">Loading tasks...</span>
             ) : (
-              <span className="text-sm text-gray-600">
+              <span className="text-sm text-muted">
                 {completed}/{totalTasks} tasks
               </span>
             )}
@@ -80,12 +80,12 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
 
         <div className="mb-4">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-gray-600">Progress</span>
-            <span className="text-sm font-medium text-gray-900">
+            <span className="text-sm text-muted">Progress</span>
+            <span className="text-sm font-medium text-theme">
               {loadingTasks ? "0%" : `${Math.round(progress)}%`}
             </span>
           </div>
-          <div className="bg-gray-200 rounded-full h-2">
+          <div className="track rounded-full h-2">
             <div
               className="h-2 rounded-full"
               style={{ width: `${progress}%`, backgroundColor: project.color }}
@@ -96,28 +96,28 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
         <div className="flex items-center justify-between">
           <button
             onClick={() => onViewBoard(project)}
-            className="text-blue-600 hover:text-blue-700 font-medium text-sm"
+            className="text-accent hover:opacity-90 font-medium text-sm"
           >
             View Board
           </button>
           <div className="flex items-center space-x-2">
             <button
               onClick={() => onEdit(project)}
-              className="text-gray-400 hover:text-gray-600"
+              className="icon-muted hover:text-theme"
               title="Edit Project"
             >
               <FiEdit className="w-4 h-4" />
             </button>
             <button
               onClick={() => onDelete(project.id)}
-              className="text-gray-400 hover:text-red-600"
+              className="icon-muted hover:text-red-600"
               title="Delete Project"
             >
               <FiTrash className="w-4 h-4" />
             </button>
             <button
               onClick={() => onManageMembers(project)}
-              className="text-gray-400 hover:text-gray-600"
+              className="icon-muted hover:text-theme"
               title="Manage Members"
             >
               <FiUserPlus className="w-4 h-4" />

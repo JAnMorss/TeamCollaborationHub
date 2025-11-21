@@ -42,22 +42,22 @@ export default function Header() {
 
   if (isLoading) {
     return (
-      <div className="navbar bg-white border-b border-gray-200 px-4 sm:px-6 py-2 flex items-center justify-end">
-        <div className="animate-pulse text-gray-500">Loading...</div>
+      <div className="navbar bg-base-100 border-b border-base-300 px-4 sm:px-6 py-2 flex items-center justify-end">
+        <div className="animate-pulse text-muted">Loading...</div>
       </div>
     );
   }
 
   if (error || !user) {
     return (
-      <div className="navbar bg-white border-b border-gray-200 px-4 sm:px-6 py-2 flex items-center justify-end">
+      <div className="navbar bg-base-100 border-b border-base-300 px-4 sm:px-6 py-2 flex items-center justify-end">
         <div className="text-red-500">{error || "Failed to load user data"}</div>
       </div>
     );
   }
 
   return (
-    <header className="navbar bg-white border-b border-gray-200 px-4 sm:px-6 py-2 flex items-center justify-end">
+    <header className="navbar bg-base-100 border-b border-base-300 px-4 sm:px-6 py-2 flex items-center justify-end">
       <div className="flex items-center space-x-4 sm:space-x-6">
         <NotificationBell />
         <UserProfile user={user} avatarSrc={avatarSrc} />

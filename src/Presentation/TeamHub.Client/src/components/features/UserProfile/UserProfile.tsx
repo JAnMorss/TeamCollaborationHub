@@ -54,17 +54,17 @@ export default function UserProfile({ user, avatarSrc }: UserProfileProps) {
       </button>
 
       {showDropdown && (
-        <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
-          <div className="p-3 border-b border-gray-200">
-            <p className="text-sm font-medium text-gray-900">{fullName}</p>
-            <p className="text-xs text-gray-500">{user.email}</p>
+        <div className="absolute right-0 mt-2 w-48 bg-base-100 rounded-lg shadow-xl border border-base-300 z-50">
+          <div className="p-3 border-b border-base-300">
+            <p className="text-sm font-medium text-theme">{fullName}</p>
+            <p className="text-xs text-muted">{user.email}</p>
           </div>
 
           <div className="py-1">
-            <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50">
+            <button className="w-full px-4 py-2 text-left text-sm text-muted hover:bg-gray-50">
               Profile Settings
             </button>
-            <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50">
+            <button className="w-full px-4 py-2 text-left text-sm text-muted hover:bg-gray-50">
               Account
             </button>
             <hr className="my-1" />

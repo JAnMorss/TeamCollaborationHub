@@ -6,7 +6,7 @@ interface DashboardRecentProjectsProps {
 
 export default function DashboardRecentProjects({ projects }: DashboardRecentProjectsProps) {
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+    <div className="card card-hover rounded-xl border border-gray-200">
       <div className="p-4 sm:p-6 border-b border-gray-200 flex justify-between items-center">
         <h3 className="text-lg sm:text-xl font-semibold text-gray-900">Recent Projects</h3>
       </div>
@@ -29,7 +29,7 @@ export default function DashboardRecentProjects({ projects }: DashboardRecentPro
               return (
                 <div
                   key={project.id}
-                  className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-50 rounded-lg gap-3"
+                  className="flex flex-col sm:flex-row sm:items-center justify-between p-4 card-item rounded-lg gap-3"
                 >
                   <div className="flex items-center space-x-3 sm:space-x-4">
                     <div

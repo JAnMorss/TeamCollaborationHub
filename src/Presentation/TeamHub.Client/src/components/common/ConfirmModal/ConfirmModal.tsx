@@ -23,13 +23,13 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl shadow-lg p-6 w-96 animate-fadeIn">
-        <h2 className="text-lg font-semibold text-gray-800 mb-2">{title}</h2>
-        <p className="text-gray-600 mb-6">{message}</p>
+      <div className="bg-base-100 rounded-xl shadow-lg p-6 w-96 animate-fadeIn">
+        <h2 className="text-lg font-semibold text-theme mb-2">{title}</h2>
+        <p className="text-muted mb-6">{message}</p>
         <div className="flex justify-end space-x-3">
           <button
             onClick={onCancel}
-            className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition"
+            className="px-4 py-2 rounded-lg border border-base-300 text-muted hover:bg-gray-100 transition"
           >
             {cancelText}
           </button>

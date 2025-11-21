@@ -64,7 +64,6 @@ const TaskPage: React.FC = () => {
     load();
   }, []);
 
-  // Clear messages after 3 seconds
   useEffect(() => {
     if (errorMessage || successMessage) {
       const timer = setTimeout(() => {
@@ -153,7 +152,6 @@ const TaskPage: React.FC = () => {
   };
 
   const handleTaskModalClose = async () => {
-    // Refresh the specific task to get updated attachments
     if (selectedTask) {
       await fetchTasks();
     }
@@ -161,8 +159,7 @@ const TaskPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-slate-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 p-6">
-      {/* Toast Notifications */}
+    <div className="min-h-screen page-bg p-6">
       {(successMessage || errorMessage) && (
         <div className="toast toast-top toast-end z-50">
           {successMessage && (
@@ -179,10 +176,10 @@ const TaskPage: React.FC = () => {
       )}
 
       <div className="mb-8 animate-fade-in">
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent mb-2">
+        <h1 className="task-title text-4xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent mb-2">
           All Tasks
         </h1>
-        <p className="text-slate-600 dark:text-slate-400 text-lg">
+        <p className="task-subtitle text-slate-600 dark:text-slate-400 text-lg">
           View and manage your tasks
         </p>
       </div>

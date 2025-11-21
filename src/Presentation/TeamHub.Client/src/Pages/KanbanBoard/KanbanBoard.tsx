@@ -74,6 +74,22 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, projectName, onBac
 
   const statuses: TaskStatus[] = ["Todo", "InProgress", "Review", "Completed"]
 
+  function hexToRgba(hex: string, alpha = 0.12) {
+    const h = hex.replace('#', '')
+    const bigint = parseInt(h, 16)
+    const r = (bigint >> 16) & 255
+    const g = (bigint >> 8) & 255
+    const b = bigint & 255
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`
+  }
+
+  const statusHex: Record<TaskStatus, string> = {
+    Todo: '#fda4af',
+    InProgress: '#60a5fa',
+    Review: '#f59e0b',
+    Completed: '#34d399',
+  }
+
   const fetchTasks = async () => {
     setLoading(true)
     try {
@@ -213,7 +229,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, projectName, onBac
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-slate-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 p-6">
+    <div className="min-h-screen page-bg p-6">
 
       <div className="mb-8 animate-fade-in">
         <div className="flex justify-between items-start gap-4">
@@ -243,8 +259,8 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, projectName, onBac
             <div className={`${statusConfig[status].header} rounded-t-xl p-4 border-b-4`}>
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-3">
-                  <h3 className="font-bold text-base text-slate-900 dark:text-white">{status}</h3>
-                  <span className={`badge ${statusConfig[status].badge} badge-sm`}>
+                  <h3 className="font-bold text-base text-theme dark:text-white px-2">{status}</h3>
+                  <span className={`badge ${statusConfig[status].badge} badge-sm px-2`}>
                     {tasks.filter((t) => t.status === status).length}
                   </span>
                 </div>
@@ -320,7 +336,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId, projectName, onBac
                           title="Assign / Unassign Task"
                         >
                           {task.assignedToId ? (
-                            <BsPersonCheck size={18} className="text-emerald-500" />
+                            <BsPersonCheck size={18} className="text-emerald-500 " />
                           ) : (
                             <BsPersonX size={18} />
                           )}

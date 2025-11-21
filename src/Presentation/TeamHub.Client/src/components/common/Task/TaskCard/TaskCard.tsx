@@ -14,39 +14,53 @@ type TaskCardProps = {
   onDelete: (task: TaskResponse) => void;
 };
 
-const priorityConfig: Record<string, { label: string; color: string }> = {
-  Low: { label: "Low", color: "badge-success" },
-  Medium: { label: "Medium", color: "badge-warning" },
-  High: { label: "High", color: "badge-error" },
+const priorityConfig: Record<string, { label: string; color: string; hex: string }> = {
+  Low: { label: "Low", color: "badge-success", hex: "#10b981" },
+  Medium: { label: "Medium", color: "badge-warning", hex: "#f59e0b" },
+  High: { label: "High", color: "badge-error", hex: "#ef4444" },
 };
+
+function hexToRgba(hex: string, alpha = 0.12) {
+  const h = hex.replace('#', '');
+  const bigint = parseInt(h, 16);
+  const r = (bigint >> 16) & 255;
+  const g = (bigint >> 8) & 255;
+  const b = bigint & 255;
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
 
 const TaskCard: React.FC<TaskCardProps> = ({ task, currentUserId, onSelect, onEdit, onAssign, onDelete }) => {
   const isAssignedToCurrentUser = task.assignedToId === currentUserId;
 
   return (
     <div
-      className={`card bg-base-100 shadow-md hover:shadow-xl p-5 rounded-xl flex flex-col cursor-pointer transition-all duration-300 border border-base-300 ${
-        isAssignedToCurrentUser ? "ring-2 ring-primary ring-offset-2 ring-offset-base-100" : ""
+      className={`card card-hover p-5 rounded-xl flex flex-col cursor-pointer transition-all duration-300 border border-theme ${
+        isAssignedToCurrentUser ? "ring-2 ring-primary ring-offset-2" : ""
       }`}
     >
       <div onClick={() => onSelect(task)} className="flex-1 space-y-3">
-        <p className="font-bold text-lg text-base-content break-words line-clamp-2 hover:text-primary transition-colors">
+        <p className="font-bold text-lg text-theme break-words line-clamp-2 hover:text-accent transition-colors">
           {task.title}
         </p>
-        <p className="text-sm text-base-content/60">
-          <span className="font-medium">Created by:</span> {task.createdBy}
+        <p className="text-sm text-muted">
+          <span className="font-medium text-theme">Created by:</span> {task.createdBy}
         </p>
         <div className="flex flex-wrap gap-2 items-center">
           <span className="badge badge-outline badge-sm">{task.projectName}</span>
           <span className="badge badge-ghost badge-sm">{task.status}</span>
         </div>
         {task.priority && (
-          <div className={`badge ${priorityConfig[task.priority]?.color || "badge-ghost"} badge-sm font-semibold gap-1 inline-flex`}>
-            <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
+          <div
+            className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold task-priority-pill"
+            style={{
+              backgroundColor: hexToRgba(priorityConfig[task.priority]?.hex || '#9ca3af', 0.12),
+              color: priorityConfig[task.priority]?.hex || '#9ca3af',
+            }}
+          >
             {priorityConfig[task.priority]?.label || task.priority}
           </div>
         )}
-        <div className="space-y-1.5 text-sm text-base-content/70 pt-2">
+        <div className="space-y-1.5 text-sm text-muted pt-2">
           {task.dueDate && (
             <div className="flex items-center gap-2">
               <span>📅</span>
@@ -56,13 +70,12 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, currentUserId, onSelect, onEd
           <div className="flex items-center gap-2">
             <span>👤</span>
             <span className="text-xs">
-              {task.assignedTo || <span className="italic text-base-content/40">Unassigned</span>}
+              {task.assignedTo || <span className="italic text-muted">Unassigned</span>}
             </span>
           </div>
         </div>
       </div>
-
-      <div className="flex gap-2 mt-4 pt-3 border-t border-base-300">
+      <div className="flex gap-2 mt-4 pt-3 border-t border-theme">
         <button
           onClick={() => onEdit(task)}
           className="btn btn-ghost btn-sm btn-square text-info hover:bg-info/10"
@@ -72,7 +85,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, currentUserId, onSelect, onEd
 
         <button
           onClick={() => onAssign(task)}
-          className={`btn btn-ghost btn-sm btn-square ${task.assignedToId ? 'text-success hover:bg-success/10' : 'hover:bg-base-300'}`}
+          className={`btn btn-ghost btn-sm btn-square ${task.assignedToId ? 'text-success hover:bg-success/10' : 'hover:bg-base-100'}`}
         >
           {task.assignedToId ? (
             <BsPersonCheck size={18} />

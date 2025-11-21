@@ -17,11 +17,11 @@ const NotificationDropdown = forwardRef<HTMLDivElement, NotificationDropdownProp
     return (
       <div
         ref={ref}
-        className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-50 animate-in slide-in-from-top-2 duration-200"
+        className="absolute right-0 mt-2 w-80 bg-base-100 rounded-lg shadow-xl border border-base-300 z-50 animate-in slide-in-from-top-2 duration-200"
       >
-        <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-          <h3 className="font-semibold text-gray-900">Notifications</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-sm">
+        <div className="p-4 border-b border-base-300 flex items-center justify-between">
+          <h3 className="font-semibold text-theme">Notifications</h3>
+          <button onClick={onClose} className="text-muted hover:text-theme text-sm">
             ✕
           </button>
         </div>
@@ -29,13 +29,13 @@ const NotificationDropdown = forwardRef<HTMLDivElement, NotificationDropdownProp
         <div className="max-h-96 overflow-y-auto">
           {notifications.length === 0 ? (
             <div className="p-8 text-center">
-              <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                <FaRegBell className="w-6 h-6 text-gray-400" />
+              <div className="w-12 h-12 bg-base-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <FaRegBell className="w-6 h-6 text-muted" />
               </div>
-              <p className="text-sm text-gray-500">No notifications</p>
+              <p className="text-sm text-muted">No notifications</p>
             </div>
           ) : (
-            <div className="divide-y divide-gray-100">
+              <div className="divide-y divide-base-300">
               {notifications.map((notif) => (
                 <div
                   key={notif.id}
@@ -53,13 +53,13 @@ const NotificationDropdown = forwardRef<HTMLDivElement, NotificationDropdownProp
                     <div className="flex-1 min-w-0">
                       <p
                         className={`text-sm ${
-                          !notif.isRead ? "font-semibold text-gray-900" : "text-gray-900"
+                          !notif.isRead ? "font-semibold text-theme" : "text-theme"
                         }`}
                       >
                         {notif.title}
                       </p>
-                      <p className="text-sm text-gray-600 mt-1 line-clamp-2">{notif.message}</p>
-                      <p className="text-xs text-gray-500 mt-2">{formatTime(notif.createdAt)}</p>
+                      <p className="text-sm text-muted mt-1 line-clamp-2">{notif.message}</p>
+                      <p className="text-xs text-muted mt-2">{formatTime(notif.createdAt)}</p>
                     </div>
                   </div>
                 </div>
