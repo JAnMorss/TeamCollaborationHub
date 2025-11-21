@@ -8,9 +8,9 @@ public sealed class EmailAddress : ValueObject
 {
     public string Value { get; private set; } 
 
-    private EmailAddress() { } 
+    private EmailAddress() { }
 
-    private EmailAddress(string value) 
+    public EmailAddress(string value) 
     {
         Value = value;
     }

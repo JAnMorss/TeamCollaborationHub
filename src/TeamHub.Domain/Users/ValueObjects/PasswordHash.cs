@@ -9,7 +9,7 @@ public sealed class PasswordHash : ValueObject
 {
     public string Value { get; }
 
-    private PasswordHash(string value)
+    public PasswordHash(string value)
     {
         Value = value;
     }

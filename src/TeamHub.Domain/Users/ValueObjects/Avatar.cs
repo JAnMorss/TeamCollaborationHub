@@ -7,7 +7,7 @@ public sealed class Avatar : ValueObject
 {
     public string Value { get; }
 
-    private Avatar(string value)
+    public Avatar(string value)
     {
         Value = value;
     }
