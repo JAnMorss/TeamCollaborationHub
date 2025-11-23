@@ -2,4 +2,4 @@
 
 namespace TeamHub.Domain.Projects.Events;
 
-public sealed record ProjectUpdatedDomainEvent(Guid id) : IDomainEvent;
+public sealed record ProjectUpdatedDomainEvent(Guid Id) : IDomainEvent;

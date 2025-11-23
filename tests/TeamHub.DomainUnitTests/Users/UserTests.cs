@@ -1,7 +1,6 @@
 ﻿using FluentAssertions;
 using TeamHub.Domain.Users.Entities;
 using TeamHub.Domain.Users.Enums;
-using TeamHub.Domain.Users.Errors;
 using TeamHub.Domain.Users.Events;
 using TeamHub.DomainUnitTests.Infrastructure;
 

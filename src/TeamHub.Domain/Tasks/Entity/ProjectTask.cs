@@ -90,11 +90,11 @@ public sealed class ProjectTask : BaseEntity
     }
 
     public Result UpdateDetails(
-    string title,
-    string description,
-    TaskPriority priority,
-    DateTime? dueDate,
-    Taskstatus status)  
+        string title,
+        string description,
+        TaskPriority priority,
+        DateTime? dueDate,
+        Taskstatus status)  
     {
         bool changed = false;
 
