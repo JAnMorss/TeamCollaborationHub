@@ -1,5 +1,4 @@
-﻿using TeamHub.Domain.Projects.ValueObjects;
-using TeamHub.SharedKernel.Domain.Entities;
+﻿using TeamHub.SharedKernel.Domain.Entities;
 using TeamHub.SharedKernel.ErrorHandling;
 
 namespace TeamHub.Domain.Tasks.ValueObjects;

@@ -33,7 +33,7 @@ export default function Sidebar({ onCollapseChange }: SidebarProps) {
         className="lg:hidden absolute top-2.5 left-4 z-30 p-2 rounded-md bg-base-100 border border-base-300 shadow-md"
         onClick={() => setIsOpen(true)}
       >
-        <FiMenu className="w-6 h-6 text-theme" />
+        <FiMenu className="w-6 h-6 text-black dark:text-white" />
       </button>
 
       <div
@@ -78,7 +78,7 @@ export default function Sidebar({ onCollapseChange }: SidebarProps) {
                 className={`flex items-center px-4 py-2 rounded-lg transition-all duration-200
                     ${
                       isActive
-                        ? "bg-blue-600 text-white shadow-sm"
+                        ? "bg-blue-600 text-black dark:text-white shadow-sm"
                         : "text-muted hover:bg-blue-100 hover:text-blue-700"
                     }`}
               >
@@ -101,9 +101,9 @@ export default function Sidebar({ onCollapseChange }: SidebarProps) {
             className="w-full flex items-center px-3 py-2 rounded-md hover:bg-gray-100 text-muted"
           >
             {theme === 'dark' ? (
-              <FiSun className="w-5 h-5" />
+              <FiSun className="w-5 h-5 text-white" />
             ) : (
-              <FiMoon className="w-5 h-5" />
+              <FiMoon className="w-5 h-5 text-black" />
             )}
             <span
               className={`ml-3 font-medium whitespace-nowrap transition-all duration-200 ${
