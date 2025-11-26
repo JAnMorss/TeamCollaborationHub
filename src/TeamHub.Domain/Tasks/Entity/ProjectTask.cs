@@ -66,20 +66,16 @@ public sealed class ProjectTask : BaseEntity
         Taskstatus status,
         DateTime? dueDate)
     {
-        var titleResult = Title.Create(title);
-        if (titleResult.IsFailure)
-            return Result.Failure<ProjectTask>(titleResult.Error);
+        var titleResult = ResultHelper.CreateOrFail(Title.Create, title);
 
-        var descriptionResult = Description.Create(description);
-        if (descriptionResult.IsFailure)
-            return Result.Failure<ProjectTask>(descriptionResult.Error);
+        var descriptionResult = ResultHelper.CreateOrFail(Description.Create, description);
 
         var task = new ProjectTask(
             id,
             projectId,
             createdById,
-            titleResult.Value,
-            descriptionResult.Value,
+            titleResult,
+            descriptionResult,
             priority,
             status,
             dueDate);
@@ -100,21 +96,17 @@ public sealed class ProjectTask : BaseEntity
 
         if (!string.IsNullOrWhiteSpace(title) && title != Title?.Value)
         {
-            var titleResult = Title.Create(title);
-            if (titleResult.IsFailure)
-                return Result.Failure(titleResult.Error);
+            var titleResult = ResultHelper.CreateOrFail(Title.Create, title);
 
-            Title = titleResult.Value;
+            Title = titleResult;
             changed = true;
         }
 
         if (!string.IsNullOrWhiteSpace(description) && description != Description?.Value)
         {
-            var descriptionResult = Description.Create(description);
-            if (descriptionResult.IsFailure)
-                return Result.Failure(descriptionResult.Error);
+            var descriptionResult = ResultHelper.CreateOrFail(Description.Create, description);
 
-            Description = descriptionResult.Value;
+            Description = descriptionResult;
             changed = true;
         }
 

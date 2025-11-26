@@ -29,7 +29,7 @@ public sealed class User : BaseEntity
         PasswordHash passwordHash,
         bool isActive) : base(id)
     {
-        IdentityId = identityId;  
+        IdentityId = identityId;
         FirstName = firstName;
         LastName = lastName;
         Email = email;
@@ -54,9 +54,9 @@ public sealed class User : BaseEntity
 
     public IReadOnlyCollection<ProjectMember> ProjectMemberships
         => _projectMemberships.AsReadOnly();
-    public IReadOnlyCollection<ProjectTask> AssignedTasks 
+    public IReadOnlyCollection<ProjectTask> AssignedTasks
         => _assignedTasks.AsReadOnly();
-    public IReadOnlyCollection<Notification> Notifications 
+    public IReadOnlyCollection<Notification> Notifications
         => _notifications.AsReadOnly();
     public IReadOnlyCollection<RefreshToken> RefreshTokens
         => _refreshTokens.AsReadOnly();
@@ -69,40 +69,23 @@ public sealed class User : BaseEntity
         string? avatar,
         string passwordHash)
     {
-        var firstNameResult = FirstName.Create(firstName);
-        if (firstNameResult.IsFailure)
-            return Result.Failure<User>(firstNameResult.Error);
+        var firstNameVo = ResultHelper.CreateOrFail(FirstName.Create, firstName);
+        var lastNameVo = ResultHelper.CreateOrFail(LastName.Create, lastName);
+        var emailVo = ResultHelper.CreateOrFail(EmailAddress.Create, email);
+        var passwordVo = ResultHelper.CreateOrFail(PasswordHash.Create, passwordHash);
 
-        var lastNameResult = LastName.Create(lastName);
-        if (lastNameResult.IsFailure)
-            return Result.Failure<User>(lastNameResult.Error);
-
-        var emailResult = EmailAddress.Create(email);
-        if (emailResult.IsFailure)
-            return Result.Failure<User>(UserErrors.InvalidEmail);
-
-        Avatar? avatarValue = null;
+        Avatar? avatarVo = null;
         if (!string.IsNullOrWhiteSpace(avatar))
-        {
-            var avatarResult = Avatar.Create(avatar);
-            if (avatarResult.IsFailure)
-                return Result.Failure<User>(UserErrors.AvatarInvalidUrl);
-
-            avatarValue = avatarResult.Value;
-        }
-
-        var passwordResult = PasswordHash.Create(passwordHash);
-        if (passwordResult.IsFailure)
-            return Result.Failure<User>(passwordResult.Error);
+            avatarVo = ResultHelper.CreateOrFail(Avatar.Create, avatar);
 
         var user = new User(
             id,
             Guid.NewGuid().ToString(),
-            firstNameResult.Value,
-            lastNameResult.Value,
-            emailResult.Value,
-            avatarValue,
-            passwordResult.Value,
+            firstNameVo,
+            lastNameVo,
+            emailVo,
+            avatarVo,
+            passwordVo,
             true);
 
         user.RaiseDomainEvent(new UserCreatedDomainEvent(user.Id));
@@ -119,31 +102,19 @@ public sealed class User : BaseEntity
 
         if (!string.IsNullOrWhiteSpace(firstName) && firstName != FirstName?.Value)
         {
-            var firstNameResult = FirstName.Create(firstName);
-            if (firstNameResult.IsFailure)
-                return Result.Failure<User>(firstNameResult.Error);
-
-            FirstName = firstNameResult.Value;
+            FirstName = ResultHelper.CreateOrFail(FirstName.Create, firstName);
             changed = true;
         }
 
         if (!string.IsNullOrWhiteSpace(lastName) && lastName != LastName?.Value)
         {
-            var lastNameResult = LastName.Create(lastName);
-            if (lastNameResult.IsFailure)
-                return Result.Failure<User>(lastNameResult.Error);
-
-            LastName = lastNameResult.Value;
+            LastName = ResultHelper.CreateOrFail(LastName.Create, lastName);
             changed = true;
         }
 
         if (!string.IsNullOrWhiteSpace(email) && email != Email?.Value)
         {
-            var emailResult = EmailAddress.Create(email);
-            if (emailResult.IsFailure)
-                return Result.Failure<User>(emailResult.Error);
-
-            Email = emailResult.Value;
+            Email = ResultHelper.CreateOrFail(EmailAddress.Create, email);
             changed = true;
         }
 
@@ -162,6 +133,7 @@ public sealed class User : BaseEntity
             return Result.Failure(UserErrors.AlreadyActive);
 
         IsActive = true;
+
         RaiseDomainEvent(new UserActivatedDomainEvent(Id));
         return Result.Success();
     }
@@ -172,6 +144,7 @@ public sealed class User : BaseEntity
             return Result.Failure(UserErrors.AlreadyInactive);
 
         IsActive = false;
+
         RaiseDomainEvent(new UserDeactiveDomainEvent(Id));
         return Result.Success();
     }
@@ -190,9 +163,9 @@ public sealed class User : BaseEntity
         return Result.Success();
     }
 
-    public void SetIdentityId(string identityId) 
+    public void SetIdentityId(string identityId)
         => IdentityId = identityId;
-    
+
     public Result PromoteToAdmin()
     {
         if (Role == UserRole.Admin)

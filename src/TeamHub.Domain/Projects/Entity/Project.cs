@@ -55,24 +55,16 @@ public sealed class Project : BaseEntity
         string description,
         string color)
     {
-        var nameResult = ProjectName.Create(name);
-        if (nameResult.IsFailure)
-            return Result.Failure<Project>(nameResult.Error);
-
-        var descriptionResult = ProjectDescription.Create(description);
-        if (descriptionResult.IsFailure)
-            return Result.Failure<Project>(descriptionResult.Error);
-
-        var colorResult = ProjectColor.Create(color);
-        if (colorResult.IsFailure)
-            return Result.Failure<Project>(colorResult.Error);
+        var nameResult = ResultHelper.CreateOrFail(ProjectName.Create, name);
+        var descriptionResult = ResultHelper.CreateOrFail(ProjectDescription.Create, description);
+        var colorResult = ResultHelper.CreateOrFail(ProjectColor.Create, color);
 
         var project = new Project(
             id,
             createdById,
-            nameResult.Value,
-            descriptionResult.Value,
-            colorResult.Value);
+            nameResult,
+            descriptionResult,
+            colorResult);
 
         project.RaiseDomainEvent(new ProjectCreatedDomainEvent(project.Id));
 
@@ -88,31 +80,25 @@ public sealed class Project : BaseEntity
 
         if (!string.IsNullOrWhiteSpace(name) && name != Name?.Value)
         {
-            var nameResult = ProjectName.Create(name);
-            if (nameResult.IsFailure)
-                return Result.Failure(nameResult.Error);
+            var nameResult = ResultHelper.CreateOrFail(ProjectName.Create, name);
 
-            Name = nameResult.Value;
+            Name = nameResult;
             changed = true;
         }
 
         if (!string.IsNullOrWhiteSpace(description) && description != Description?.Value)
         {
-            var descriptionResult = ProjectDescription.Create(description);
-            if (descriptionResult.IsFailure)
-                return Result.Failure(descriptionResult.Error);
+            var descriptionResult = ResultHelper.CreateOrFail(ProjectDescription.Create, description);
 
-            Description = descriptionResult.Value;
+            Description = descriptionResult;
             changed = true;
         }
 
         if (!string.IsNullOrWhiteSpace(color) && color != Color?.Value)
         {
-            var colorResult = ProjectColor.Create(color);
-            if (colorResult.IsFailure)
-                return Result.Failure(colorResult.Error);
+            var colorResult = ResultHelper.CreateOrFail(ProjectColor.Create, color);
 
-            Color = colorResult.Value;
+            Color = colorResult;
             changed = true;
         }
 
