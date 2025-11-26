@@ -102,19 +102,25 @@ public sealed class User : BaseEntity
 
         if (!string.IsNullOrWhiteSpace(firstName) && firstName != FirstName?.Value)
         {
-            FirstName = ResultHelper.CreateOrFail(FirstName.Create, firstName);
+            var firstNameResult = ResultHelper.CreateOrFail(FirstName.Create, firstName);
+
+            FirstName = firstNameResult;
             changed = true;
         }
 
         if (!string.IsNullOrWhiteSpace(lastName) && lastName != LastName?.Value)
         {
-            LastName = ResultHelper.CreateOrFail(LastName.Create, lastName);
+            var lastNameResult = ResultHelper.CreateOrFail(LastName.Create, lastName);
+
+            LastName = lastNameResult;
             changed = true;
         }
 
         if (!string.IsNullOrWhiteSpace(email) && email != Email?.Value)
         {
-            Email = ResultHelper.CreateOrFail(EmailAddress.Create, email);
+            var emailResult = ResultHelper.CreateOrFail(EmailAddress.Create, email);
+
+            Email = emailResult;
             changed = true;
         }
 
