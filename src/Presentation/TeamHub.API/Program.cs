@@ -6,6 +6,7 @@ using TeamHub.Application;
 using TeamHub.Infrastructure;
 using TeamHub.Infrastructure.Seeding;
 using TeamHub.SignalR.Hubs;
+using TeamHub.EmailService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddEmailService(builder.Configuration);
 
 builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
 builder.Services.AddSwaggerDocumentation();

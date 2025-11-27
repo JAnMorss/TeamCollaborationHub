@@ -1,4 +1,4 @@
-﻿namespace TeamHub.API.Controllers.Auth;
+﻿namespace TeamHub.API.Controllers.Auth.Requests;
 
 public record LoginRequest(
     string Email,
