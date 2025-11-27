@@ -198,4 +198,16 @@ public sealed class User : BaseEntity
     {
         _refreshTokens.Add(refreshToken);
     }
+
+    public Result ChangePassword(string newPasswordHash)
+    {
+        var passwordResult = PasswordHash.Create(newPasswordHash);
+        if (passwordResult.IsFailure)
+            return Result.Failure(UserErrors.InvalidPassword);
+
+        PasswordHash = passwordResult.Value;
+
+        RaiseDomainEvent(new UserPasswordChangedDomainEvent(Id));
+        return Result.Success();
+    }
 }

@@ -29,11 +29,11 @@ public static class UserErrors
         "The provided credentials are incorrect.");
 
     public static readonly Error AlreadyAdmin = new(
-        "User.AlreadyAdmin", 
+        "User.AlreadyAdmin",
         "The user is already an admin.");
 
     public static readonly Error AlreadyUser = new(
-        "User.AlreadyUser", 
+        "User.AlreadyUser",
         "The user is already a regular user.");
 
     public static readonly Error AvatarNotFound = new(
@@ -43,5 +43,17 @@ public static class UserErrors
     public static readonly Error InvalidAvatar = new(
         "User.InvalidAvatar",
         "The user's avatar is invalid.");
+
+    public static readonly Error InvalidResetRequest = new(
+        "User.InvalidResetRequest",
+        "The user's reset request is invalid.");
+
+    public static readonly Error InvalidResetToken = new(
+        "User.InvalidResetToken",
+        "The user's reset token is invalid.");
+
+    public static readonly Error InvalidPassword = new(
+        "User.InvalidPassword",
+        "The provided password does not meet the required criteria.");
 
 }
