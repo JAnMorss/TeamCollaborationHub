@@ -78,6 +78,7 @@ public static class DependencyInjection
         services.AddJwtAuthentication(configuration);
 
         services.AddScoped<IJwtProvider, JwtProvider>();
+        services.AddTransient<IPasswordResetTokenProvider, PasswordResetTokenProvider>();
     }
 
     private static void AddApiVersioning(IServiceCollection services)
