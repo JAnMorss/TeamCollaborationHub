@@ -3,7 +3,6 @@ using TeamHub.Domain.Projects.Entity;
 using TeamHub.Domain.Projects.Events;
 using TeamHub.Domain.Projects.Errors;
 using TeamHub.Domain.ProjectMembers.Enums;
-using TeamHub.Domain.Users.Entities;
 using TeamHub.DomainUnitTests.Infrastructure;
 using TeamHub.DomainUnitTests.Users;
 
@@ -11,35 +10,14 @@ namespace TeamHub.DomainUnitTests.Projects;
 
 public class ProjectTests : BaseTest
 {
-    private static Project CreateValidProject()
-    {
-        var user = CreateValidUser();
-        var result = Project.Create(
-            Guid.NewGuid(),
-            user.Id,
-            ProjectData.Name.Value,
-            ProjectData.Description.Value,
-            ProjectData.Color.Value);
-        return result.Value;
-    }
-
-    private static User CreateValidUser()
-    {
-        return User.Create(
-            Guid.NewGuid(),
-            UserData.FirstName.Value,
-            UserData.LastName.Value,
-            UserData.Email.Value,
-            UserData.Avatar.Value,
-            UserData.passwordHash.Value).Value;
-    }
+    
 
     [Fact]
     public void Create_Should_Return_Success_And_Raise_Event()
     {
         // Arrange
-        var user = CreateValidUser();
-        var project = CreateValidProject();
+        var user = UserData.Create();
+        var project = ProjectData.Create();
 
         // Act
         var result = Project.Create(
@@ -65,7 +43,7 @@ public class ProjectTests : BaseTest
     public void UpdateDetails_Should_Update_Project_Values_And_Raise_Event()
     {
         // Arrange
-        var project = CreateValidProject();
+        var project = ProjectData.Create();
         var newName = "Updated Project";
         var newDescription = "Updated Description";
         var newColor = "#0000FF";
@@ -87,7 +65,7 @@ public class ProjectTests : BaseTest
     public void UpdateDetails_Should_Fail_When_No_Changes()
     {
         // Arrange
-        var project = CreateValidProject();
+        var project = ProjectData.Create();
 
         // Act
         var result = project.UpdateDetails(
@@ -104,8 +82,8 @@ public class ProjectTests : BaseTest
     public void AddMember_Should_Add_User_And_Raise_Event()
     {
         // Arrange
-        var project = CreateValidProject();
-        var user = CreateValidUser();
+        var user = UserData.Create();
+        var project = ProjectData.Create();
         var role = ProjectRole.Member;
 
         // Act
@@ -124,8 +102,8 @@ public class ProjectTests : BaseTest
     public void AddMember_Should_Fail_When_User_Already_Member()
     {
         // Arrange
-        var project = CreateValidProject();
-        var user = CreateValidUser();
+        var user = UserData.Create();
+        var project = ProjectData.Create();
         project.AddMember(user, ProjectRole.Member);
 
         // Act
@@ -140,8 +118,8 @@ public class ProjectTests : BaseTest
     public void RemoveMember_Should_Remove_User_And_Raise_Event()
     {
         // Arrange
-        var project = CreateValidProject();
-        var user = CreateValidUser();
+        var user = UserData.Create();
+        var project = ProjectData.Create();
         project.AddMember(user, ProjectRole.Member);
 
         // Act
@@ -160,7 +138,7 @@ public class ProjectTests : BaseTest
     public void RemoveMember_Should_Fail_When_User_Not_Member()
     {
         // Arrange
-        var project = CreateValidProject();
+        var project = ProjectData.Create();
         var nonMemberId = Guid.NewGuid();
 
         // Act
@@ -175,7 +153,7 @@ public class ProjectTests : BaseTest
     public void Archive_Should_Set_IsActive_False_And_Raise_Event()
     {
         // Arrange
-        var project = CreateValidProject();
+        var project = ProjectData.Create();
 
         // Act
         var result = project.Archive();
@@ -193,7 +171,7 @@ public class ProjectTests : BaseTest
     public void Archive_Should_Fail_When_Already_Archived()
     {
         // Arrange
-        var project = CreateValidProject();
+        var project = ProjectData.Create();
         project.Archive();
 
         // Act

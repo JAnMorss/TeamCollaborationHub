@@ -8,16 +8,6 @@ namespace TeamHub.DomainUnitTests.Users;
 
 public class UserTests : BaseTest
 {
-    private static User CreateValidUser()
-    {
-        return User.Create(
-            Guid.NewGuid(),
-            UserData.FirstName.Value,
-            UserData.LastName.Value,
-            UserData.Email.Value,
-            UserData.Avatar.Value,
-            UserData.passwordHash.Value).Value;
-    }
 
     [Fact]
     public void Create_Should_ShouldReturnSuccess_And_Raise_Event()
@@ -29,7 +19,7 @@ public class UserTests : BaseTest
             UserData.LastName.Value,
             UserData.Email.Value,
             UserData.Avatar.Value,
-            UserData.passwordHash.Value);
+            UserData.PasswordHash.Value);
 
         // Assert
         result.IsSuccess.Should().BeTrue();
@@ -40,7 +30,7 @@ public class UserTests : BaseTest
         user.LastName.Value.Should().Be(UserData.LastName.Value);
         user.Email.Value.Should().Be(UserData.Email.Value);
         user.Avatar!.Value.Should().Be(UserData.Avatar.Value);
-        user.PasswordHash.Value.Should().Be(UserData.passwordHash.Value);
+        user.PasswordHash.Value.Should().Be(UserData.PasswordHash.Value);
         user.IsActive.Should().BeTrue();
         user.Id.Should().NotBe(Guid.Empty);
 
@@ -52,7 +42,7 @@ public class UserTests : BaseTest
     public void UpdateDetails_Should_Update_User_Values_And_Raise_Event()
     {
         // Arrange
-        var user = CreateValidUser();
+        var user = UserData.Create();
         var newFirstName = "Jane";
         var newLastName = "Smith";
         var newEmail = "Jane.smith@test.com";
@@ -75,7 +65,7 @@ public class UserTests : BaseTest
     public void Activate_Should_Set_IsActive_True_And_Raise_Event()
     {
         // Arrange
-        var user = CreateValidUser();
+        var user = UserData.Create();
         user.Deactivate();
 
         // Act
@@ -93,7 +83,7 @@ public class UserTests : BaseTest
     public void Deactivate_Should_Set_IsActive_False_And_Raise_Event()
     {
         // Arrange
-        var user = CreateValidUser();
+        var user = UserData.Create();
 
         // Act
         var result = user.Deactivate();
@@ -110,7 +100,7 @@ public class UserTests : BaseTest
     public void UpdateAvatar_Should_Update_Avatar_And_Raise_Event()
     {
         // Arrange
-        var user = CreateValidUser();
+        var user = UserData.Create();
         var newAvatarUrl = "https://example.com/new-avatar.png";
 
         // Act
@@ -129,7 +119,7 @@ public class UserTests : BaseTest
     public void PromoteToAdmin_Should_SetRole_And_Raise_Event()
     {
         // Arrange
-        var user = CreateValidUser();
+        var user = UserData.Create();
 
         // Act
         var result = user.PromoteToAdmin();
@@ -146,7 +136,7 @@ public class UserTests : BaseTest
     public void DemoteToUser_Should_SetRole_And_Raise_Event()
     {
         // Arrange
-        var user = CreateValidUser();
+        var user = UserData.Create();
         user.PromoteToAdmin();
 
         // Act
@@ -166,7 +156,7 @@ public class UserTests : BaseTest
     public void AddRefreshToken_Should_Add_Token_To_Collection()
     {
         // Arrange
-        var user = CreateValidUser();
+        var user = UserData.Create();
         var token = new RefreshToken(Guid.NewGuid(), "value123", DateTime.UtcNow.AddDays(7));
 
         // Act
