@@ -24,7 +24,7 @@ public sealed class UpdateProjectCommandHandler : ICommandHandler<UpdateProjectC
         UpdateProjectCommand request, 
         CancellationToken cancellationToken)
     {
-        var project = await _projectRepository.GetByIdAsync(request.Id, cancellationToken);
+        var project = await _projectRepository.GetByIdAndUserIdAsync(request.Id, request.UserId, cancellationToken);
         if (project is null)
             return Result.Failure<ProjectResponse>(ProjectErrors.NotFound);
 

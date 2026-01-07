@@ -24,15 +24,16 @@ public sealed class GetAllProjectsQueryHandler
     {
         var query = request.Query ?? new QueryObject();
 
-        var projects = await _projectRepository.GetAllByUserAsync(query, request.UserId, cancellationToken);
-        if (projects is null)
-            return Result.Failure<PaginatedResult<ProjectResponse>>(ProjectErrors.NotFound);
+        var projects = await _projectRepository.GetAllForUserAsync(request.UserId, query, cancellationToken);
+
+        if (projects is null || !projects.Any())
+            return Result.Failure<PaginatedResult<ProjectResponse>>(ProjectErrors.EmptyCategory);
 
         var mapped = projects
             .Select(ProjectResponse.FromEntity)
             .ToList();
 
-        var totalCount = await _projectRepository.CountAsync(cancellationToken);
+        var totalCount = await _projectRepository.CountByUserIdAsync(request.UserId, cancellationToken);
 
         var result = new PaginatedResult<ProjectResponse>(
             mapped,

@@ -1,9 +1,6 @@
 ﻿using TeamHub.Application.Projects.Responses;
-using TeamHub.Application.Tasks.Responses;
 using TeamHub.Domain.ProjectMembers.Errors;
 using TeamHub.Domain.ProjectMembers.Interface;
-using TeamHub.Domain.Projects.Errors;
-using TeamHub.Domain.Tasks.Interface;
 using TeamHub.SharedKernel.Application.Helpers;
 using TeamHub.SharedKernel.Application.Mediator.Query;
 using TeamHub.SharedKernel.Application.PageSize;

@@ -21,16 +21,16 @@ public sealed class SearchProjectsByNameQueryHandler
         SearchProjectsByNameQuery request, 
         CancellationToken cancellationToken)
     {
-        var query = request.Query ?? new QueryObject();
+        var query = request.SearchQuery ?? new SearchQueryObject();
 
-        var filteredProjects = await _projectRepository.SearchProjectsByNameAsync(
-                request.Name, 
+        var filteredProjects = await _projectRepository.SearchAsync(
                 query, 
+                request.UserId,
                 cancellationToken);
 
         var mapped = filteredProjects.Select(ProjectResponse.FromEntity).ToList();
 
-        var totalCount = filteredProjects.Count();
+        var totalCount = await _projectRepository.CountByUserIdAsync(request.UserId, cancellationToken);
 
         var result = new PaginatedResult<ProjectResponse>(
             mapped,

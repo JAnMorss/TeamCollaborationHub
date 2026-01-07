@@ -6,5 +6,5 @@ using TeamHub.SharedKernel.Application.PageSize;
 namespace TeamHub.Application.Projects.Queries.SearchProjectsByName;
 
 public sealed record SearchProjectsByNameQuery(
-    string Name, 
-    QueryObject Query) : IQuery<PaginatedResult<ProjectResponse>>;
+    Guid UserId,
+    SearchQueryObject SearchQuery) : IQuery<PaginatedResult<ProjectResponse>>;

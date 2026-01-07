@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using TeamHub.Domain.Users.Entities;
+﻿using TeamHub.Domain.Users.Entities;
 
 namespace TeamHub.Application.Abstractions;
 

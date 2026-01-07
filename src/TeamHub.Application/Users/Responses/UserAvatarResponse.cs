@@ -11,8 +11,8 @@ public sealed class UserAvatarResponse
     public string? ContentType { get; init; }
 
     public static UserAvatarResponse FromEntity(
-        User user, byte[]? 
-        imageBytes = null, 
+        User user,
+        byte[]? imageBytes = null, 
         string? contentType = null)
     {
         return new UserAvatarResponse

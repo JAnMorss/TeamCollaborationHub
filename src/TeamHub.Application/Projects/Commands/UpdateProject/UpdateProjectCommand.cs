@@ -7,4 +7,5 @@ public sealed record UpdateProjectCommand(
     Guid Id,
     string Name,
     string Description,
-    string Color) : ICommand<ProjectResponse>;
+    string Color,
+    Guid UserId) : ICommand<ProjectResponse>;

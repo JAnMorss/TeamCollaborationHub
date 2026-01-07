@@ -2,4 +2,6 @@
 
 namespace TeamHub.Application.Projects.Commands.DeleteProject;
 
-public sealed record DeleteProjectCommand(Guid Id) : ICommand<Guid>;
+public sealed record DeleteProjectCommand(
+    Guid Id,
+    Guid UserId) : ICommand<Guid>;
