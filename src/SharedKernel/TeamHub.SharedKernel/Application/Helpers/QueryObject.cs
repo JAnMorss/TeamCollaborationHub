@@ -22,5 +22,4 @@ public class QueryObject
         set => _pageSize = value > 0 ? value : 10;
     }
 
-
 }

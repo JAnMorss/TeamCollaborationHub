@@ -23,12 +23,12 @@ public abstract class ApiController : ControllerBase
                         "Validation Error", StatusCodes.Status400BadRequest,
                         result.Error,
                         validationResult.Errors)),
-            _ =>
-                BadRequest(
-                    CreateProblemDetails(
-                        "Bad Request",
-                        StatusCodes.Status400BadRequest,
-                        result.Error))
+                _ =>
+                    BadRequest(
+                        CreateProblemDetails(
+                            "Bad Request",
+                            StatusCodes.Status400BadRequest,
+                            result.Error))
         };
 
     private static ProblemDetails CreateProblemDetails(
@@ -36,14 +36,14 @@ public abstract class ApiController : ControllerBase
         int status,
         Error error,
         Error[]? errors = null) =>
-        new()
-        {
-            Title = title,
-            Type = error.Code,
-            Detail = error.Message,
-            Status = status,
-            Extensions = { { nameof(errors), errors } }
-        };
+            new()
+            {
+                Title = title,
+                Type = error.Code,
+                Detail = error.Message,
+                Status = status,
+                Extensions = { { nameof(errors), errors } }
+            };
 
     protected Guid? GetUserId()
     {

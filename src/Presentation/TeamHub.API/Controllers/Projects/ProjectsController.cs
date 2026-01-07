@@ -69,11 +69,14 @@ public class ProjectsController : ApiController
 
     [HttpGet("search")]
     public async Task<IActionResult> SearchProjectsByName(
-    [FromQuery] string name,
-    [FromQuery] QueryObject queryObject,
+    [FromQuery] SearchQueryObject queryObject,
     CancellationToken cancellationToken)
     {
-        var query = new SearchProjectsByNameQuery(name, queryObject);
+        var userId = GetUserId();
+        if (userId is null)
+            return Unauthorized();
+
+        var query = new SearchProjectsByNameQuery(userId.Value, queryObject);
 
         var result = await _sender.Send(query, cancellationToken);
 
@@ -114,11 +117,16 @@ public class ProjectsController : ApiController
         [FromBody] ProjectRequest request,
         CancellationToken cancellationToken)
     {
+        var userId = GetUserId();
+        if (userId is null)
+            return Unauthorized();
+
         var command = new UpdateProjectCommand(
             id,
             request.Name,
             request.Description,
-            request.Color);
+            request.Color,
+            userId.Value);
 
         var result = await _sender.Send(command, cancellationToken);
 
@@ -134,7 +142,11 @@ public class ProjectsController : ApiController
         [FromRoute] Guid id,
         CancellationToken cancellationToken)
     {
-        var command = new DeleteProjectCommand(id);
+        var userId = GetUserId();
+        if (userId is null)
+            return Unauthorized();
+
+        var command = new DeleteProjectCommand(id, userId.Value);
 
         var result = await _sender.Send(command, cancellationToken);
 
@@ -143,7 +155,6 @@ public class ProjectsController : ApiController
            : HandleFailure(result);
     }
 
-    //Project Members
     [HttpGet("/api/projects/members")]
     public async Task<IActionResult> GetAllProjectMembers(
         [FromQuery] QueryObject queryObject,
