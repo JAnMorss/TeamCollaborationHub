@@ -1,92 +1,82 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TeamHub.Domain.Projects.Entity;
 using TeamHub.Domain.Projects.Interface;
+using TeamHub.Infrastructure.Repositories.Base;
 using TeamHub.SharedKernel.Application.Helpers;
 
 namespace TeamHub.Infrastructure.Repositories;
 
-internal class ProjectRepository : Repository<Project>, IProjectRepository
+internal sealed class ProjectRepository : UserOwnedRepository<Project>, IProjectRepository
 {
-    public ProjectRepository(ApplicationDbContext context) 
+    public ProjectRepository(ApplicationDbContext context)
         : base(context)
     {
     }
 
-    public override async Task<IEnumerable<Project>> GetAllAsync(
-        QueryObject query,
-        CancellationToken cancellationToken = default)
+    protected override IQueryable<Project> BuildQuery(
+        ApplicationDbContext context,
+        QueryObject query)
     {
-        var project = _context.Projects
+        return context.Projects
             .Include(p => p.Members)
                 .ThenInclude(m => m.User)
             .Include(p => p.Tasks)
             .Include(p => p.CreatedBy)
             .AsQueryable();
-
-        project = query.SortBy?.ToLower() switch
-        {
-            "name" => query.Descending
-                      ? project.OrderByDescending(p => p.Name.Value)
-                      : project.OrderBy(p => p.Name.Value),
-            _ => project.OrderBy(p => p.CreatedAt) 
-        };
-
-        var page = query.Page <= 0 ? 1 : query.Page;
-        var pageSize = query.PageSize <= 0 ? 10 : query.PageSize;
-
-        var skip = (page - 1) * pageSize;
-
-        return await project
-            .Skip(skip)
-            .Take(pageSize)
-            .ToListAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<Project>> GetAllByUserAsync(
-        QueryObject query, 
-        Guid userId, 
-        CancellationToken cancellationToken = default)
+
+    protected override IQueryable<Project> ApplyFilters(
+        IQueryable<Project> query,
+        SearchQueryObject searchQueryObject,
+        Guid? userId = null)
     {
-        var projects = _context.Projects
-            .Include(p => p.Members)
-                .ThenInclude(m => m.User)
-            .Include(p => p.Tasks)
-            .Include(p => p.CreatedBy)
-            .AsQueryable();
-
-        projects = projects.Where(p =>
-            p.CreatedById == userId |
-            p.Members.Any(m => m.UserId == userId)
-        );
-
-        projects = query.SortBy?.ToLower() switch
+        if (!string.IsNullOrWhiteSpace(searchQueryObject.Search))
         {
-            "name" => query.Descending
-                      ? projects.OrderByDescending(p => p.Name.Value)
-                      : projects.OrderBy(p => p.Name.Value),
-            _ => projects.OrderBy(p => p.CreatedAt)
-        };
+            query = query.Where(p => p.Name.Value.Contains(searchQueryObject.Search));
+        }
 
-        var page = query.Page <= 0 ? 1 : query.Page;
-        var pageSize = query.PageSize <= 0 ? 10 : query.PageSize;
+        if (userId.HasValue)
+        {
+            query = query.Where(p =>
+                p.CreatedById == userId.Value ||
+                p.Members.Any(m => m.UserId == userId.Value)
+            );
+        }
 
-        var skip = (page - 1) * pageSize;
-
-        return await projects
-            .Skip(skip)
-            .Take(pageSize)
-            .ToListAsync(cancellationToken);
+        return query;
     }
 
+    protected override IQueryable<Project> ApplySorting(
+        IQueryable<Project> query,
+        QueryObject queryObject)
+    {
+        if (string.IsNullOrWhiteSpace(queryObject.SortBy))
+            return query.OrderBy(p => p.CreatedAt);
+
+        return queryObject.SortBy?.ToLower() switch
+        {
+            "name" => queryObject.Descending
+                ? query.OrderByDescending(p => p.Name.Value)
+                : query.OrderBy(p => p.Name.Value),
+
+            "createdat" => queryObject.Descending
+                ? query.OrderByDescending(p => p.CreatedAt)
+                : query.OrderBy(p => p.CreatedAt),
+
+            "updatedat" => queryObject.Descending
+                ? query.OrderByDescending(p => p.UpdatedAt)
+                : query.OrderBy(p => p.UpdatedAt),
+
+            _ => query.OrderBy(p => p.CreatedAt)
+        };
+    }
 
     public override async Task<Project?> GetByIdAsync(
         Guid id,
         CancellationToken cancellationToken = default)
     {
-        return await _context.Projects
-            .Include(p => p.Members)
-            .Include(p => p.Tasks)
-            .Include(p => p.CreatedBy)
+        return await BuildQuery(_context, new QueryObject())
             .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
     }
 
@@ -98,7 +88,7 @@ internal class ProjectRepository : Repository<Project>, IProjectRepository
     }
 
     public async Task<IEnumerable<Project>> GetProjectsOwnedByUserAsync(
-        Guid userId, 
+        Guid userId,
         CancellationToken cancellationToken = default)
     {
         return await _context.Projects
@@ -106,45 +96,35 @@ internal class ProjectRepository : Repository<Project>, IProjectRepository
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<Project>> SearchProjectsByNameAsync(
-        string name, 
-        QueryObject query, 
-        CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Project>> GetAllForUserAsync(
+        Guid userId, 
+        QueryObject queryObject, 
+        CancellationToken cancellationToken)
     {
-        var projects = _context.Projects
+        var query = _context.Projects
             .Include(p => p.Members)
                 .ThenInclude(m => m.User)
             .Include(p => p.Tasks)
-            .Include(p => p.CreatedBy).AsQueryable();
+            .Include(p => p.CreatedBy)
+            .AsQueryable();
 
-        if (!string.IsNullOrWhiteSpace(name))
-        {
-            projects = projects.Where(p => p.Name.Value.Contains(name));
-        }
+        query = query.Where(p =>
+            p.CreatedById == userId |
+            p.Members.Any(m => m.UserId == userId)
+        );
 
-        var validSortColumns = new[]
-        {
-            "Name",
-            "CreatedAt",
-            "UpdatedAt"
-        };
+        query = ApplySorting(query, queryObject);
 
-        if (!string.IsNullOrWhiteSpace(query.SortBy) && validSortColumns.Contains(query.SortBy))
-        {
-            projects = query.Descending
-                ? projects.OrderByDescending(e => EF.Property<object>(e, query.SortBy))
-                : projects.OrderBy(e => EF.Property<object>(e, query.SortBy));
-        }
-        else
-        {
-            projects = projects.OrderBy(p => p.CreatedAt);
-        }
+        int skip = (queryObject.Page - 1) * queryObject.PageSize;
 
-        var skip = (query.Page - 1) * query.PageSize;
-        return await projects
-            .Skip(skip)
-            .Take(query.PageSize)
-            .ToListAsync(cancellationToken);
+        return await query.Skip(skip).Take(queryObject.PageSize).ToListAsync(cancellationToken);
+    }
+
+    public override async Task<int> CountByUserIdAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        return await _context.Set<Project>()
+            .Include(p => p.Members)
+            .CountAsync(p => p.CreatedById == userId || p.Members.Any(m => m.UserId == userId), cancellationToken);
     }
 
 }

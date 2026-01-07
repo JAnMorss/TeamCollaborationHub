@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using TeamHub.Infrastructure.Authentication;
 
 namespace TeamHub.Infrastructure.Authentication.Extensions;
 

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TeamHub.Domain.Notifications.Entity;
 using TeamHub.Domain.Notifications.Interface;
+using TeamHub.Infrastructure.Repositories.Base;
 
 namespace TeamHub.Infrastructure.Repositories;
 

@@ -1,5 +1,6 @@
 ﻿using TeamHub.Domain.Messages.Entity;
 using TeamHub.Domain.Messages.Interface;
+using TeamHub.Infrastructure.Repositories.Base;
 
 namespace TeamHub.Infrastructure.Repositories;
 

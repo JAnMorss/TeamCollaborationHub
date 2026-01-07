@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using TeamHub.Domain.Tasks.Entity;
 using TeamHub.Domain.Tasks.Enums;
 using TeamHub.Domain.Tasks.Interface;
+using TeamHub.Infrastructure.Repositories.Base;
 using TeamHub.SharedKernel.Application.Helpers;
 
 namespace TeamHub.Infrastructure.Repositories;

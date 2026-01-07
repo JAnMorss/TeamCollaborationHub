@@ -2,6 +2,7 @@
 using TeamHub.Domain.ProjectMembers.Entity;
 using TeamHub.Domain.ProjectMembers.Enums;
 using TeamHub.Domain.ProjectMembers.Interface;
+using TeamHub.Infrastructure.Repositories.Base;
 using TeamHub.SharedKernel.Application.Helpers;
 
 namespace TeamHub.Infrastructure.Repositories;

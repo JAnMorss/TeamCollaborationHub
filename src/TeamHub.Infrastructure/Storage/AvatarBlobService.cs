@@ -13,7 +13,9 @@ internal sealed class AvatarBlobService(BlobServiceClient blobServiceClient) : I
         CancellationToken cancellationToken = default)
     {
         var containerClient = blobServiceClient.GetBlobContainerClient(ContainerName);
+
         var blobClient = containerClient.GetBlobClient(fileId.ToString());
+
         await blobClient.DeleteIfExistsAsync(cancellationToken: cancellationToken);
     }
 
@@ -22,7 +24,9 @@ internal sealed class AvatarBlobService(BlobServiceClient blobServiceClient) : I
         CancellationToken cancellationToken = default)
     {
         var containerClient = blobServiceClient.GetBlobContainerClient(ContainerName);
+
         var blobClient = containerClient.GetBlobClient(fileId.ToString());
+
         var response = await blobClient.DownloadContentAsync(cancellationToken: cancellationToken);
 
         return new FileResponse(
@@ -37,9 +41,11 @@ internal sealed class AvatarBlobService(BlobServiceClient blobServiceClient) : I
         CancellationToken cancellationToken = default)
     {
         var containerClient = blobServiceClient.GetBlobContainerClient(ContainerName);
+
         await containerClient.CreateIfNotExistsAsync(PublicAccessType.Blob, cancellationToken: cancellationToken);
 
         var fileId = Guid.NewGuid();
+
         var blobClient = containerClient.GetBlobClient(fileId.ToString());
 
         await blobClient.UploadAsync(
@@ -52,7 +58,9 @@ internal sealed class AvatarBlobService(BlobServiceClient blobServiceClient) : I
     public string GetBlobUri(Guid fileId)
     {
         var containerClient = blobServiceClient.GetBlobContainerClient("avatars");
+
         var blobClient = containerClient.GetBlobClient(fileId.ToString());
+
         return blobClient.Uri.ToString();
     }
 
