@@ -1,6 +1,6 @@
 ﻿using TeamHub.Domain.ProjectMembers.Entity;
 using TeamHub.SharedKernel.Application.Helpers;
-using TeamHub.SharedKernel.Domain.Repositories;
+using TeamHub.SharedKernel.Repositories;
 
 namespace TeamHub.Domain.ProjectMembers.Interface;
 

@@ -28,4 +28,8 @@ public static class ProjectErrors
     "Project.NoMembers",
     "This project has no members. Please add a member.");
 
+    public static readonly Error EmptyCategory = new(
+        "Project.Empty",
+        "Your project list is empty. Please create a category first");
+
 }

@@ -1,5 +1,5 @@
 ﻿using TeamHub.Domain.Notifications.Entity;
-using TeamHub.SharedKernel.Domain.Repositories;
+using TeamHub.SharedKernel.Repositories;
 
 namespace TeamHub.Domain.Notifications.Interface;
 

@@ -7,10 +7,11 @@ using TeamHub.Domain.Tasks.Entity;
 using TeamHub.Domain.Users.Entities;
 using TeamHub.SharedKernel.Domain.Entities;
 using TeamHub.SharedKernel.ErrorHandling;
+using TeamHub.SharedKernel.Repositories;
 
 namespace TeamHub.Domain.Projects.Entity;
 
-public sealed class Project : BaseEntity
+public sealed class Project : BaseEntity, IUserOwned
 {
     private readonly List<ProjectMember> _members = new();
     private readonly List<ProjectTask> _tasks = new();

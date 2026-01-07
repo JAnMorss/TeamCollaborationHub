@@ -1,7 +1,7 @@
 ﻿using TeamHub.Domain.Users.Entities;
 using TeamHub.Domain.Users.ValueObjects;
 using TeamHub.SharedKernel.Application.Helpers;
-using TeamHub.SharedKernel.Domain.Repositories;
+using TeamHub.SharedKernel.Repositories;
 
 namespace TeamHub.Domain.Users.Interface;
 
