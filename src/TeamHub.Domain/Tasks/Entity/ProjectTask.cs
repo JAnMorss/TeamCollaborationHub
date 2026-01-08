@@ -8,10 +8,11 @@ using TeamHub.Domain.Tasks.ValueObjects;
 using TeamHub.Domain.Users.Entities;
 using TeamHub.SharedKernel.Domain.Entities;
 using TeamHub.SharedKernel.ErrorHandling;
+using TeamHub.SharedKernel.Repositories;
 
 namespace TeamHub.Domain.Tasks.Entity;
 
-public sealed class ProjectTask : BaseEntity
+public sealed class ProjectTask : BaseEntity, IUserOwned
 {
     private readonly List<TaskAttachment> _attachments = new();
 

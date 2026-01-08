@@ -11,6 +11,6 @@ public interface IProjectRepository : IUserOwnedRepository<Project>
 
     Task<IEnumerable<Project>> GetProjectsOwnedByUserAsync(Guid userId, CancellationToken cancellationToken = default);
 
-    Task<IEnumerable<Project>> GetAllForUserAsync(Guid userId, QueryObject queryObject, CancellationToken cancellationToken);
+    Task<IEnumerable<Project>> GetAllByUserAsync(Guid userId, QueryObject queryObject, CancellationToken cancellationToken);
 
 }
