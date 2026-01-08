@@ -33,7 +33,7 @@ public sealed class CreateTaskCommandHandler : ICommandHandler<CreateTaskCommand
         CreateTaskCommand request, 
         CancellationToken cancellationToken)
     {
-        var project = await _projectRepository.GetByIdAsync(request.ProjectId, cancellationToken);
+        var project = await _projectRepository.GetByIdAndUserIdAsync(request.ProjectId, request.UserId, cancellationToken);
         if (project is null)
             return Result.Failure<TaskResponse>(TaskErrors.NotFound);
 

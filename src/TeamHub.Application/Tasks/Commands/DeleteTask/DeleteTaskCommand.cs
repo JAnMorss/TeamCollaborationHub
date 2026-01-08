@@ -2,4 +2,6 @@
 
 namespace TeamHub.Application.Tasks.Commands.DeleteTask;
 
-public sealed record DeleteTaskCommand(Guid Id) : ICommand<Guid>;
+public sealed record DeleteTaskCommand(
+    Guid Id,
+    Guid UserId) : ICommand<Guid>;

@@ -31,7 +31,7 @@ public sealed class AssignTaskCommandHandler : ICommandHandler<AssignTaskCommand
         AssignTaskCommand request, 
         CancellationToken cancellationToken)
     {
-        var task = await _taskRepository.GetByIdAsync(request.TaskId, cancellationToken);
+        var task = await _taskRepository.GetByIdAndUserIdAsync(request.TaskId, request.UserId, cancellationToken);
         if (task is null)
             return Result.Failure<Guid>(TaskErrors.NotFound);
 

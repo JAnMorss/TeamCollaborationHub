@@ -21,7 +21,7 @@ public sealed class DeleteTaskCommandHandler : ICommandHandler<DeleteTaskCommand
         DeleteTaskCommand request, 
         CancellationToken cancellationToken)
     {
-        var task = await _taskRepository.GetByIdAsync(request.Id, cancellationToken);
+        var task = await _taskRepository.GetByIdAndUserIdAsync(request.Id, request.UserId, cancellationToken);
         if (task is null)
             return Result.Failure<Guid>(TaskErrors.NotFound);
 

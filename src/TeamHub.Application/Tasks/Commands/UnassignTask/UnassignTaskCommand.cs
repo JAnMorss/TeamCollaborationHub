@@ -2,4 +2,6 @@
 
 namespace TeamHub.Application.Tasks.Commands.UnassignTask;
 
-public sealed record UnassignTaskCommand(Guid TaskId) : ICommand<Guid>;
+public sealed record UnassignTaskCommand(
+    Guid TaskId,
+    Guid UserId) : ICommand<Guid>;

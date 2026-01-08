@@ -10,4 +10,5 @@ public sealed record UpdateTaskCommand(
     string Description,
     TaskPriority Priority,
     Taskstatus Status,
-    DateTime? DueDate) : ICommand<TaskResponse>;
+    DateTime? DueDate,
+    Guid UserId) : ICommand<TaskResponse>;

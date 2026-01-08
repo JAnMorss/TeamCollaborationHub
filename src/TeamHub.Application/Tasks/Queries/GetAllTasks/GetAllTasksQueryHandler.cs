@@ -24,7 +24,7 @@ public sealed class GetAllTasksQueryHandler
     {
         var query = request.Query ?? new QueryObject();
 
-        var tasks = await _taskRepository.GetAllByUserAsync(query, request.UserId, cancellationToken);
+        var tasks = await _taskRepository.GetAllByUserAsync(request.UserId, query, cancellationToken);
         if (tasks is null)
             return Result.Failure<PaginatedResult<TaskResponse>>(TaskErrors.NotFound);
 
@@ -32,7 +32,7 @@ public sealed class GetAllTasksQueryHandler
             .Select(TaskResponse.FromEntity)
             .ToList();
 
-        var totalCount = await _taskRepository.CountAsync(cancellationToken);
+        var totalCount = await _taskRepository.CountByUserIdAsync(request.UserId, cancellationToken);
 
         var result = new PaginatedResult<TaskResponse>(
             mapped,
