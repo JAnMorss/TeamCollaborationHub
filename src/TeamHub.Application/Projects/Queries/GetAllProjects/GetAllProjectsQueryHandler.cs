@@ -24,7 +24,7 @@ public sealed class GetAllProjectsQueryHandler
     {
         var query = request.Query ?? new QueryObject();
 
-        var projects = await _projectRepository.GetAllForUserAsync(request.UserId, query, cancellationToken);
+        var projects = await _projectRepository.GetAllByUserAsync(request.UserId, query, cancellationToken);
 
         if (projects is null || !projects.Any())
             return Result.Failure<PaginatedResult<ProjectResponse>>(ProjectErrors.EmptyCategory);
