@@ -113,7 +113,8 @@ public class TaskController : ApiController
         CancellationToken cancellationToken)
     {
         var userId = GetUserId();
-        if (userId is null) return Unauthorized();
+        if (userId is null) 
+            return Unauthorized();
 
         var command = new CreateTaskCommand(
             request.ProjectId,
@@ -139,13 +140,18 @@ public class TaskController : ApiController
         [FromBody] TaskRequest request,
         CancellationToken cancellationToken)
     {
+        var userId = GetUserId();
+        if (userId is null)
+            return Unauthorized();
+
         var command = new UpdateTaskCommand(
             id,
             request.Title,
             request.Description,
             request.Priority,
             request.Status,
-            request.DueDate);
+            request.DueDate,
+            userId.Value);
 
         var result = await _sender.Send(command, cancellationToken);
 
@@ -161,7 +167,11 @@ public class TaskController : ApiController
         [FromRoute] Guid id,
         CancellationToken cancellationToken)
     {
-        var command = new DeleteTaskCommand(id);
+        var userId = GetUserId();
+        if (userId is null)
+            return Unauthorized();
+
+        var command = new DeleteTaskCommand(id, userId.Value);
 
         var result = await _sender.Send(command, cancellationToken);
 
@@ -190,7 +200,11 @@ public class TaskController : ApiController
         Guid taskId,
         CancellationToken cancellationToken)
     {
-        var command = new UnassignTaskCommand(taskId);
+        var userId = GetUserId();
+        if (userId is null)
+            return Unauthorized();
+
+        var command = new UnassignTaskCommand(taskId, userId.Value);
 
         var result = await _sender.Send(command, cancellationToken);
 
