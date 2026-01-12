@@ -1,3 +1,3 @@
-﻿namespace TeamHub.API.Controllers.Tasks;
+﻿namespace TeamHub.API.Controllers.Tasks.Requests;
 
 public sealed record AssignTaskRequest(Guid UserId);

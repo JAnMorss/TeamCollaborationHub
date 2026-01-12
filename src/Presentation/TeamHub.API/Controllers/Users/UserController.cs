@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TeamHub.API.Abstractions;
+using TeamHub.API.Controllers.Users.Requests;
 using TeamHub.Application.Users.Commands.ActiveUser;
 using TeamHub.Application.Users.Commands.DeactivateUser;
 using TeamHub.Application.Users.Commands.UpdateDetails;

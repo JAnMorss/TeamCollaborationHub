@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TeamHub.API.Abstractions;
-using TeamHub.API.Controllers.Users;
+using TeamHub.API.Controllers.Users.Requests;
 using TeamHub.Application.Users.Commands.DemoteUserToUser;
 using TeamHub.Application.Users.Commands.PromoteUserToAdmin;
 using TeamHub.Application.Users.Commands.UpdateDetails;

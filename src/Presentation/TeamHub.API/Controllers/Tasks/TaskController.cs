@@ -261,7 +261,11 @@ public class TaskController : ApiController
         [FromRoute] Guid attachmentId,
         CancellationToken cancellationToken)
     {
-        var command = new RemoveTaskAttachmentCommand(attachmentId);
+        var userId = GetUserId();
+        if (userId is null)
+            return Unauthorized();
+
+        var command = new RemoveTaskAttachmentCommand(attachmentId, userId.Value);
 
         var result = await _sender.Send(command, cancellationToken);
 

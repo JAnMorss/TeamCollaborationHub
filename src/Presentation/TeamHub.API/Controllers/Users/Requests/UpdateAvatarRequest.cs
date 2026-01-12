@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace TeamHub.API.Controllers.Users;
+namespace TeamHub.API.Controllers.Users.Requests;
 
 public class UpdateAvatarRequest
 {
