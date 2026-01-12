@@ -29,6 +29,9 @@ public sealed class RemoveTaskAttachmentCommandHandler : ICommandHandler<RemoveT
         if (taskAttachment is null)
             return Result.Failure(TaskAttachmentErrors.NotFound);
 
+        if (taskAttachment.UploadedById != request.UserId)
+            return Result.Failure(TaskAttachmentErrors.AccessDenied);
+
         await _blobService.DeleteAsync(
             Guid.Parse(taskAttachment.FilePath.Value), 
             cancellationToken);
