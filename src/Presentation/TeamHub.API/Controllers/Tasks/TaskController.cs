@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TeamHub.API.Abstractions;
+using TeamHub.API.Controllers.Tasks.Requests;
 using TeamHub.Application.Tasks.Commands.AssignTask;
 using TeamHub.Application.Tasks.Commands.CreateTask;
 using TeamHub.Application.Tasks.Commands.DeleteTask;

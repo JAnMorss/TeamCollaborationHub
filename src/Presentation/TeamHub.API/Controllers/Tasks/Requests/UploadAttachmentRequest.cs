@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace TeamHub.API.Controllers.Tasks;
+namespace TeamHub.API.Controllers.Tasks.Requests;
 
 public class UploadAttachmentRequest
 {
