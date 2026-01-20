@@ -1,9 +1,9 @@
 export default function Footer() {
   return (
-    <footer className="bg-card border-t border-border px-6 py-12">
+    <footer className="bg-card border-t border-border px-4 sm:px-6 py-8 sm:py-12">
       <div className="mx-auto max-w-7xl text-muted-foreground">
 
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+        <div className="grid gap-6 sm:gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 mb-6 sm:mb-8">
           <div>
             <div className="flex items-center gap-2 mb-4">
               <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-bold">
