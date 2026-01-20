@@ -10,18 +10,18 @@ export default function Hero({}: Props) {
         relative overflow-hidden
         bg-gradient-to-b from-blue-50 to-white
         dark:bg-background dark:bg-none
-        px-6 py-20 sm:py-32
+        py-20 sm:py-32
       "
     >
-      <div className="mx-auto max-w-7xl">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="grid items-center gap-12 lg:grid-cols-2">
           
           <div className="space-y-8">
             <div className="inline-block rounded-full bg-blue-100 px-4 py-2 text-sm text-blue-700 dark:bg-blue-900 dark:text-blue-300 font-medium">
-              Team Collaboration Platform
+              Team Collaboration Platforms
             </div>
 
-            <h1 className="text-5xl font-bold tracking-tight text-gray-900 dark:text-gray-100 sm:text-6xl lg:text-7xl">
+            <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100 sm:text-5xl lg:text-6xl xl:text-7xl">
               Welcome to <span className="text-blue-600 dark:text-blue-400">TeamHub</span>
             </h1>
 
@@ -58,9 +58,9 @@ export default function Hero({}: Props) {
               </Button>
             </div>
 
-            <div className="flex items-center gap-8 pt-4">
+            <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-8 pt-4">
               <div className="transition-transform duration-300 hover:-translate-y-1">
-                <div className="text-3xl font-semibold text-gray-900 dark:text-gray-100">
+                <div className="text-2xl sm:text-3xl font-semibold text-gray-900 dark:text-gray-100">
                   100%
                 </div>
                 <div className="text-sm text-gray-600 dark:text-gray-400">
@@ -68,10 +68,10 @@ export default function Hero({}: Props) {
                 </div>
               </div>
 
-              <div className="h-12 w-px bg-gray-300 dark:bg-gray-600" />
+              <div className="hidden sm:block h-12 w-px bg-gray-300 dark:bg-gray-600" />
 
               <div className="transition-transform duration-300 hover:-translate-y-1">
-                <div className="text-3xl font-semibold text-gray-900 dark:text-gray-100">
+                <div className="text-2xl sm:text-3xl font-semibold text-gray-900 dark:text-gray-100">
                   CQRS
                 </div>
                 <div className="text-sm text-gray-600 dark:text-gray-400">
@@ -79,10 +79,10 @@ export default function Hero({}: Props) {
                 </div>
               </div>
 
-              <div className="h-12 w-px bg-gray-300 dark:bg-gray-600" />
+              <div className="hidden sm:block h-12 w-px bg-gray-300 dark:bg-gray-600" />
 
               <div className="transition-transform duration-300 hover:-translate-y-1">
-                <div className="text-3xl font-semibold text-gray-900 dark:text-gray-100">
+                <div className="text-2xl sm:text-3xl font-semibold text-gray-900 dark:text-gray-100">
                   Ongoing
                 </div>
                 <div className="text-sm text-gray-600 dark:text-gray-400">
