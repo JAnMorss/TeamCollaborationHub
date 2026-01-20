@@ -11,25 +11,25 @@ const features = [
 
 export default function Features() {
   return (
-    <section id="features" className="px-6 py-20 bg-background">
+    <section id="features" className="px-4 sm:px-6 py-20 bg-background">
       <div className="mx-auto max-w-7xl">
 
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-semibold text-foreground mb-4">
+        <div className="text-center mb-12 sm:mb-16">
+          <h2 className="text-3xl sm:text-4xl font-semibold text-foreground mb-4">
             Everything your team needs
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto px-4">
             Powerful features designed to help teams collaborate better.
           </p>
         </div>
 
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 sm:gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {features.map(({ icon: Icon, title, description }) => (
             <div
               key={title}
               className="
-                group p-8 rounded-2xl bg-card
-                border border-border/60
+                group p-6 sm:p-8 rounded-2xl bg-card
+                border border-border/60 dark:border-white/5
                 shadow-sm dark:shadow-md
                 transition-all duration-300
                 hover:-translate-y-1
@@ -50,11 +50,11 @@ export default function Features() {
                 <Icon className="h-6 w-6" />
               </div>
 
-              <h3 className="text-xl font-medium text-foreground mb-2">
+              <h3 className="text-lg sm:text-xl font-medium text-foreground mb-2">
                 {title}
               </h3>
 
-              <p className="text-muted-foreground">
+              <p className="text-muted-foreground text-sm sm:text-base">
                 {description}
               </p>
             </div>
