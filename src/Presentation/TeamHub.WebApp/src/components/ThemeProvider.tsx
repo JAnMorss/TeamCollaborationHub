@@ -14,18 +14,18 @@ type ThemeContextType = {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 
 export default function ThemeProvider({children}: Props) {
-    const [theme, setTheme] = useState<Theme>('dark')
+    const [theme, setTheme] = useState<Theme>('light')
 
     const toggleTheme = () => {
-        setTheme(prev => prev === 'dark' ? 'light' : 'dark')
+        setTheme(prev => prev === 'light' ? 'dark' : 'light')
     }
 
     useEffect(() => {
         const root = document.documentElement
-        if (theme === "dark"){
-            root.classList.add("dark")
+        if (theme === "light"){
+            root.classList.add("light")
         } else {
-            root.classList.remove("dark")
+            root.classList.remove("light")
         }
     }, [theme])
 
