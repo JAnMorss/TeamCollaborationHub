@@ -3,30 +3,33 @@ import { Button } from "../ui/button";
 import { useState } from "react";
 import MobileNav from "./MobileNav";
 
-type Props = {};
-
-export default function Header({}: Props) {
+export default function Header() {
   const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
 
   return (
     <header
       className="
         sticky top-0 z-50 w-full
-        border-b border-border
-        bg-card
-        supports-[backdrop-filter]:bg-card/80
+        border-b
+        bg-white/95
+        text-gray-900
+        supports-[backdrop-filter]:bg-white/60
         backdrop-blur
+        dark:bg-card
+        dark:text-foreground
+        dark:border-white/5
+        dark:supports-[backdrop-filter]:bg-card/80
       "
     >
-      <div className="mx-auto max-w-7xl px-6 py-4">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center shadow-sm">
-              <span className="text-primary-foreground font-bold text-lg">
+            <div className="h-8 w-8 rounded-lg bg-blue-600 dark:bg-primary flex items-center justify-center shadow-sm">
+              <span className="text-white dark:text-primary-foreground font-bold text-lg">
                 T
               </span>
             </div>
-            <span className="text-xl font-semibold text-foreground">
+            <span className="text-xl font-semibold text-gray-900 dark:text-foreground">
               TeamHub
             </span>
           </div>
@@ -37,8 +40,8 @@ export default function Header({}: Props) {
                 key={item}
                 href={`#${item.toLowerCase()}`}
                 className="
-                  text-muted-foreground
-                  hover:text-foreground
+                  text-gray-600 hover:text-gray-900
+                  dark:text-muted-foreground dark:hover:text-foreground
                   transition-colors
                 "
               >
@@ -51,13 +54,13 @@ export default function Header({}: Props) {
             <Button
               variant="ghost"
               className="
-                text-muted-foreground
-                hover:text-foreground
+                text-gray-600 hover:text-gray-900
+                dark:text-muted-foreground dark:hover:text-foreground
               "
             >
               Sign In
             </Button>
-            <Button className="shadow-sm">
+            <Button className="bg-blue-600 hover:bg-blue-700 dark:bg-primary dark:hover:bg-primary/90 shadow-sm">
               Get Started
             </Button>
           </div>
@@ -68,8 +71,8 @@ export default function Header({}: Props) {
             size="icon"
             className="
               md:hidden
-              text-muted-foreground
-              hover:text-foreground
+              text-gray-600 hover:text-gray-900
+              dark:text-muted-foreground dark:hover:text-foreground
             "
           >
             <Menu className="h-6 w-6" />
