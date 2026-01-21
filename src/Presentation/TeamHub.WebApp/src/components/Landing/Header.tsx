@@ -1,10 +1,16 @@
 import { Menu } from "lucide-react";
 import { Button } from "../ui/button";
 import { useState } from "react";
-import MobileNav from "./MobileNav";
+import MobileNav from "../layout/MobileNav";
+import { AuthModal } from "../auth/auth-modal";
+
+type AuthTab = "login" | "signup";
 
 export default function Header() {
   const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [authTab, setAuthTab] = useState<AuthTab>("login");
+  
 
   return (
     <header
@@ -36,17 +42,18 @@ export default function Header() {
 
           <nav className="hidden md:flex items-center gap-8">
             {["Features", "About", "Contact"].map((item) => (
-              <a
+              <button
                 key={item}
-                href={`#${item.toLowerCase()}`}
-                className="
-                  text-gray-600 hover:text-gray-900
-                  dark:text-muted-foreground dark:hover:text-foreground
-                  transition-colors
-                "
+                onClick={() => {
+                  const el = document.getElementById(item.toLowerCase());
+                  if (el) {
+                    el.scrollIntoView({ behavior: "smooth" });
+                  }
+                }}
+                className="text-gray-600 hover:text-gray-900 dark:text-muted-foreground dark:hover:text-foreground transition-colors"
               >
                 {item}
-              </a>
+              </button>
             ))}
           </nav>
 
@@ -57,10 +64,22 @@ export default function Header() {
                 text-gray-600 hover:text-gray-900
                 dark:text-muted-foreground dark:hover:text-foreground
               "
+              onClick={() => {
+                setAuthTab("login");
+                setIsAuthOpen(true);
+              }}
             >
               Sign In
             </Button>
-            <Button className="bg-blue-600 hover:bg-blue-700 dark:bg-primary dark:hover:bg-primary/90 shadow-sm">
+            <Button 
+            className="
+              bg-blue-600 hover:bg-blue-700 
+              dark:bg-primary dark:hover:bg-primary/90 shadow-sm"
+            onClick={() => {
+                setAuthTab("signup");
+                setIsAuthOpen(true);
+              }}
+            >
               Get Started
             </Button>
           </div>
@@ -81,7 +100,22 @@ export default function Header() {
           <MobileNav
             isSidePanelOpen={isSidePanelOpen}
             setIsSidePanelOpen={setIsSidePanelOpen}
+            onLogin={() => {
+              setAuthTab("login");
+              setIsAuthOpen(true);
+            }}
+            onSignup={() => {
+              setAuthTab("signup");
+              setIsAuthOpen(true);
+            }}
           />
+
+          <AuthModal
+            open={isAuthOpen}
+            onOpenChange={setIsAuthOpen}
+            defaultTab={authTab}
+          />
+
         </div>
       </div>
     </header>
