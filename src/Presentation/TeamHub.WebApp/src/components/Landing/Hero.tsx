@@ -39,7 +39,7 @@ export default function Hero({}: Props) {
                   group
                 "
               >
-                Explore TeamHub
+                Get Started Free
                 <ArrowRight className="
                   ml-2 h-5 w-5
                   transition-transform duration-300
