@@ -1,14 +1,103 @@
-
+import { useState } from "react";
 import { Mail, Github } from "lucide-react";
+import type { ZodIssue } from "zod";
+
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
-import { Checkbox } from "../ui/checkbox";
+
+import {
+  loginRequestSchema,
+  loginApiResponseSchema,
+} from "@/schemas/auth/login.schema";
+import { loginApiConnector } from "@/api/auth/login.api";
+
+type ValidationError = {
+  propertyName: string;
+  errorMessage: string;
+};
 
 export default function LoginForm() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<ValidationError[]>([]);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setErrors([]);
+    setIsLoading(true);
+
+    const parsed = loginRequestSchema.safeParse({ email, password });
+
+    if (!parsed.success) {
+      const validationFailure = {
+        type: "ValidationFailure" as const,
+        title: "Validation Error",
+        status: 400,
+        detail: "One or more validation errors has occured",
+        errors: parsed.error.issues.map((err: ZodIssue) => ({
+          propertyName:
+            err.path[0]
+              ? String(err.path[0]).charAt(0).toUpperCase() +
+                String(err.path[0]).slice(1)
+              : "Unknown",
+          errorMessage: err.message,
+        })),
+      };
+
+      setErrors(validationFailure.errors);
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const response = await loginApiConnector.login(parsed.data);
+      const parsedResponse = loginApiResponseSchema.parse(response);
+
+      if ("data" in parsedResponse) {
+        console.log("Login success:", parsedResponse.data.token);
+        return;
+      }
+
+      if (
+        "type" in parsedResponse &&
+        parsedResponse.type === "ValidationFailure"
+      ) {
+        setErrors(parsedResponse.errors);
+        return;
+      }
+    } catch (err: any) {
+      if (err?.response?.data) {
+        const backendData = err.response.data;
+
+        setErrors([
+          {
+            propertyName: "Form",
+            errorMessage:
+              backendData.detail ||
+              "Something went wrong. Please try again.",
+          },
+        ]);
+      } else {
+        setErrors([
+          {
+            propertyName: "Form",
+            errorMessage: "Something went wrong. Please try again.",
+          },
+        ]);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const getFieldErrors = (field: string) =>
+    errors.filter((e) => e.propertyName === field);
+
   return (
-    <form className="space-y-4">
+    <form className="space-y-4" onSubmit={handleSubmit} noValidate>
       <div className="space-y-3">
         <Button variant="outline" className="w-full" type="button">
           <Mail className="mr-2 h-4 w-4" />
@@ -27,32 +116,46 @@ export default function LoginForm() {
         </span>
       </div>
 
-      <div className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="login-email">Email</Label>
-          <Input id="login-email" type="email" placeholder="name@example.com" required />
-        </div>
+      {getFieldErrors("Form").map((e, i) => (
+        <p key={i} className="text-sm text-red-600 text-center">
+          {e.errorMessage}
+        </p>
+      ))}
 
-        <div className="space-y-2">
-          <div className="flex justify-between items-center">
-            <Label htmlFor="login-password">Password</Label>
-            <button type="button" className="text-sm text-blue-600 hover:text-blue-700">
-              Forgot password?
-            </button>
-          </div>
-          <Input id="login-password" type="password" placeholder="••••••••" required />
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Checkbox id="remember" />
-          <label htmlFor="remember" className="text-sm text-gray-700 cursor-pointer">
-            Remember me for 30 days
-          </label>
-        </div>
+      <div className="space-y-1">
+        <Label>Email</Label>
+        <Input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        {getFieldErrors("Email").map((e, i) => (
+          <p key={i} className="text-sm text-red-600">
+            {e.errorMessage}
+          </p>
+        ))}
       </div>
 
-      <Button className="w-full bg-blue-600 hover:bg-blue-700" size="lg">
-        Sign In
+      <div className="space-y-1">
+        <Label>Password</Label>
+        <Input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        {getFieldErrors("Password").map((e, i) => (
+          <p key={i} className="text-sm text-red-600">
+            {e.errorMessage}
+          </p>
+        ))}
+      </div>
+
+      <Button
+        className="w-full bg-blue-600 hover:bg-blue-700"
+        size="lg"
+        disabled={isLoading}
+      >
+        {isLoading ? "Signing in..." : "Sign In"}
       </Button>
     </form>
   );
