@@ -1,14 +1,40 @@
+import { useState } from "react";
 import { Mail, Github } from "lucide-react";
+
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Checkbox } from "../ui/checkbox";
 
+import { useRegister } from "@/hooks/auth/useRegister";
 
 export default function SignupForm() {
+  const { register, isLoading, getFieldErrors } = useRegister();
+
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!acceptedTerms) return;
+
+    await register(firstName, lastName, email, password);
+  };
+
+  const renderErrors = (field: string) =>
+    getFieldErrors(field).map((e, i) => (
+      <p key={i} className="text-xs text-red-500">
+        {e.errorMessage}
+      </p>
+    ));
+
   return (
-    <form className="space-y-4">
+    <form className="space-y-4" onSubmit={onSubmit}>
       <div className="space-y-3">
         <Button variant="outline" className="w-full" type="button">
           <Mail className="mr-2 h-4 w-4" />
@@ -30,43 +56,61 @@ export default function SignupForm() {
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="signup-firstname">First name</Label>
-            <Input id="signup-firstname" placeholder="John" required />
+            <Label>First name</Label>
+            <Input
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+            />
+            {renderErrors("FirstName")}
           </div>
+
           <div className="space-y-2">
-            <Label htmlFor="signup-lastname">Last name</Label>
-            <Input id="signup-lastname" placeholder="Doe" required />
+            <Label>Last name</Label>
+            <Input
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+            />
+            {renderErrors("LastName")}
           </div>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="signup-email">Email</Label>
-          <Input id="signup-email" type="email" placeholder="name@example.com" required />
+          <Label>Email</Label>
+          <Input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          {renderErrors("Email")}
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="signup-password">Password</Label>
-          <Input id="signup-password" type="password" placeholder="••••••••" required />
-          <p className="text-xs text-gray-500">Must be at least 8 characters</p>
+          <Label>Password</Label>
+          <Input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          {renderErrors("Password")}
         </div>
 
         <div className="flex items-start gap-2">
-          <Checkbox id="terms" required />
-          <label htmlFor="terms" className="text-sm text-gray-700 cursor-pointer leading-tight">
-            I agree to the{" "}
-            <a href="#" className="text-blue-600 hover:text-blue-700">
-              Terms of Service
-            </a>{" "}
-            and{" "}
-            <a href="#" className="text-blue-600 hover:text-blue-700">
-              Privacy Policy
-            </a>
+          <Checkbox
+            checked={acceptedTerms}
+            onCheckedChange={(v) => setAcceptedTerms(Boolean(v))}
+          />
+          <label className="text-sm text-gray-700 leading-tight">
+            I agree to the Terms of Service and Privacy Policy
           </label>
         </div>
       </div>
 
-      <Button className="w-full bg-blue-600 hover:bg-blue-700" size="lg">
-        Create Account
+      <Button
+        className="w-full bg-blue-600 hover:bg-blue-700"
+        size="lg"
+        disabled={isLoading}
+      >
+        {isLoading ? "Creating account..." : "Create Account"}
       </Button>
     </form>
   );
