@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom"; // 👈 import navigate
 import { Mail, Github } from "lucide-react";
 import type { ZodIssue } from "zod";
 
@@ -12,6 +13,7 @@ import {
   loginApiResponseSchema,
 } from "@/schemas/auth/login.schema";
 import { loginApiConnector } from "@/api/auth/login.api";
+import { useAuth } from "@/hooks/auth/useAuth"; // 👈 to save token
 
 type ValidationError = {
   propertyName: string;
@@ -24,6 +26,9 @@ export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<ValidationError[]>([]);
 
+  const { login: saveAuth } = useAuth(); 
+  const navigate = useNavigate();     
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setErrors([]);
@@ -32,22 +37,16 @@ export default function LoginForm() {
     const parsed = loginRequestSchema.safeParse({ email, password });
 
     if (!parsed.success) {
-      const validationFailure = {
-        type: "ValidationFailure" as const,
-        title: "Validation Error",
-        status: 400,
-        detail: "One or more validation errors has occured",
-        errors: parsed.error.issues.map((err: ZodIssue) => ({
+      setErrors(
+        parsed.error.issues.map((err: ZodIssue) => ({
           propertyName:
             err.path[0]
               ? String(err.path[0]).charAt(0).toUpperCase() +
                 String(err.path[0]).slice(1)
               : "Unknown",
           errorMessage: err.message,
-        })),
-      };
-
-      setErrors(validationFailure.errors);
+        }))
+      );
       setIsLoading(false);
       return;
     }
@@ -57,7 +56,8 @@ export default function LoginForm() {
       const parsedResponse = loginApiResponseSchema.parse(response);
 
       if ("data" in parsedResponse) {
-        console.log("Login success:", parsedResponse.data.token);
+        saveAuth(parsedResponse.data.token);
+        navigate("/dashboard");
         return;
       }
 
@@ -69,25 +69,14 @@ export default function LoginForm() {
         return;
       }
     } catch (err: any) {
-      if (err?.response?.data) {
-        const backendData = err.response.data;
-
-        setErrors([
-          {
-            propertyName: "Form",
-            errorMessage:
-              backendData.detail ||
-              "Something went wrong. Please try again.",
-          },
-        ]);
-      } else {
-        setErrors([
-          {
-            propertyName: "Form",
-            errorMessage: "Something went wrong. Please try again.",
-          },
-        ]);
-      }
+      setErrors([
+        {
+          propertyName: "Form",
+          errorMessage:
+            err?.response?.data?.detail ||
+            "Something went wrong. Please try again.",
+        },
+      ]);
     } finally {
       setIsLoading(false);
     }
