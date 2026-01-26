@@ -207,18 +207,19 @@ public class ProjectsController : ApiController
             : HandleFailure(result);
     }
 
-    [HttpDelete("/api/projects/{projectId:Guid}/members")]
+    [HttpDelete("/api/projects/{projectId:Guid}/members/{userId:Guid}")]
     public async Task<IActionResult> RemoveProjectMember(
-        [FromRoute] Guid projectId,
-        [FromBody] ProjectMemberRequest request,
+        Guid projectId,
+        Guid userId,
         CancellationToken cancellationToken)
     {
-        var command = new RemoveProjectMemberCommand(projectId, request.UserId);
+        var command = new RemoveProjectMemberCommand(projectId, userId);
 
         var result = await _sender.Send(command, cancellationToken);
 
         return result.IsSuccess
-            ? Ok("Member Remove Successfully")
+            ? Ok("Member Removed Successfully")
             : HandleFailure(result);
     }
+
 }
