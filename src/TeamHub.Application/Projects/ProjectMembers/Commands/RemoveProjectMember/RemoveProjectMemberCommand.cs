@@ -5,4 +5,5 @@ namespace TeamHub.Application.Projects.ProjectMembers.Commands.RemoveProjectMemb
 
 public sealed record RemoveProjectMemberCommand(
     Guid ProjectId,
-    Guid UserId) : ICommand<Unit>;
+    Guid UserId
+) : ICommand<Unit>;
