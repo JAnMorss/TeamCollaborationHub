@@ -1,9 +1,7 @@
 ﻿using MediatR;
 using TeamHub.Domain.ProjectMembers.Interface;
-using TeamHub.Domain.Projects.Entity;
 using TeamHub.Domain.Projects.Errors;
 using TeamHub.Domain.Projects.Interface;
-using TeamHub.Domain.Users.Interface;
 using TeamHub.SharedKernel;
 using TeamHub.SharedKernel.Application.Mediator.Command;
 using TeamHub.SharedKernel.ErrorHandling;
@@ -18,26 +16,31 @@ public sealed class RemoveProjectMemberCommandHandler : ICommandHandler<RemovePr
 
     public RemoveProjectMemberCommandHandler(
         IProjectRepository projectRepository,
-        IUnitOfWork unitOfWork,
-        IProjectMemberRepository projectMemberRepository)
+        IProjectMemberRepository projectMemberRepository,
+        IUnitOfWork unitOfWork)
     {
-        _projectRepository = projectRepository;
-        _unitOfWork = unitOfWork;
-        _projectMemberRepository = projectMemberRepository;
+        _projectRepository = projectRepository ?? throw new ArgumentNullException(nameof(projectRepository));
+        _projectMemberRepository = projectMemberRepository ?? throw new ArgumentNullException(nameof(projectMemberRepository));
+        _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
     }
+
     public async Task<Result<Unit>> Handle(
-        RemoveProjectMemberCommand request, 
+        RemoveProjectMemberCommand request,
         CancellationToken cancellationToken)
     {
         var project = await _projectRepository.GetByIdAsync(request.ProjectId, cancellationToken);
-        if (project is null)
+        if (project == null)
             return Result.Failure<Unit>(ProjectErrors.NotFound);
 
-        var member = project.RemoveMember(request.UserId);
-        if (member is null)
+        var member = await _projectMemberRepository.GetByProjectAndUserIdAsync(
+            request.ProjectId, request.UserId, cancellationToken);
+
+        if (member == null)
             return Result.Failure<Unit>(ProjectErrors.MemberNotFound);
 
-        await _projectMemberRepository.DeleteAsync(member.Value.Id, cancellationToken);
+        project.RemoveMember(member.UserId);
+
+        await _projectMemberRepository.DeleteAsync(member.Id, cancellationToken);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
