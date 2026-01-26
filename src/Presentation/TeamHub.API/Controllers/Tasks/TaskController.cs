@@ -187,7 +187,11 @@ public class TaskController : ApiController
         [FromBody] AssignTaskRequest request,
         CancellationToken cancellationToken)
     {
-        var command = new AssignTaskCommand(taskId, request.UserId);
+        var userId = GetUserId();
+        if (userId is null)
+            return Unauthorized();
+
+        var command = new AssignTaskCommand(taskId, request.UserId, userId.Value);
 
         var result = await _sender.Send(command, cancellationToken);
 
