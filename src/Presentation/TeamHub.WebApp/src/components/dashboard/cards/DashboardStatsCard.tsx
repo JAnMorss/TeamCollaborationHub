@@ -1,7 +1,7 @@
 import { projectsApiConnector } from "@/api/projects/project.api";
 import { tasksApiConnector } from "@/api/tasks/tasks.api";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import Card from "./Card";
+import Card from "../../cards/Card";
 import { FolderIcon, UsersIcon, CheckCircleIcon, ClipboardListIcon } from "lucide-react";
 
 export default function DashboardStatsCard() {
@@ -35,10 +35,10 @@ export default function DashboardStatsCard() {
       {stats.map((stat) => {
         const Icon = stat.icon;
         const colorClasses = {
-          blue: "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300",
-          green: "bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-300",
-          orange: "bg-orange-100 text-orange-600 dark:bg-orange-900 dark:text-orange-300",
-          purple: "bg-purple-100 text-purple-600 dark:bg-purple-900 dark:text-purple-300",
+          blue: "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-50",
+          green: "bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-50",
+          orange: "bg-orange-100 text-orange-600 dark:bg-orange-900 dark:text-orange-50",
+          purple: "bg-purple-100 text-purple-600 dark:bg-purple-900 dark:text-purple-50",
         }[stat.color];
 
         return (
