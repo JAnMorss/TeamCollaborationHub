@@ -1,8 +1,8 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { projectsApiConnector } from "@/api/projects/project.api";
 import { tasksApiConnector } from "@/api/tasks/tasks.api";
-import Card from "../../cards/Card";
 import { Progress } from "@/components/ui/progress";
+import { Card } from "@/components/ui/card";
 
 export default function ProjectProgressCard() {
   const { data: projectsData } = useSuspenseQuery({
