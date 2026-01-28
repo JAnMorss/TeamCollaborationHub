@@ -1,7 +1,7 @@
 import { projectsApiConnector } from "@/api/projects/project.api";
 import { tasksApiConnector } from "@/api/tasks/tasks.api";
+import { Card } from "@/components/ui/card";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import Card from "../../cards/Card";
 import { FolderIcon, UsersIcon, CheckCircleIcon, ClipboardListIcon } from "lucide-react";
 
 export default function DashboardStatsCard() {
