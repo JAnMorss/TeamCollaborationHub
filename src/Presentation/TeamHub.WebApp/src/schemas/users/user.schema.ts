@@ -7,11 +7,17 @@ export const UserSchema = z.object({
   fullName: z.string().min(1),
   role: UserRoleEnum,
   email: z.string().email(),
-  avatar: z.string().url().nullable(),  
+  avatar: z.string().url().nullable(),
   isActive: z.boolean(),
-  updatedAt: z.string().datetime().nullable(),  
+  updatedAt: z
+    .string()
+    .nullable()
+    .refine((val) => !val || !isNaN(Date.parse(val)), {
+      message: "Invalid datetime",
+    }),
   identityId: z.string().uuid(),
 });
+
 
 export const GetMyProfileResponseSchema = z.object({
   data: UserSchema,
