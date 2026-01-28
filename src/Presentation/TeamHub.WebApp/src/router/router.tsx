@@ -1,10 +1,14 @@
 import { createBrowserRouter } from "react-router-dom";
-import PublicLayout from "@/components/layout/PublicLayout";
-import AppLayout from "@/components/layout/AppLayout";
-import LandingPage from "@/pages/LandingPage";
+import PublicLayout from "@/components/appLayout/PublicLayout";
+import AppLayout from "@/components/appLayout/AppLayout";
+import LandingPage from "@/pages/landing/LandingPage";
 import PublicRoute from "@/hooks/auth/PublicRoute";
 import RequireAuth from "@/hooks/auth/RequireAuth";
 import DashboardPage from "@/pages/dashboard/DashboardPage";
+import ProjectPage from "@/pages/projects/ProjectPage";
+import CalendarPage from "@/pages/calendar/CalendarPage";
+import MembersPage from "@/pages/members/MembersPage";
+import TasksPage from "@/pages/tasks/TasksPage ";
 
 export const router = createBrowserRouter([
   {
@@ -20,6 +24,10 @@ export const router = createBrowserRouter([
         element: <AppLayout />,
         children: [
           { path: "/dashboard", element: <DashboardPage /> },
+          { path: "/dashboard/projects", element: <ProjectPage /> },
+          { path: "/dashboard/members", element: <MembersPage /> },
+          { path: "/dashboard/tasks", element: <TasksPage /> },
+          { path: "/dashboard/calendar", element: <CalendarPage /> },
         ],
       },
     ],
