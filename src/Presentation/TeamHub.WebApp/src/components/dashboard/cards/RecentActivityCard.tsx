@@ -1,6 +1,6 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { tasksApiConnector } from "@/api/tasks/tasks.api";
-import Card from "../../cards/Card";
+import { Card } from "@/components/ui/card";
 
 type Activity = {
   user: string;
