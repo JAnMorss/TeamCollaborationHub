@@ -1,7 +1,7 @@
 import { Menu } from "lucide-react";
 import { Button } from "../ui/button";
 import { useState } from "react";
-import MobileNav from "../layout/MobileNav";
+import MobileNav from "../appLayout/MobileNav";
 import { AuthModal } from "../auth/auth-modal";
 
 type AuthTab = "login" | "signup";
