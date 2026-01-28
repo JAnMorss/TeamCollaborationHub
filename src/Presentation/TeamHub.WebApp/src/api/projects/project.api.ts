@@ -52,25 +52,28 @@ api.interceptors.response.use(
 );
 
 export const projectsApiConnector = {
+  // Fetch all projects
   getAllProjects: async (): Promise<GetAllProjectsResponse> => {
     const response = await api.get("/project");
     return getAllProjectsResponseSchema.parse(response.data);
   },
 
+  // Fetch single project by ID
   getProjectById: async (projectId: string): Promise<GetProjectByIdResponse> => {
     const response = await api.get(`/project/${projectId}`);
     return getProjectByIdResponseSchema.parse(response.data);
   },
 
+  // Create a project
   createProject: async (
     data: unknown
   ): Promise<CreateUpdateProjectResponse | ValidationErrorResponse> => {
     const validData = projectRequestSchema.parse(data);
     const response = await api.post("/project", validData);
-
     return projectApiResponseSchema.parse(response.data);
   },
 
+  // Update a project
   updateProject: async (
     projectId: string,
     data: unknown
@@ -80,11 +83,21 @@ export const projectsApiConnector = {
     return projectApiResponseSchema.parse(response.data);
   },
 
+  // Delete a project
+  removeProject: async (
+    projectId: string
+  ): Promise<{ message: string } | ValidationErrorResponse> => {
+    const response = await api.delete(`/project/${projectId}`);
+    return response.data;
+  },
+
+  // Fetch all project members
   getAllProjectMembers: async (): Promise<ProjectMembersResponse> => {
     const response = await api.get("/projects/members");
     return projectMembersResponseSchema.parse(response.data);
   },
 
+  // Fetch members of a specific project
   getAllMembersOfProject: async (
     projectId: string
   ): Promise<ProjectMembersResponse> => {
@@ -92,6 +105,7 @@ export const projectsApiConnector = {
     return projectMembersResponseSchema.parse(response.data);
   },
 
+  // Add a member to a project
   addProjectMember: async (
     projectId: string,
     data: unknown
@@ -101,6 +115,7 @@ export const projectsApiConnector = {
     return addMemberApiResponseSchema.parse(response.data);
   },
 
+  // Remove a member from a project
   removeProjectMember: async (
     projectId: string,
     userId: string
