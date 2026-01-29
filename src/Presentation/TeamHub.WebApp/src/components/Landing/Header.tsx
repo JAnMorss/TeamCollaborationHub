@@ -19,12 +19,12 @@ export default function Header() {
         border-b
         bg-white/95
         text-gray-900
-        supports-[backdrop-filter]:bg-white/60
+        supports-backdrop-filter:bg-white/60
         backdrop-blur
         dark:bg-card
         dark:text-foreground
         dark:border-white/5
-        dark:supports-[backdrop-filter]:bg-card/80
+        dark:supports-backdrop-filter:bg-card/80
       "
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 py-4">

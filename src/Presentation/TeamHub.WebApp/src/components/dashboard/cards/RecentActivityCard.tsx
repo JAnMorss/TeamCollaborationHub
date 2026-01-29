@@ -75,7 +75,7 @@ export default function RecentActivityCard() {
             key={index}
             className="flex items-start gap-3 pb-4 border-b border-gray-100 dark:border-gray-800 last:border-0 last:pb-0"
           >
-            <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
+            <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center shrink-0">
               <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
                 {getInitials(activity.user)}
               </span>

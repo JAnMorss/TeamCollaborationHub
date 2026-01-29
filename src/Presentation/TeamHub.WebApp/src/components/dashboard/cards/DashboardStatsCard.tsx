@@ -44,7 +44,7 @@ export default function DashboardStatsCard() {
         return (
           <Card
             key={stat.label}
-            className="p-6 flex-1 min-w-[220px] shadow-md hover:shadow-lg transition-shadow rounded-xl animate-fade-in"
+            className="p-6 flex-1 min-w-55 shadow-md hover:shadow-lg transition-shadow rounded-xl animate-fade-in"
           >
             <div className="flex items-center justify-between">
               <div>

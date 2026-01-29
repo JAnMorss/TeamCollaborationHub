@@ -2,7 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 
 export default function DashboardHeroCard() {
   return (
-    <Card className="bg-gradient-to-r from-blue-400 to-blue-500 text-white dark:text-black shadow-md">
+    <Card className="bg-linear-to-r from-blue-400 to-blue-500 text-white dark:text-black shadow-md">
       <CardContent className="flex items-center space-x-4 p-6">
         <svg
           className="w-12 h-12 text-white " 

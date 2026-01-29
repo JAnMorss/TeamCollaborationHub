@@ -59,7 +59,7 @@ export default function TaskDistributionCard() {
         <CardTitle>Task Distribution</CardTitle>
       </CardHeader>
 
-      <CardContent className="h-[280px]">
+      <CardContent className="h-70">
         {tasks.length === 0 ? (
           <p className="text-sm text-muted-foreground">
             No tasks available.

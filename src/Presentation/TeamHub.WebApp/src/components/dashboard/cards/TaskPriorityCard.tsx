@@ -66,7 +66,7 @@ export default function TaskPriorityCard() {
               <div className="h-5 w-full rounded-lg bg-muted dark:bg-muted/50 overflow-hidden relative">
                 <div
                   style={{ width: `${percentage}%` }}
-                  className={`h-full rounded-lg bg-gradient-to-r ${PRIORITY_COLORS[priority]} transition-all duration-500`}
+                  className={`h-full rounded-lg bg-linear-to-r ${PRIORITY_COLORS[priority]} transition-all duration-500`}
                 />
                 {percentage > 15 && (
                   <span className="absolute left-2 top-0.5 text-xs font-semibold text-white dark:text-black">
