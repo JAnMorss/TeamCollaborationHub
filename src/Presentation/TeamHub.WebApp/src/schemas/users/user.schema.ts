@@ -18,7 +18,6 @@ export const UserSchema = z.object({
   identityId: z.string().uuid(),
 });
 
-
 export const GetMyProfileResponseSchema = z.object({
   data: UserSchema,
   message: z.string(),
@@ -42,11 +41,19 @@ export const UserUpdateDetailsInputSchema = z.object({
 
 export const UserUpdateDetailsResponseSchema = GetMyProfileResponseSchema;
 
+export const UserAvatarSchema = z.object({
+  avatarUrl: z.string().url(),
+  imageBytes: z.string(),
+  contentType: z.string(),
+});
+
 export const GetUserAvatarResponseSchema = z.object({
-  data: z.object({
-    avatarUrl: z.string().url(),
-    imageBytes: z.string(),      
-    contentType: z.string(),
-  }),
+  data: UserAvatarSchema,
   message: z.string(),
 });
+
+export type User = z.infer<typeof UserSchema>;
+export type GetMyProfileResponse = z.infer<typeof GetMyProfileResponseSchema>["data"];
+export type UsersListResponse = z.infer<typeof UsersListSchema>["data"];
+export type UserUpdateResponse = z.infer<typeof UserUpdateDetailsResponseSchema>["data"];
+export type UserAvatarResponse = z.infer<typeof GetUserAvatarResponseSchema>["data"];
