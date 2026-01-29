@@ -1,19 +1,20 @@
+import axios, {
+  type AxiosInstance,
+  type InternalAxiosRequestConfig,
+  AxiosHeaders,
+  type AxiosResponse,
+} from "axios";
 import {
-  UserSchema,
   GetMyProfileResponseSchema,
   UsersListSchema,
   UserUpdateDetailsInputSchema,
   UserUpdateDetailsResponseSchema,
   GetUserAvatarResponseSchema,
+  type GetMyProfileResponse,
+  type UsersListResponse,
+  type UserUpdateResponse,
+  type UserAvatarResponse,
 } from "@/schemas/users/user.schema";
-import axios, { type AxiosInstance, type InternalAxiosRequestConfig, AxiosHeaders, type AxiosResponse } from "axios";
-import type { z } from "zod";
-
-type User = z.infer<typeof UserSchema>;
-type GetMyProfileResponse = z.infer<typeof GetMyProfileResponseSchema>["data"];
-type UsersListResponse = z.infer<typeof UsersListSchema>["data"];
-type UserUpdateResponse = z.infer<typeof UserUpdateDetailsResponseSchema>["data"];
-type UserAvatarResponse = z.infer<typeof GetUserAvatarResponseSchema>["data"];
 
 const BASE_URL = "http://localhost:8080/api/v1/users";
 
@@ -68,8 +69,8 @@ export const userApiConnector = {
     return UserUpdateDetailsResponseSchema.parse(response.data).data;
   },
 
-  getUserAvatar: async (): Promise<UserAvatarResponse> => {
-    const response = await api.get("/avatar");
+  getUserAvatar: async (userId: string): Promise<UserAvatarResponse> => {
+    const response = await api.get(`/${userId}/avatar`);
     return GetUserAvatarResponseSchema.parse(response.data).data;
   },
 
