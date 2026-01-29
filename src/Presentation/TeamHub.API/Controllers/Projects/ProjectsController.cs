@@ -156,7 +156,7 @@ public class ProjectsController : ApiController
            : HandleFailure(result);
     }
 
-    [HttpGet("/api/projects/members")]
+    [HttpGet("members")]
     public async Task<IActionResult> GetAllProjectMembers(
         [FromQuery] QueryObject queryObject,
         CancellationToken cancellationToken)
@@ -190,7 +190,7 @@ public class ProjectsController : ApiController
     }
 
 
-    [HttpPost("/api/projects/{projectId:Guid}/members")]
+    [HttpPost("{projectId:Guid}/members")]
     public async Task<IActionResult> AddProjectMembers(
     [FromRoute] Guid projectId,
     [FromBody] ProjectMemberRequest request,
@@ -207,7 +207,7 @@ public class ProjectsController : ApiController
             : HandleFailure(result);
     }
 
-    [HttpDelete("/api/projects/{projectId:Guid}/members/{userId:Guid}")]
+    [HttpDelete("{projectId:Guid}/members/{userId:Guid}")]
     public async Task<IActionResult> RemoveProjectMember(
         Guid projectId,
         Guid userId,
