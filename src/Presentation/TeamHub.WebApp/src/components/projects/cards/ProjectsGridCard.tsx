@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+
 import { projectsApiConnector } from "@/api/projects/project.api";
 import { userApiConnector } from "@/api/users/user.api";
-import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -14,14 +15,19 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+
 import { MoreVertical, Pencil, Trash } from "lucide-react";
 
 import type { Project } from "@/schemas/projects/project.schema";
+
 import EditProjectDialog from "./EditProjectDialog";
+import RemoveProjectDialog from "./RemoveProjectDialog";
 
 export default function ProjectsGridCard() {
   const queryClient = useQueryClient();
+
   const [editingProject, setEditingProject] = useState<Project | null>(null);
+  const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
 
   const { data: currentUserData } = useSuspenseQuery({
     queryKey: ["user", "profile"],
@@ -46,7 +52,10 @@ export default function ProjectsGridCard() {
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => projectsApiConnector.removeProject(id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["projects"] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+      setProjectToDelete(null);
+    },
   });
 
   return (
@@ -68,9 +77,14 @@ export default function ProjectsGridCard() {
               <CardContent className="p-6 space-y-4">
                 <div className="flex justify-between items-start">
                   <div className="pr-4 flex-1">
-                    <h3 className="font-semibold text-xl text-card-foreground">{project.name}</h3>
+                    <h3 className="font-semibold text-xl text-card-foreground">
+                      {project.name}
+                    </h3>
                     <p className="text-xs text-muted-foreground mt-1 italic">
-                      Created by: <span className="font-medium">{project.createdBy || "Unknown"}</span>
+                      Created by:{" "}
+                      <span className="font-medium">
+                        {project.createdBy || "Unknown"}
+                      </span>
                     </p>
                   </div>
 
@@ -89,13 +103,16 @@ export default function ProjectsGridCard() {
 
                       <DropdownMenuContent align="end" className="z-50">
                         <DropdownMenuItem onClick={() => setEditingProject(project)}>
-                          <Pencil className="mr-2 h-4 w-4" /> Edit
+                          <Pencil className="mr-2 h-4 w-4" />
+                          Edit
                         </DropdownMenuItem>
+
                         <DropdownMenuItem
                           className="text-destructive"
-                          onClick={() => deleteMutation.mutate(project.id)}
+                          onClick={() => setProjectToDelete(project)}
                         >
-                          <Trash className="mr-2 h-4 w-4" /> Delete
+                          <Trash className="mr-2 h-4 w-4" />
+                          Delete
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -116,7 +133,9 @@ export default function ProjectsGridCard() {
 
                   <span className="text-sm text-muted-foreground">
                     {Array.isArray(project.members)
-                      ? `${project.members.length} member${project.members.length === 1 ? "" : "s"}`
+                      ? `${project.members.length} member${
+                          project.members.length === 1 ? "" : "s"
+                        }`
                       : "0 members"}
                   </span>
                 </div>
@@ -131,7 +150,21 @@ export default function ProjectsGridCard() {
         isSaving={updateMutation.isPending}
         onClose={() => setEditingProject(null)}
         onSubmit={({ id, name, description, color }) => {
-          updateMutation.mutate({ id, payload: { name, description, color } });
+          updateMutation.mutate({
+            id,
+            payload: { name, description, color },
+          });
+        }}
+      />
+
+      <RemoveProjectDialog
+        open={!!projectToDelete}
+        projectName={projectToDelete?.name}
+        isDeleting={deleteMutation.isPending}
+        onClose={() => setProjectToDelete(null)}
+        onConfirm={() => {
+          if (!projectToDelete) return;
+          deleteMutation.mutate(projectToDelete.id);
         }}
       />
     </>
