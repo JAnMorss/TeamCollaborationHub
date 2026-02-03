@@ -87,12 +87,13 @@ export type GetTaskByIdResponse = z.infer<typeof getTaskByIdResponseSchema>;
 
 export const taskRequestSchema = z.object({
   projectId: z.string(),
-  title: z.string().min(1),
-  description: z.string().min(1),
-  priority: z.enum(["Low", "Medium", "High"]),
-  status: z.enum(["Todo", "InProgress", "Review", "Completed"]),
-  dueDate: z.string().nullable(),
+  title: z.string(),
+  description: z.string(),
+  priority: z.number(), 
+  status: z.number(),   
+  dueDate: z.string().optional(),
 });
+
 
 export type TaskRequest = z.infer<typeof taskRequestSchema>;
 

@@ -1,7 +1,6 @@
 import {
   getAllTasksResponseSchema,
   getTaskByIdResponseSchema,
-  taskRequestSchema,
   createUpdateTaskApiResponseSchema,
   assignedTasksResponseSchema,
   assignTaskRequestSchema,
@@ -18,6 +17,7 @@ import {
   type UploadTaskAttachmentResponse,
   type RemoveTaskAttachmentResponse,
   type ValidationErrorResponse,
+  taskRequestSchema,
 } from "@/schemas/tasks/task.schema";
 import axios, { type AxiosInstance, type InternalAxiosRequestConfig, AxiosHeaders, type AxiosResponse } from "axios";
 
@@ -94,18 +94,24 @@ export const tasksApiConnector = {
     return parsed;
   },
 
-  createTask: async (data: unknown): Promise<CreateUpdateTaskResponse | ValidationErrorResponse> => {
+  createTask: async (
+    data: unknown
+  ): Promise<CreateUpdateTaskResponse | ValidationErrorResponse> => {
     const validData = taskRequestSchema.parse(data);
+
     const response = await api.post("/task", validData);
     return createUpdateTaskApiResponseSchema.parse(response.data);
   },
 
-  updateTask: async (taskId: string, data: unknown): Promise<CreateUpdateTaskResponse | ValidationErrorResponse> => {
+  updateTask: async (
+    taskId: string,
+    data: unknown
+  ): Promise<CreateUpdateTaskResponse | ValidationErrorResponse> => {
     const validData = taskRequestSchema.parse(data);
+
     const response = await api.put(`/task/${taskId}/details`, validData);
     return createUpdateTaskApiResponseSchema.parse(response.data);
   },
-
   deleteTask: async (taskId: string): Promise<{ message: string } | ValidationErrorResponse> => {
     const response = await api.delete(`/task/${taskId}`);
     return removeTaskAttachmentApiResponseSchema.parse(response.data);
