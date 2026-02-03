@@ -23,7 +23,6 @@ import axios, {
   type AxiosResponse,
 } from "axios";
 
-// Base URL now includes /v1
 const BASE_URL = "http://localhost:8080/api/v1";
 
 const api: AxiosInstance = axios.create({
@@ -91,6 +90,18 @@ export const projectsApiConnector = {
     query?: { page?: number; pageSize?: number }
   ): Promise<ProjectMembersResponse> => {
     const response = await api.get("/project/members", { params: query });
+    return projectMembersResponseSchema.parse(response.data);
+  },
+
+  getAllMembersOfProject: async (
+    projectId: string,
+    query?: { page?: number; pageSize?: number }
+  ): Promise<ProjectMembersResponse> => {
+    const response = await api.get(
+      `/project/${projectId}/members`,
+      { params: query }
+    );
+
     return projectMembersResponseSchema.parse(response.data);
   },
 
