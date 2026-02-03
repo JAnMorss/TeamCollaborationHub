@@ -2,43 +2,53 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { userApiConnector } from "@/api/users/user.api";
+
+import { projectsApiConnector } from "@/api/projects/project.api";
 import { tasksApiConnector } from "@/api/tasks/tasks.api";
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+
 import { Button } from "@/components/ui/button";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 
 import type { Task } from "@/schemas/tasks/task.schema";
-import type { User } from "@/schemas/users/user.schema";
+import type { ProjectMember } from "@/schemas/projects/project.schema";
 
 interface AssignTaskDialogProps {
   task: Task;
   onClose: () => void;
 }
 
-interface GetAllUsersResponse {
-  items: User[];
-  totalCount: number;
-}
-
-export default function AssignTaskDialog({ task, onClose }: AssignTaskDialogProps) {
+export default function AssignTaskDialog({
+  task,
+  onClose,
+}: AssignTaskDialogProps) {
   const queryClient = useQueryClient();
-  const [selectedUser, setSelectedUser] = useState("");
+  const [selectedUserId, setSelectedUserId] = useState<string>("");
 
-  const { data: usersData, isLoading, isError } = useQuery<GetAllUsersResponse>({
-    queryKey: ["users", "all"],
-    queryFn: async () => {
-      const res = await userApiConnector.getAllUsers(1, 50);
-      return res;
-    },
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["project-members", task.projectId],
+    queryFn: () =>
+      projectsApiConnector.getAllMembersOfProject(task.projectId),
   });
 
-  const users = usersData?.items || [];
+  const members: ProjectMember[] = data?.data.items ?? [];
 
   const assignTaskMutation = useMutation({
     mutationFn: (userId: string) =>
-      tasksApiConnector.assignTask(task.id, { assignedTo: userId }),
+      tasksApiConnector.assignTask(task.id, { userId }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
       onClose();
@@ -46,24 +56,40 @@ export default function AssignTaskDialog({ task, onClose }: AssignTaskDialogProp
   });
 
   return (
-    <Dialog open={true} onOpenChange={onClose}>
+    <Dialog open onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Assign Task: {task.title}</DialogTitle>
         </DialogHeader>
 
-        {isLoading && <p className="text-sm text-muted-foreground">Loading users...</p>}
-        {isError && <p className="text-sm text-destructive">Failed to load users.</p>}
+        {isLoading && (
+          <p className="text-sm text-muted-foreground">
+            Loading project members...
+          </p>
+        )}
+
+        {isError && (
+          <p className="text-sm text-destructive">
+            Failed to load project members.
+          </p>
+        )}
 
         {!isLoading && !isError && (
-          <Select value={selectedUser} onValueChange={setSelectedUser}>
+          <Select
+            value={selectedUserId}
+            onValueChange={setSelectedUserId}
+          >
             <SelectTrigger>
-              <SelectValue placeholder="Select user" />
+              <SelectValue placeholder="Select project member" />
             </SelectTrigger>
+
             <SelectContent>
-              {users.map((user) => (
-                <SelectItem key={user.id} value={user.id}>
-                  {user.fullName} ({user.email})
+              {members.map((member) => (
+                <SelectItem
+                  key={member.userId}
+                  value={member.userId}
+                >
+                  {member.fullName} • {member.role}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -71,12 +97,19 @@ export default function AssignTaskDialog({ task, onClose }: AssignTaskDialogProp
         )}
 
         <DialogFooter className="flex justify-end gap-2 mt-4">
-          <Button variant="outline" onClick={onClose}>Cancel</Button>
+          <Button variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+
           <Button
-            disabled={!selectedUser || assignTaskMutation.isPending}
-            onClick={() => assignTaskMutation.mutate(selectedUser)}
+            disabled={!selectedUserId || assignTaskMutation.isPending}
+            onClick={() =>
+              assignTaskMutation.mutate(selectedUserId)
+            }
           >
-            {assignTaskMutation.isPending ? "Assigning..." : "Assign"}
+            {assignTaskMutation.isPending
+              ? "Assigning..."
+              : "Assign"}
           </Button>
         </DialogFooter>
       </DialogContent>
