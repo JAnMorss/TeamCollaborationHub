@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { tasksApiConnector } from "@/api/tasks/tasks.api";
+import { projectsApiConnector } from "@/api/projects/project.api";
 
 import {
   Dialog,
@@ -13,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -21,93 +23,154 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { Textarea } from "../ui/textarea";
+
 import type { Task } from "@/schemas/tasks/task.schema";
 
-/* ✅ Editable form fields */
-interface TaskFormFields {
-  title: string;
-  description: string;
-  status: Task["status"];
-  priority: Task["priority"];
-  dueDate: string;
-}
+const STATUS_MAP: Record<string, number> = {
+  Todo: 0,
+  InProgress: 1,
+  Review: 2,
+  Completed: 3,
+};
 
-interface EditTaskDialogProps {
+const PRIORITY_MAP: Record<string, number> = {
+  Low: 0,
+  Medium: 1,
+  High: 2,
+};
+
+type EditTaskDialogProps = {
+  open: boolean;
   task: Task;
-  onClose: () => void;
-}
+  onOpenChange: (open: boolean) => void;
+};
 
-export default function EditTaskDialog({ task, onClose }: EditTaskDialogProps) {
+export default function EditTaskDialog({
+  open,
+  task,
+  onOpenChange,
+}: EditTaskDialogProps) {
   const queryClient = useQueryClient();
 
-  const [form, setForm] = useState<TaskFormFields>({
-    title: task.title,
-    description: task.description,
-    status: task.status,
-    priority: task.priority || "Medium",
-    dueDate: task.dueDate || "",
+  const [form, setForm] = useState({
+    projectId: "",
+    title: "",
+    description: "",
+    status: "Todo",
+    priority: "Medium",
+    dueDate: "",
   });
 
-  /* ✅ Mutation inside the dialog */
+  const { data: projectsData, isLoading: projectsLoading } = useQuery({
+    queryKey: ["projects", "all"],
+    queryFn: projectsApiConnector.getAllProjects,
+  });
+
+  const projects = projectsData?.data.items ?? [];
+
+  useEffect(() => {
+    if (!task) return;
+
+    setForm({
+      projectId: task.projectId,
+      title: task.title,
+      description: task.description,
+      status: task.status,
+      priority: task.priority,
+      dueDate: task.dueDate ? task.dueDate.split("T")[0] : "",
+    });
+  }, [task]);
+
   const updateMutation = useMutation({
-    mutationFn: (payload: Partial<TaskFormFields>) =>
-      tasksApiConnector.updateTask(task.id, payload),
+    mutationFn: () =>
+      tasksApiConnector.updateTask(task.id, {
+        projectId: form.projectId,
+        title: form.title,
+        description: form.description,
+        status: STATUS_MAP[form.status],
+        priority: PRIORITY_MAP[form.priority],
+        dueDate: form.dueDate
+          ? new Date(form.dueDate).toISOString()
+          : null,
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
-      onClose(); // close dialog automatically after update
+      onOpenChange(false);
     },
-    onError: (err) => {
-      console.error("Failed to update task:", err);
+    onError: (error) => {
+      console.error("Failed to update task:", error);
     },
   });
 
-  const handleSubmit = () => {
-    const payload: Partial<TaskFormFields> = {};
-    if (form.title !== task.title) payload.title = form.title;
-    if (form.description !== task.description) payload.description = form.description;
-    if (form.status !== task.status) payload.status = form.status;
-    if (form.priority !== task.priority) payload.priority = form.priority;
-    if (form.dueDate !== task.dueDate) payload.dueDate = form.dueDate;
-
-    updateMutation.mutate(payload);
-  };
+  const isSubmitDisabled =
+    !form.projectId ||
+    !form.title ||
+    !form.description ||
+    updateMutation.isPending;
 
   return (
-    <Dialog open={true} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>Edit Task</DialogTitle>
-          <DialogDescription>Edit the details of this task</DialogDescription>
+          <DialogDescription>
+            Update task details
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 mt-4">
           <div className="space-y-2">
-            <Label htmlFor="title">Title</Label>
+            <Label>Project</Label>
+            <Select
+              value={form.projectId}
+              onValueChange={(value) =>
+                setForm({ ...form, projectId: value })
+              }
+              disabled={projectsLoading}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select project" />
+              </SelectTrigger>
+              <SelectContent>
+                {projects.map((project) => (
+                  <SelectItem key={project.id} value={project.id}>
+                    {project.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Title</Label>
             <Input
-              id="title"
               value={form.title}
-              onChange={(e) => setForm({ ...form, title: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, title: e.target.value })
+              }
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
+            <Label>Description</Label>
             <Textarea
-              id="description"
               value={form.description}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, description: e.target.value })
+              }
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="status">Status</Label>
+              <Label>Status</Label>
               <Select
                 value={form.status}
-                onValueChange={(value) => setForm({ ...form, status: value as Task["status"] })}
+                onValueChange={(value) =>
+                  setForm({ ...form, status: value })
+                }
               >
-                <SelectTrigger id="status">
+                <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -120,12 +183,14 @@ export default function EditTaskDialog({ task, onClose }: EditTaskDialogProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="priority">Priority</Label>
+              <Label>Priority</Label>
               <Select
                 value={form.priority}
-                onValueChange={(value) => setForm({ ...form, priority: value as Task["priority"] })}
+                onValueChange={(value) =>
+                  setForm({ ...form, priority: value })
+                }
               >
-                <SelectTrigger id="priority">
+                <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -138,21 +203,22 @@ export default function EditTaskDialog({ task, onClose }: EditTaskDialogProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="dueDate">Due Date</Label>
+            <Label>Due Date</Label>
             <Input
               type="date"
-              id="dueDate"
               value={form.dueDate}
-              onChange={(e) => setForm({ ...form, dueDate: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, dueDate: e.target.value })
+              }
             />
           </div>
 
           <Button
-            className="w-full bg-blue-600 hover:bg-blue-700"
-            onClick={handleSubmit}
-            disabled={updateMutation.isPending} 
+            className="w-full mt-2 bg-blue-600 hover:bg-blue-700"
+            disabled={isSubmitDisabled}
+            onClick={() => updateMutation.mutate()}
           >
-            {updateMutation.isPending ? "Updating..." : "Update Task"} 
+            {updateMutation.isPending ? "Saving..." : "Save Changes"}
           </Button>
         </div>
       </DialogContent>
