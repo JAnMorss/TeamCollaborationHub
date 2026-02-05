@@ -89,7 +89,7 @@ export default function CreateTaskDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-blue-600 hover:bg-blue-700">
+        <Button className="bg-white text-blue-600 hover:bg-white/90">
           <Plus className="w-4 h-4 mr-2" /> Create Task
         </Button>
       </DialogTrigger>
