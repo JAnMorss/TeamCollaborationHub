@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { tasksApiConnector } from "@/api/tasks/tasks.api";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
@@ -15,6 +15,7 @@ interface UploadAttachmentDialogProps {
 export default function UploadAttachmentDialog({ task, onClose }: UploadAttachmentDialogProps) {
   const [files, setFiles] = useState<File[]>([]);
   const queryClient = useQueryClient();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const uploadMutation = useMutation<
     UploadTaskAttachmentResponse | ValidationErrorResponse, 
@@ -37,6 +38,12 @@ export default function UploadAttachmentDialog({ task, onClose }: UploadAttachme
     onClose();
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setFiles(Array.from(e.target.files));
+    }
+  };
+
   return (
     <Dialog open={true} onOpenChange={onClose}>
       <DialogContent>
@@ -47,9 +54,26 @@ export default function UploadAttachmentDialog({ task, onClose }: UploadAttachme
         <input
           type="file"
           multiple
-          onChange={(e) => e.target.files && setFiles(Array.from(e.target.files))}
-          className="my-4"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          className="hidden"
         />
+
+        <Button
+          variant="outline"
+          onClick={() => fileInputRef.current?.click()}
+          className="mb-2"
+        >
+          Choose Files
+        </Button>
+
+        {files.length > 0 && (
+          <ul className="mb-4 max-h-32 overflow-auto border border-gray-200 rounded p-2 bg-gray-50 text-sm">
+            {files.map((file, idx) => (
+              <li key={idx}>{file.name}</li>
+            ))}
+          </ul>
+        )}
 
         <DialogFooter className="flex justify-end gap-2">
           <Button variant="outline" onClick={onClose}>Cancel</Button>
