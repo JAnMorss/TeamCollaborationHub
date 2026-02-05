@@ -1,11 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type JSX } from "react";
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-
 import { projectsApiConnector } from "@/api/projects/project.api";
 import { userApiConnector } from "@/api/users/user.api";
-
 import { Card, CardContent } from "@/components/ui/card";
 import {
   DropdownMenu,
@@ -15,19 +13,27 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-
 import { MoreVertical, Pencil, Trash } from "lucide-react";
-
 import type { Project } from "@/schemas/projects/project.schema";
-
 import EditProjectDialog from "./EditProjectDialog";
 import RemoveProjectDialog from "./RemoveProjectDialog";
+
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationPrevious,
+  PaginationNext,
+} from "@/components/ui/pagination"; 
 
 export default function ProjectsGridCard() {
   const queryClient = useQueryClient();
 
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(6);
 
   const { data: currentUserData } = useSuspenseQuery({
     queryKey: ["user", "profile"],
@@ -40,6 +46,9 @@ export default function ProjectsGridCard() {
     queryFn: projectsApiConnector.getAllProjects,
   });
   const projects = data.data.items;
+
+  const totalPages = Math.ceil(projects.length / pageSize);
+  const paginatedProjects = projects.slice((page - 1) * pageSize, page * pageSize);
 
   const updateMutation = useMutation({
     mutationFn: ({ id, payload }: { id: string; payload: Partial<Project> }) =>
@@ -61,7 +70,7 @@ export default function ProjectsGridCard() {
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {projects.map((project) => {
+        {paginatedProjects.map((project) => {
           const isOwner = currentUserId && project.createdById === currentUserId;
 
           return (
@@ -143,6 +152,54 @@ export default function ProjectsGridCard() {
             </Card>
           );
         })}
+      </div>
+
+      <div className="flex justify-center mt-6">
+        <Pagination>
+          <PaginationPrevious
+            onClick={() => page > 1 && setPage(page - 1)}
+            className={page === 1 ? "pointer-events-none opacity-40" : ""}
+          />
+
+          <PaginationContent>
+            {Array.from({ length: totalPages }, (_, i) => i + 1)
+              .map((p) => {
+                if (p === 1 || p === totalPages || (p >= page - 1 && p <= page + 1)) {
+                  return (
+                    <PaginationItem key={p}>
+                      <PaginationLink
+                        isActive={p === page}
+                        onClick={() => setPage(p)}
+                      >
+                        {p}
+                      </PaginationLink>
+                    </PaginationItem>
+                  );
+                }
+                return null;
+              })
+              .reduce<JSX.Element[]>((acc, el, idx, arr) => {
+                if (!el) return acc;
+                const last = acc[acc.length - 1];
+                if (last && Number(last.props.children) + 1 < Number(el.props.children)) {
+                  acc.push(
+                    <PaginationItem key={`ellipsis-${idx}`}>
+                      <PaginationLink isActive={false} className="pointer-events-none">
+                        ...
+                      </PaginationLink>
+                    </PaginationItem>
+                  );
+                }
+                acc.push(el);
+                return acc;
+              }, [])}
+          </PaginationContent>
+
+          <PaginationNext
+            onClick={() => page < totalPages && setPage(page + 1)}
+            className={page === totalPages ? "pointer-events-none opacity-40" : ""}
+          />
+        </Pagination>
       </div>
 
       <EditProjectDialog
