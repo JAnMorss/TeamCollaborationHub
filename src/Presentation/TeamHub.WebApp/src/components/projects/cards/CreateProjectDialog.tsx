@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { projectsApiConnector } from "@/api/projects/project.api";
+
 import {
   Dialog,
   DialogContent,
@@ -12,63 +13,74 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { tasksApiConnector } from "@/api/tasks/tasks.api";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 
-interface CreateTaskDialogProps {
-  projectId: string; // The project where the task will be created
-}
-
-export default function CreateTaskDialog({ projectId }: CreateTaskDialogProps) {
+export default function CreateProjectDialog() {
   const queryClient = useQueryClient();
 
-  const [title, setTitle] = useState("");
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [priority, setPriority] = useState<"Low" | "Medium" | "High">("Low");
-  const [status, setStatus] = useState<"Todo" | "InProgress" | "Review" | "Completed">("Todo");
-  const [dueDate, setDueDate] = useState<string>("");
+  const [color, setColor] = useState("#000000");
 
-  const mutation = useMutation({
-    mutationFn: (data: any) => tasksApiConnector.createTask(data),
+  const createMutation = useMutation({
+    mutationFn: () =>
+      projectsApiConnector.createProject({
+        name,
+        description,
+        color,
+      }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tasks", projectId] });
-      setTitle("");
-      setDescription("");
-      setPriority("Low");
-      setStatus("Todo");
-      setDueDate("");
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+      handleClose();
+    },
+    onError: (error) => {
+      console.error("Failed to create project:", error);
     },
   });
 
+  const handleClose = () => {
+    setOpen(false);
+    setName("");
+    setDescription("");
+    setColor("#000000");
+  };
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="flex items-center gap-2 bg-white text-blue-600 hover:bg-white/90 hover:text-blue-700 font-semibold transition">
-          <Plus className="h-4 w-4" />
-          Create Task
+        <Button className="bg-white text-blue-600 hover:bg-white/90">
+          <Plus className="w-4 h-4 mr-2" />
+          Create Project
         </Button>
       </DialogTrigger>
 
       <DialogContent className="max-w-md rounded-2xl p-6 shadow-lg bg-white">
         <DialogHeader className="flex items-center justify-between mb-4">
-          <DialogTitle className="text-lg font-semibold">Create Task</DialogTitle>
+          <DialogTitle className="text-lg font-semibold">
+            Create Project
+          </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
           <div className="flex flex-col">
-            <label className="mb-1 text-sm font-medium text-gray-700">Title</label>
+            <label className="mb-1 text-sm font-medium text-gray-700">
+              Project Name
+            </label>
             <Input
-              placeholder="Enter task title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Enter project name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
             />
           </div>
 
           <div className="flex flex-col">
-            <label className="mb-1 text-sm font-medium text-gray-700">Description</label>
+            <label className="mb-1 text-sm font-medium text-gray-700">
+              Description
+            </label>
             <Textarea
-              placeholder="Enter task description"
+              placeholder="Enter project description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
@@ -76,58 +88,26 @@ export default function CreateTaskDialog({ projectId }: CreateTaskDialogProps) {
           </div>
 
           <div className="flex flex-col">
-            <label className="mb-1 text-sm font-medium text-gray-700">Priority</label>
-            <Select value={priority} onValueChange={(val) => setPriority(val as any)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select priority" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Low">Low</SelectItem>
-                <SelectItem value="Medium">Medium</SelectItem>
-                <SelectItem value="High">High</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="flex flex-col">
-            <label className="mb-1 text-sm font-medium text-gray-700">Status</label>
-            <Select value={status} onValueChange={(val) => setStatus(val as any)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Todo">Todo</SelectItem>
-                <SelectItem value="InProgress">In Progress</SelectItem>
-                <SelectItem value="Review">Review</SelectItem>
-                <SelectItem value="Completed">Completed</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="flex flex-col">
-            <label className="mb-1 text-sm font-medium text-gray-700">Due Date</label>
-            <Input
-              type="date"
-              value={dueDate}
-              onChange={(e) => setDueDate(e.target.value)}
-            />
+            <label className="mb-1 text-sm font-medium text-gray-700">
+              Project Color
+            </label>
+            <div className="flex items-center gap-2">
+              <Input
+                type="color"
+                value={color}
+                onChange={(e) => setColor(e.target.value)}
+                className="w-12 h-10 p-0 border-0"
+              />
+              <span className="text-gray-600">{color}</span>
+            </div>
           </div>
 
           <Button
             className="w-full mt-2 bg-blue-600 text-white hover:bg-blue-700 transition-all"
-            onClick={() =>
-              mutation.mutate({
-                projectId,
-                title,
-                description,
-                priority,
-                status,
-                dueDate: dueDate || null,
-              })
-            }
-            disabled={mutation.isPending}
+            disabled={createMutation.isPending || !name || !description}
+            onClick={() => createMutation.mutate()}
           >
-            {mutation.isPending ? "Creating..." : "Create Task"}
+            {createMutation.isPending ? "Creating..." : "Create Project"}
           </Button>
         </div>
       </DialogContent>
