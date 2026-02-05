@@ -56,7 +56,7 @@ export default function AddProjectMemberDialog() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="bg-white text-emerald-600 hover:bg-white/90">
+        <Button className="bg-white text-blue-600 hover:bg-white/90">
           <Plus className="h-4 w-4 mr-2" />
           Add Member
         </Button>
