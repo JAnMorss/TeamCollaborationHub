@@ -47,9 +47,17 @@ export default function About() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div className="rounded-2xl p-6 bg-blue-50 dark:bg-card dark:border dark:border-border">
-              <div className="text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 ">
+            <div className="
+                  rounded-2xl p-6 bg-blue-50 dark:bg-card 
+                  dark:border dark:border-border 
+                  transition-all duration-300
+                  hover:-translate-y-1
+                  hover:border-blue-300 dark:hover:border-blue-500/50
+                  hover:shadow-lg dark:hover:shadow-black/20
+                "
+              >
+              <div className="text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2 ">
                 100%
               </div>
               <div className="text-gray-700 dark:text-muted-foreground">
@@ -57,7 +65,14 @@ export default function About() {
               </div>
             </div>
 
-            <div className="rounded-2xl p-6 bg-purple-50 dark:bg-card dark:border dark:border-border">
+            <div className="
+                  rounded-2xl p-6 bg-purple-50 dark:bg-card 
+                  dark:border dark:border-border 
+                  transition-all duration-300 hover:-translate-y-1
+                  hover:border-blue-300 dark:hover:border-blue-500/50
+                  hover:shadow-lg dark:hover:shadow-black/20
+                "
+              >
               <div className="text-4xl font-bold text-purple-600 dark:text-purple-400 mb-2">
                 CQRS
               </div>
@@ -66,7 +81,14 @@ export default function About() {
               </div>
             </div>
 
-            <div className="rounded-2xl p-6 bg-green-50 dark:bg-card dark:border dark:border-border">
+            <div className="
+                  rounded-2xl p-6 bg-green-50 
+                  dark:bg-card dark:border dark:border-border 
+                  transition-all duration-300 hover:-translate-y-1
+                  hover:border-blue-300 dark:hover:border-blue-500/50
+                  hover:shadow-lg dark:hover:shadow-black/20
+                "
+              >
               <div className="text-4xl font-bold text-green-600 dark:text-green-400 mb-2">
                 JWT
               </div>
@@ -75,7 +97,14 @@ export default function About() {
               </div>
             </div>
 
-            <div className="rounded-2xl p-6 bg-orange-50 dark:bg-card dark:border dark:border-border">
+            <div className="
+                  rounded-2xl p-6 bg-orange-50 
+                  dark:bg-card dark:border dark:border-border 
+                  transition-all duration-300 hover:-translate-y-1
+                  hover:border-blue-300 dark:hover:border-blue-500/50
+                  hover:shadow-lg dark:hover:shadow-black/20
+                "
+              >
               <div className="text-4xl font-bold text-orange-600 dark:text-orange-400 mb-2">
                 Ongoing
               </div>
@@ -95,10 +124,17 @@ export default function About() {
           </p>
         </div>
 
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4 ">
           {values.map(({ icon: Icon, title, description }, index) => (
             <div key={index} className="text-center">
-              <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-100 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400 mb-4">
+              <div className="
+                  inline-flex h-16 w-16 items-center justify-center 
+                  rounded-2xl bg-blue-100 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400 mb-4 
+                  transition-all duration-300 hover:-translate-y-1
+                  hover:border-blue-300 dark:hover:border-blue-500/50
+                  hover:shadow-lg dark:hover:shadow-black/20
+                "
+              >
                 <Icon className="h-8 w-8" />
               </div>
 
