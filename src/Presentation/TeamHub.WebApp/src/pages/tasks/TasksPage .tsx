@@ -1,5 +1,7 @@
+import TasksGridCardSkeleton from "@/components/skeletons/task/TasksGridCardSkeleton";
 import TasksGridCard from "@/components/tasks/TasksGridCard";
 import TasksHeroCard from "@/components/tasks/TasksHeroCard";
+import { Suspense } from "react";
 
 export default function TasksPage() {
   return (
@@ -7,7 +9,9 @@ export default function TasksPage() {
       <TasksHeroCard />
       <div className="flex justify-end items-center">
       </div>
-      <TasksGridCard />
+      <Suspense fallback={<TasksGridCardSkeleton />}>
+        <TasksGridCard />
+      </Suspense>
     </div>
   );
 }
