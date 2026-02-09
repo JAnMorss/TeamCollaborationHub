@@ -1,6 +1,8 @@
 
 import ProjectsGridCard from "@/components/projects/cards/ProjectsGridCard";
 import ProjectsHeroCard from "@/components/projects/cards/ProjectsHeroCard"
+import ProjectsGridCardSkeleton from "@/components/skeletons/projects/ProjectsGridCardSkeleton";
+import { Suspense } from "react";
 
 export default function ProjectsPage() {
   return (
@@ -9,7 +11,9 @@ export default function ProjectsPage() {
       <div className="flex justify-end items-center">
         
       </div>
-      <ProjectsGridCard />
+      <Suspense fallback={<ProjectsGridCardSkeleton />}>
+        <ProjectsGridCard />
+      </Suspense>
     </div>
   );
 }
