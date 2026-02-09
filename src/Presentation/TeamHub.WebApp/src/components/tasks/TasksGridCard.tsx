@@ -262,7 +262,7 @@ export default function TasksGridCard() {
                 }
                 return null;
               })
-              .reduce<JSX.Element[]>((acc, el, idx, arr) => {
+              .reduce<JSX.Element[]>((acc, el, idx) => {
                 if (!el) return acc;
 
                 const last = acc[acc.length - 1];
