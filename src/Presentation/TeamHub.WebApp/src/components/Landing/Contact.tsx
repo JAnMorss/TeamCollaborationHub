@@ -32,7 +32,7 @@ export default function Contact() {
               </div>
 
               <Input type="email" placeholder="Email" />
-              <Textarea placeholder="Your message..." className="min-h-[120px]" />
+              <Textarea placeholder="Your message..." className="min-h-30" />
 
               <Button
                 size="lg"
@@ -59,7 +59,15 @@ export default function Contact() {
               { icon: MapPin, label: "Location", value: "Dumaguete City, Philippines" },
             ].map(({ icon: Icon, label, value }) => (
               <div key={label} className="flex items-start gap-4">
-                <div className="h-12 w-12 rounded-xl bg-blue-100 text-blue-600 dark:bg-muted dark:text-foreground flex items-center justify-center">
+                <div className="
+                    h-12 w-12 rounded-xl bg-blue-100 text-blue-600
+                    dark:bg-muted dark:text-foreground 
+                    flex items-center justify-center 
+                    transition-all duration-300 hover:-translate-y-1
+                  hover:border-blue-300 dark:hover:border-blue-500/50
+                    hover:shadow-lg dark:hover:shadow-black/20
+                  "
+                >
                   <Icon className="h-6 w-6" />
                 </div>
                 <div>
@@ -76,7 +84,7 @@ export default function Contact() {
             <div
               className="
                 rounded-2xl p-6 border
-                bg-gradient-to-br from-blue-50 to-purple-50 border-transparent
+                bg-linear-to-br from-blue-50 to-purple-50 border-transparent
                 dark:bg-none dark:bg-card dark:border-border/60
               "
             >
