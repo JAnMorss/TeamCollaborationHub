@@ -1,24 +1,57 @@
-export default function Footer() {
-  return (
-    <footer className="
-      bg-gray-900 text-gray-300
-      dark:bg-card dark:text-muted-foreground
-      border-t border-gray-800 dark:border-border
-      px-4 sm:px-6 py-8 sm:py-12
-    ">
-      <div className="mx-auto max-w-7xl">
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
+export default function Footer() {
+  const footerRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: footerRef.current,
+          start: "top bottom-=100", // when footer is about to enter view
+          end: "bottom bottom",
+          toggleActions: "play none none reverse",
+        },
+      });
+
+      tl.fromTo(
+        footerRef.current,
+        { y: 60 },
+        {
+          y: -10,
+          duration: 0.85,
+          ease: "power3.out",
+        }
+      )
+        .to(footerRef.current, {
+          y: 0,
+          duration: 0.6,
+          ease: "bounce.out",
+        });
+    }, footerRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  return (
+    <footer
+      ref={footerRef}
+      className="
+        bg-gray-900 text-gray-300
+        dark:bg-card dark:text-muted-foreground
+        border-t border-gray-800 dark:border-border
+        px-4 sm:px-6 py-8 sm:py-12
+      "
+    >
+      <div className="mx-auto max-w-7xl">
         <div className="grid gap-6 sm:gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 mb-6 sm:mb-8">
-          
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <div className="
-                h-8 w-8 rounded-lg
-                bg-blue-600 dark:bg-primary
-                flex items-center justify-center
-                text-white dark:text-primary-foreground
-                font-bold
-              ">
+              <div className="h-8 w-8 rounded-lg bg-blue-600 dark:bg-primary flex items-center justify-center text-white dark:text-primary-foreground font-bold">
                 T
               </div>
               <span className="text-xl font-semibold text-white dark:text-foreground">
@@ -68,19 +101,14 @@ export default function Footer() {
               <li>ASP.NET & React</li>
             </ul>
           </div>
-
         </div>
 
-        <div className="
-          border-t border-gray-800 dark:border-border
-          pt-6 text-center text-sm
-        ">
+        <div className="border-t border-gray-800 dark:border-border pt-6 text-center text-sm">
           © {new Date().getFullYear()} TeamHub — Built by{" "}
           <span className="text-white dark:text-foreground font-medium">
             John Anthony Morales
           </span>
         </div>
-
       </div>
     </footer>
   );
