@@ -1,5 +1,5 @@
-﻿namespace TeamHub.Domain.Projects.Enums;
+﻿//namespace TeamHub.Domain.Projects.Enums;
 
-public enum ProjectTheme
-{
-}
+//public enum ProjectTheme
+//{
+//}
